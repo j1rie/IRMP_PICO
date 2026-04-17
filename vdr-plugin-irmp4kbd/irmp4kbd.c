@@ -199,9 +199,9 @@ bool cReadIR::Connect()
   }
 
   /*if(ioctl(fd, EVIOCGRAB, 1)){
-    if(DEBUG) printf("Cannot grab %s. %s.\n", kbd_device, strerror(errno));
+    if(DEBUG) printf("Cannot grab %s. %s.\n", irmp_device, strerror(errno));
   } else {
-    if(DEBUG) printf("Grabbed %s!\n", kbd_device);
+    if(DEBUG) printf("Grabbed %s!\n", irmp_device);
   }*/
 
   return true;

@@ -881,10 +881,10 @@ void send_magic(void)
 	uint8_t magic[SIZEOF_IR] = {0xFF, 0x00, 0x00, 0x00, 0x00, 0x00};
 	USB_HID_SendData(REPORT_ID_IR, magic, SIZEOF_IR);
 	while (!PrevXferComplete)
-		sleep_ms(1);
+		tud_task();
 	USB_KBD_SendData(0, 0xFA); // KEY_REFRESH
 	while (!PrevXferComplete)
-		sleep_ms(1);
+		tud_task();
 	USB_KBD_SendData(0, 0);
 }
 
