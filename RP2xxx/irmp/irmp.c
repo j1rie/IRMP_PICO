@@ -2891,7 +2891,7 @@ irmp_get_data (IRMP_DATA * irmp_data_p)
                 }
                 upper_border = min_delta * (100 + JITTER_COMPENSATION) / 100 + 1;
                 timeout = (delta >= upper_border);
-                if (irmp_protocol == IRMP_RC5_PROTOCOL || irmp_protocol == IRMP_RC6_PROTOCOL || irmp_protocol == IRMP_RC6A_PROTOCOL || irmp_protocol == IRMP_RECS80_PROTOCOL \
+                if (irmp_protocol == IRMP_RC5_PROTOCOL || irmp_protocol == IRMP_RC6_PROTOCOL /*|| irmp_protocol == IRMP_RC6A_PROTOCOL*/ || irmp_protocol == IRMP_RECS80_PROTOCOL \
                     || irmp_protocol == IRMP_RECS80EXT_PROTOCOL || irmp_protocol == IRMP_RCMM24_PROTOCOL || irmp_protocol == IRMP_RCMM32_PROTOCOL \
                     || irmp_protocol == IRMP_THOMSON_PROTOCOL || irmp_protocol == IRMP_S100_PROTOCOL || irmp_protocol == IRMP_METZ_PROTOCOL) {
                     if (same_key) // same_key is false, if toggle; not using timeout helps detecting repeats after misdetection and timeout isn't needed for discerning repetition
