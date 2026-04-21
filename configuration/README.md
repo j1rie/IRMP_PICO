@@ -3,8 +3,8 @@
 2. REPORT_ID_KBD -> /dev/input/eventX → eventlircd → Kodi/VDR  
 3. REPORT_ID_IR -> vdr-plugin-irmp -> VDR  
 4. REPORT_ID_KBD -> vdr-plugin-irmp4kbd -> VDR  
-5a. REPORT_ID_KBD -> /dev/input/eventX → softhddevcie → Kodi/VDR (with X)  
-5b. REPORT_ID_KBD -> /dev/input/eventX → Kodi/VDR (without X) 
+5a. REPORT_ID_KBD -> /dev/input/eventX → softhddevcie → VDR (with X)  
+5b. REPORT_ID_KBD -> /dev/input/eventX → VDR (without X) 
 
 *Only one of the five ways may be activated.*  
 
