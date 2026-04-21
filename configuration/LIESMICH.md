@@ -1,25 +1,31 @@
-## Die vier Wege
+## Die fünf Wege
 1. REPORT_ID_IR -> irmplircd → lircd2uinput bzw. lircd-uinput → /dev/input/eventX → eventlircd → Kodi/VDR  
 2. REPORT_ID_KBD -> /dev/input/eventX → eventlircd → Kodi/VDR  
 3. REPORT_ID_IR -> vdr-plugin-irmp -> VDR  
 4. REPORT_ID_KBD -> vdr-plugin-irmp4kbd -> VDR  
+5. REPORT_ID_KBD -> /dev/input/eventX → softhddevcie → Kodi/VDR (mit X)  
+5. REPORT_ID_KBD -> /dev/input/eventX → Kodi/VDR (ohne X)  
 
-*Es darf nur einer der vier Wege aktiviert sein.*  
+*Es darf nur einer der fünf Wege aktiviert sein.*  
 
 Für den ersten Weg braucht man eine map für irmplircd.  
 Für den zweiten Weg braucht man eine kbd.map und eine .evmap.  
 Für den vierten Weg müssen die Tasten im Empfänger angelernt werden.  
 Für den dritten Weg und den vierten Weg müssen einmalig die Tasten im VDR angelernt werden.  
-Der dritte Weg ist, wenn man nur VDR bedienen will, der einfachste.
+Der dritte Weg ist, wenn man nur den VDR bedienen will, der einfachste.
 
 Für Kodi braucht man bei Weg drei und vier eine kbd.map fürs eeprom und eine passende keymap für Kodi.  
+
+Der fünfte Weg wird nicht empfohlen.
 
 ## /dev/irmp_pico
 Die udev Regel '70-irmp.rules' wird in das udev rules Verzeichnis (z.B. /etc/udev/rules.d/) kopiert.  
 
 ## Fehlersuche
 Kommen mit irmpconfig_gui im receive mode Tasten an?  
-Was zeigt journalctl -u vdr -f?  
+yaVDR: Was zeigt journalctl -u vdr -f?  
+VDR*ELEC: VDR stoppen (systemctl stop vdropt) und vdr manuell auf der Konsole starten /usr/local/bin/start_vdr.sh
+andere: VDR stoppen (systemctl stop vdr) und vdr manuell auf der Konsole starten vdr -Pirmp ...
 
 ## Autorepeat vom Kernel
 Wenn die automatische Wiederholung des Kernels stört, kann man diese mit evrepeat, kbdrate oder xset (oder ir-keytable auf älteren Systemen) ändern. Sie sollte größer als das release timeout sein, damit sie nicht stört.  
@@ -66,7 +72,7 @@ und es wird "systemctl enable eventlircd.service eventlircd.socket" einmal ausge
 ## Verwende nicht softhddevice für die Fernbedienung.
 Es wird empfohlen, stattdessen vdr-plugin-irmp oder vdr-plugin-irmp4kbd zu verwenden, da die Fernbedienungsfunktion von softhddevice nicht so präzise ist.  
 Die Fernbedienungsfunktion von softhddevice wird mit dem Parameter -N abgeschaltet.  
-Für softhddevice-drm-gles braucht man vdr mit --no-kbd.  
+Für softhddevice-drm-gles und vaapivideo braucht man vdr mit --no-kbd.  
 
 ## Mit softhddevice, ohne eventlircd: keysyms finden
 Softhddevice gibt X11 Tastendrücke als 'XKeySym' an VDR weiter. Um sie zu finden, startet man xev in einem xterm mit dem Fokus auf dem Testfenster.  
@@ -76,3 +82,15 @@ Zum Beispiel ist eine Taste als 'KEY_I' konfiguriert, was das keysym 'i' ergibt,
 ## Mit softhddevice, ohne eventlircd: softhddevice fortsetzen
 Im Suspend mit SuspendClose=1 gibt softhddevice keine X11 Tastendrücke weiter.  
 Um aus dem Suspend weiterzumachen, braucht man z.B. triggerhappy. Siehe irmp_pico.conf und 70-irmp.rules.
+
+## Wiederholrate der Fernbedienung testen
+Wenn man irmpconfig -> y startet und lange dieselbe Taste gedrückt hält, bekommt man eine Statistik, wie oft welcher Zeitabstand zwischen den Signalen der Fernbedienung gemessen wurde.  
+Normalerweise sollten da nur ein oder zwei Zahlen stehen, und im Fall von Aussetzern auch noch ca. die doppelten Zahlen.  
+Falls die Zahlen stärker als 3% streuen, muss man die automatische Releaseerkennung deaktivieren und bei repeat-release statt 0 einen Wert etwas höher als den längsten nicht verdoppelten Wert einsetzen.
+
+## Support Anfragen
+Bitte folgende Daten bereitstellen:  
+- Sämtliche Parameter von VDR und Plugins  
+- Debugausgaben des Plugins (falls irmp oder irmp4kbd verwendet)  
+- Ausgabe von irmpconfig → y (1 Minute Tasten gedrückt halten)  
+- Ausgabe von irmpconfig → m (verschiedene Tasten drücken, manchmal auch länger)  

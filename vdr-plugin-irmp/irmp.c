@@ -13,7 +13,7 @@
 #include "protocols.h"
 #include <locale.h>
 
-static const char *VERSION        = "0.0.6";
+static const char *VERSION        = "0.0.7";
 static const char *DESCRIPTION    = tr("Send keypresses from IRMP Pico Device to VDR");
 
 #define DEBUG 1
@@ -98,7 +98,7 @@ void cIrmpRemote::Action(void)
         if (protocol != lastprotocol) { // new protocol
             lastprotocol = protocol;
             if(DEBUG) printf("protocol: %02x, %s\n", protocol, (const char *)protocols[protocol]);
-            isyslog("irmp: protocol: %02x, %s\n", protocol, (const char *)protocols[protocol]);
+            isyslog("irmp: protocol: %02x, %s", protocol, (const char *)protocols[protocol]);
         }
 
         int Delta = ThisTime.Elapsed(); // the time between two consecutive events
@@ -148,6 +148,7 @@ void cIrmpRemote::Action(void)
                 Put(lastkey, false, true);
                 repeat = false;
             }
+            lastkey = "";
         }
     if (DEBUG) printf("\n");
   }
@@ -189,7 +190,7 @@ bool cReadIR::Connect()
     return false;
   } else {
     if(DEBUG) printf("opened %s\n", irmp_device);
-    isyslog("irmp: opened %s\n", irmp_device);
+    isyslog("irmp: opened %s", irmp_device);
   }
 
   /*if(ioctl(fd, EVIOCGRAB, 1)){
@@ -226,10 +227,10 @@ void cReadIR::Action(void)
 
     //if(DEBUG) printf("IR report: %016lx\n", *((uint64_t*)buf));
     if (buf[0] == REPORT_ID_IR) {
-	//if(DEBUG) printf("IR report: %016lx\n", *((uint64_t*)buf));
+        //if(DEBUG) printf("IR report: %016lx\n", *((uint64_t*)buf));
         myIrmpRemote->Receive();
     } else {
-	//if(DEBUG) printf("configuration report or keyboard\n");
+        //if(DEBUG) printf("configuration report or keyboard\n");
     }
   }
 }

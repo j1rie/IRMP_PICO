@@ -1,10 +1,12 @@
-## The four ways
-REPORT_ID_IR -> irmplircd → lircd2uinput or lircd-uinput → /dev/input/eventX → eventlircd → Kodi/VDR  
-REPORT_ID_KBD -> /dev/input/eventX → eventlircd → Kodi/VDR  
-REPORT_ID_IR -> vdr-plugin-irmp -> VDR  
-REPORT_ID_KBD -> vdr-plugin-irmp4kbd -> VDR  
+## The five ways
+1. REPORT_ID_IR -> irmplircd → lircd2uinput or lircd-uinput → /dev/input/eventX → eventlircd → Kodi/VDR  
+2. REPORT_ID_KBD -> /dev/input/eventX → eventlircd → Kodi/VDR  
+3. REPORT_ID_IR -> vdr-plugin-irmp -> VDR  
+4. REPORT_ID_KBD -> vdr-plugin-irmp4kbd -> VDR  
+5. REPORT_ID_KBD -> /dev/input/eventX → softhddevcie → Kodi/VDR (with X)  
+5. REPORT_ID_KBD -> /dev/input/eventX → Kodi/VDR (without X) 
 
-*Only one of the four paths may be activated.*  
+*Only one of the five ways may be activated.*  
 
 For the first way, you need a map for irmplircd.  
 For the second way, you need a kbd.map and an .evmap.  
@@ -14,12 +16,16 @@ The third way is the easiest, if you want to control only VDR.
 
 For Kodi with the third or fourth way you need a kbd.map for the eeprom and a suitable keymap for Kodi.  
 
+The fifth way is not recommended.
+
 ## /dev/irmp_pico
 Put the udev rule '70-irmp.rules' in your udev rules directory (e.g. /etc/udev/rules.d/).  
 
 ## Troubleshooting
 Do keys arrive in irmpconfig_gui's receive mode?  
-What is shown by journalctl -u vdr -f?
+yaVDR: What is shown by journalctl -u vdr -f?
+VDR*ELEC: stop VDR (systemctl stop vdropt) and start vdr manually on the console /usr/local/bin/start_vdr.sh
+andere: stop VDR (systemctl stop vdr) and start vdr manually on the console vdr -Pirmp ...
 
 ## Kernel's autorepeat
 If the kernel's autorepeat bothers you, you can change it with evrepeat, kbdrate or xset (or ir-keytable on older systems). It should be greater than the release timeout, so that it does not interfere.  
@@ -66,7 +72,7 @@ and run "systemctl enable eventlircd.service eventlircd.socket" once.
 ## Don't use softhddevice for remote control
 It is recommended to use vdr-plugin-irmp or vdr-plugin-irmp4kbd instead, because softhddevice's remote function is not as precise.  
 Disable softhddevice's remote function with the parameter -N.  
-For softhddevice-drm-gles you need vdr with --no-kbd.  
+For softhddevice-drm-gles and vaapivideo you need vdr with --no-kbd.  
 
 ## Using softhddevice without eventlircd: Finding keysym's
 Softhddevice passes X11 keypresses on to VDR as 'XKeySym'. To find them, start xev in an xterm with the focus on the test window.  
@@ -76,3 +82,15 @@ For example a button is configured as 'KEY_I', which gives the keysym 'i', which
 ## Using softhddevice without eventlircd: Resuming softhddevice
 No X11 keypresses are passed on by softhddevice when suspended and SuspendClose=1.  
 E.g. triggerhappy is needed to resume from suspend. See irmp_pico.conf and 70-irmp.rules.
+
+## Testing the remote control's repeat rate
+If you run `irmpconfig -> y` and hold down the same button for a long time, you'll see statistics on how often different intervals between the remote control's signals were measured.  
+Normally, there should only be one or two numbers, and in the case of dropouts, approximately double those numbers.  
+If the numbers vary by more than 3%, you must disable automatic release detection and set the value for `repeat-release` to a number slightly higher than the longest non-doubled value instead of 0.
+
+## Support Requests
+Please provide the following information:  
+- All VDR and plugin parameters  
+- Plugin debug output (if using irmp or irmp4kbd)  
+- Output from irmpconfig → y (hold down a button for 1 minute)  
+- Output from irmpconfig → m (press various buttons, sometimes holding them down longer)  
