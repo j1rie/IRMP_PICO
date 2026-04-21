@@ -10,8 +10,6 @@ when VDR starts, the LED is turned on;
 when VDR stops, the LED is turned off;
 if VDR is recording, the LED blinks (as often as recordings are active).
 
-The LED is controlled by a microcontroller, connected via USB (which serves also as IR-receiver for the remote, see https://github.com/j1rie/IRMP_STM32/blob/master/stm32IRstatusled/README).
-
 
 Requirements:
 =============

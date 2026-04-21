@@ -12,4 +12,5 @@ The easiest way for creating key mappings in remote.conf is to use VDR's key lea
 
 Set repeat_delay, repeat_period and repeat_release to 0.
 
-If you use the vdr-plugin-softhddevice, you need to disable softhddevice's remote control function with -P'softhddevice ... -N'.
+If you use the vdr-plugin-softhddevice, you need to disable softhddevice's remote control function with -P'softhddevice ... -N'.  
+For softhddevice-drm-gles and vaapivideo you need vdr with --no-kbd.  

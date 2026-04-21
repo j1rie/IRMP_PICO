@@ -24,7 +24,7 @@ Put the udev rule '70-irmp.rules' in your udev rules directory (e.g. /etc/udev/r
 ## Troubleshooting
 Do keys arrive in irmpconfig_gui's receive mode?  
 yaVDR: What is shown by journalctl -u vdr -f?
-VDR*ELEC: stop VDR (systemctl stop vdropt) and start vdr manually on the console /usr/local/bin/start_vdr.sh
+VDR*ELEC: stop VDR (systemctl stop vdropt) and start vdr manually on the console /usr/local/bin/start_vdr.sh  
 andere: stop VDR (systemctl stop vdr) and start vdr manually on the console vdr -Pirmp ...
 
 ## Kernel's autorepeat

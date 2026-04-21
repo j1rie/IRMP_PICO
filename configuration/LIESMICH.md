@@ -24,7 +24,7 @@ Die udev Regel '70-irmp.rules' wird in das udev rules Verzeichnis (z.B. /etc/ude
 ## Fehlersuche
 Kommen mit irmpconfig_gui im receive mode Tasten an?  
 yaVDR: Was zeigt journalctl -u vdr -f?  
-VDR*ELEC: VDR stoppen (systemctl stop vdropt) und vdr manuell auf der Konsole starten /usr/local/bin/start_vdr.sh
+VDR*ELEC: VDR stoppen (systemctl stop vdropt) und vdr manuell auf der Konsole starten /usr/local/bin/start_vdr.sh  
 andere: VDR stoppen (systemctl stop vdr) und vdr manuell auf der Konsole starten vdr -Pirmp ...
 
 ## Autorepeat vom Kernel

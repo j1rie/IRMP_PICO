@@ -10,6 +10,7 @@ Beschreibung: Das Plugin irmp4kbd sendet Tastatureingaben von einem IRMP Pico Ge
 
 Die einfachste Methode zum Erstellen von Tastenbelegungen in remote.conf ist die Verwendung des Tasten-Anlernprozesses von VDR.
 
-repeat_delay und repeat_period müssen auf 0 gesetzt werden.
+repeat_delay, repeat_period und repeat_release müssen auf 0 gesetzt werden.
 
-Wenn man das vdr-plugin-softhddevice verwendet, muss die Fernbedienungsfunktion von softhddevice mit -P'softhddevice ... -N' deaktiviert werden.
+Wenn man das vdr-plugin-softhddevice verwendet, muss die Fernbedienungsfunktion von softhddevice mit -P'softhddevice ... -N' deaktiviert werden.  
+Für softhddevice-drm-gles und vaapivideo braucht man vdr mit --no-kbd.  

@@ -12,7 +12,7 @@ For boards with RP2040 and RP2350. An open source firmware with many functions w
 * connection via USB 
 * registers as USB HID Keyboard device *and* appears as /dev/hidraw or "Custom HID device", no drivers needed
 * transfers the data over USB2 in hardware at fullspeed 
-* IR receiver (about 40 protocols decoded in hardware) 
+* IR receiver (about 40 protocols) 
 * power on PC via remote control from S3 (STR) and S4 (STD) via USB or from S3, S4 and S5 (SoftOff) via motherboard switch (+5V required, on USB or from PSU or motherboard) 
 * power on PC via built-in timer from S3 (STR) and S4 (STD) via USB or from S3, S4 and S5 (SoftOff) via motherboard switch (+5V required, on USB or from PSU or motherboard) 
 * IR transmitter (about 40 protocols) 
@@ -149,9 +149,9 @@ https://files.seeedstudio.com/wiki/XIAO-RP2350/res/Seeed-Studio-XIAO-RP2350-v1.0
 
 ## Thanks to
 Frank Meyer for IRMP. [1]  
-Ole Ernst for code review, linux Makefile and linux download-extract-patch-script and new protocol. [2]  
-Manuel Reimer for gcc-4.9 fix, SimpleCircuit and check if host is running. [3]  
-Martin Neubauer for integration into EasyVDR, addon board development and selling ready-to-use receiver sets. [4]  
+Ole Ernst for code review and new protocol. [2]  
+Manuel Reimer for SimpleCircuit. [3]  
+Martin Neubauer for integration into EasyVDR. [4]  
 Alexander Grothe for integration into yaVDR and much help with difficult questions. [5]  
 Helmut Emmerich for selling ready-to-use receiver sets and user support. [6]  
 Claus Muus for integration into MLD. [7]  
@@ -166,7 +166,7 @@ All Users for questions, feature requests, feedback and ideas.
 [7] https://www.vdr-portal.de/user/942-clausmuus/  
 
 ## Discussion and further information
-Comments, questions and suggestions can be sent to https://www.vdr-portal.de/forum/index.php?thread/132289-irmp-auf-stm32-ein-usb-hid-keyboard-ir-empf%C3%A4nger-einschalter-mit-wakeup-timer/
+Comments, questions and suggestions can be sent to https://www.vdr-portal.de/forum/thread/137133-irmp-auf-pico-ein-usb-hid-keyboard-ir-empfänger-sender-einschalter-mit-wake-up-t/.
 
 Have fun with IRMP on Pico!
 

@@ -12,7 +12,7 @@ Für Boards mit RP2040 und RP2350, z.B. Pico und Pico2 sowie viele andere. Darau
 * Anschluss über USB 
 * registriert sich als USB HID Keyboard Gerät *und* erscheint als /dev/hidraw oder „Custom HID device“, keine Treiber erforderlich
 * überträgt die Daten über USB2 in Hardware mit Fullspeed 
-* IR-Empfänger (ca. 40 Protokolle in Hardware dekodiert) 
+* IR-Empfänger (ca. 40 Protokolle) 
 * Einschalten des PCs per Fernbedienung von S3 (STR) und S4 (STD) über USB oder von S3, S4 und S5 (SoftOff) über den Einschalter  auf der Hauptplatine (+5V erforderlich, über USB oder vom Netzteil oder der Hauptplatine) 
 * Einschalten des PCs über den eingebauten Timer von S3 (STR) und S4 (STD) über USB oder von S3, S4 und S5 (SoftOff) über den Einschalter auf der Hauptplatine (+5V erforderlich, über USB oder vom Netzteil oder der Hauptplatine) 
 * IR-Sender (etwa 40 Protokolle) 
@@ -153,7 +153,7 @@ Ole Ernst für die Code-Überprüfung und das neue Protokoll. [2]
 Manuel Reimer für den SimpleCircuit. [3]  
 Martin Neubauer für die Integration in EasyVDR. [4]  
 Alexander Grothe für die Integration in yaVDR und für wertvolle Hilfe bei schwierigen Fragestellungen. [5]  
-Helmut Emmerich für den Verkauf von fertigen Empfängern mit Kabeln und die Unterstützung der Anwender. [6]  
+Helmut Emmerich für den Verkauf von gebrauchsfertigen Empfänger-Sets und die Unterstützung der Anwender. [6]  
 Claus Muus für die Integration in MLD. [7]  
 Alle Benutzer für Fragen, Feature-Anfragen, Feedback und Ideen.  
 
@@ -166,7 +166,7 @@ Alle Benutzer für Fragen, Feature-Anfragen, Feedback und Ideen.
 [7] https://www.vdr-portal.de/user/942-clausmuus/  
 
 ## Diskussion und weitere Informationen
-Kommentare, Fragen und Anregungen können an https://www.vdr-portal.de/forum/index.php?thread/132289-irmp-auf-stm32-ein-usb-hid-keyboard-ir-empf%C3%A4nger-einschalter-mit-wakeup-timer/ gesendet werden.
+Kommentare, Fragen und Anregungen können an https://www.vdr-portal.de/forum/thread/137133-irmp-auf-pico-ein-usb-hid-keyboard-ir-empfänger-sender-einschalter-mit-wake-up-t/ gesendet werden.
 
 Viel Spaß mit IRMP auf Pico!
 
