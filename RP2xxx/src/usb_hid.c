@@ -36,6 +36,10 @@ void USB_HID_SendData(uint8_t Report_ID, uint8_t *ptr, uint8_t len)
 		buf[55] = INV_F_INT_US;
 		//buf[54] = ;
 		buf[53] = keep_same_key;
+		buf[52] = pass_on_min_delta >> 8;
+		buf[51] = pass_on_min_delta & 0xFF;
+		buf[50] = po_upper_border >> 8;
+		buf[49] = po_upper_border & 0xFF;
 		tud_hid_report(Report_ID, buf, HID_IN_REPORT_COUNT - 1);
 	}
 	else if (Report_ID == REPORT_ID_CONFIG_IN)

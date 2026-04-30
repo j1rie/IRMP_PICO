@@ -177,7 +177,7 @@ int main(int argc, const char **argv) {
 	char c, d, e;
 	uint8_t s, m, l, idx = 3, eeprom_lines;
 	int8_t k;
-	int retValm, jump_to_firmware, res, desc_size = 0;
+	int retValm, jump_to_firmware;
 	unsigned int n;
 	FILE *fp;
 	char testfilename[10];
@@ -784,7 +784,8 @@ monit:	memset(inBuf, 0, sizeof(inBuf));
 
 			if (inBuf[0] == REPORT_ID_IR) {
 				printf("converted to protocoladdresscommandflag:\n\t");
-				printf("%02hhx%02hhx%02hhx%02hhx%02hhx%02hhx   pass_on_delta_detection_f: %f delta: %d min_delta: %d upper_border: %d same key: %d timeout: %d repeat detected: %d", inBuf[1],inBuf[3],inBuf[2],inBuf[5],inBuf[4],inBuf[6], ((float)(inBuf[58] * 0xFF + inBuf[57]) * inBuf[56]) / 1000, inBuf[63], inBuf[62], inBuf[59], inBuf[54], inBuf[61], inBuf[60]);
+				//printf("%02hhx%02hhx%02hhx%02hhx%02hhx%02hhx   pass_on_delta_detection_f: %f delta: %d min_delta: %d upper_border: %d same key: %d timeout: %d repeat detected: %d", inBuf[1],inBuf[3],inBuf[2],inBuf[5],inBuf[4],inBuf[6], ((float)(inBuf[58] * 0xFF + inBuf[57]) * inBuf[56]) / 1000, inBuf[63], inBuf[62], inBuf[59], inBuf[54], inBuf[61], inBuf[60]);
+				printf("%02hhx%02hhx%02hhx%02hhx%02hhx%02hhx   pass_on_delta_detection_f: %f pass_on_min_delta: %f po_upper_border: %f same key: %d timeout: %d repeat detected: %d", inBuf[1],inBuf[3],inBuf[2],inBuf[5],inBuf[4],inBuf[6], ((float)(inBuf[58] * 0xFF + inBuf[57]) * inBuf[56]) / 1000, ((float)(inBuf[53] * 0xFF + inBuf[52]) * inBuf[56]) / 1000, ((float)(inBuf[51] * 0xFF + inBuf[50]) * inBuf[56]) / 1000, inBuf[54], inBuf[61], inBuf[60]);
 				printf("\n\n");
 			}
 		}
@@ -793,7 +794,7 @@ monit:	memset(inBuf, 0, sizeof(inBuf));
 rate:	while(true) {
 		retValm = read(irmpfd, inBuf, in_size);
 		if (retValm >= 0) {
-			if (inBuf[0] == REPORT_ID_IR) {
+			if (inBuf[0] == REPORT_ID_IR && inBuf[6] != 0x02) { // IRMP_FLAG_RELEASE
 				printf("%02hhx%02hhx%02hhx%02hhx%02hhx%02hhx\n", inBuf[1],inBuf[3],inBuf[2],inBuf[5],inBuf[4],inBuf[6]);
 				now_us = GetUsTicks();
 				diff_us = now_us - last_us;
@@ -816,7 +817,8 @@ rate:	while(true) {
 							uc_rate[(((inBuf[58] * 0xFF + inBuf[57]) * 52) + 500) / 1000]++;
 							if (min_dd > (uint32_t)((inBuf[58] * 0xFF + inBuf[57]) * 52))
 								min_dd = (inBuf[58] * 0xFF + inBuf[57]) * 52;
-							printf("min_delta: %d\n", inBuf[62]);
+							//printf("min_delta: %d\n", inBuf[62]);
+							printf("po_min_delta: %f\n", ((float)(inBuf[58] * 0xFF + inBuf[57]) * inBuf[56]) / 1000);
 						}
 					} else {
 						for(l=0;l<5;l++) {

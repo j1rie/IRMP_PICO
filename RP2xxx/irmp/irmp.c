@@ -228,7 +228,8 @@
 #define RECS80_0_PAUSE_LEN_MIN                  ((uint_fast8_t)(F_INTERRUPTS * RECS80_0_PAUSE_TIME * MIN_TOLERANCE_10 + 0.5) - 1)
 #define RECS80_0_PAUSE_LEN_MAX                  ((uint_fast8_t)(F_INTERRUPTS * RECS80_0_PAUSE_TIME * MAX_TOLERANCE_10 + 0.5) + 1)
 
-#if IRMP_SUPPORT_BOSE_PROTOCOL == 1 // BOSE conflicts with RC5, so keep tolerance for RC5 minimal here:
+#if (0) // IRMP_SUPPORT_BOSE_PROTOCOL == 1 // BOSE conflicts with RC5, so keep tolerance for RC5 minimal here:
+// start pause is well separated, so overlap in start pulse does not disturb, but reducing tolerance leads to worse RC5 recognition
 #define RC5_START_BIT_LEN_MIN                   ((uint_fast8_t)(F_INTERRUPTS * RC5_BIT_TIME * MIN_TOLERANCE_05 + 0.5) - 1)
 #define RC5_START_BIT_LEN_MAX                   ((uint_fast8_t)(F_INTERRUPTS * RC5_BIT_TIME * MAX_TOLERANCE_05 + 0.5) + 1)
 #else
@@ -2477,11 +2478,13 @@ volatile uint32_t                               pass_on_delta_detection = 0xFFFF
 volatile uint_fast16_t                          tmp_delta = 0xFFFF;
 volatile uint_fast8_t                           delta = 0;              // interval between two detections in ms
 volatile uint_fast8_t                           min_delta = 170;  // detected repeat rate, preset to greatest known repeat rate
-static volatile uint_fast8_t                    previous_irmp_protocol = 0;
+volatile uint32_t                               pass_on_min_delta = F_INTERRUPTS * 170 / 1000;  // detected repeat rate, preset to greatest known repeat rate // (uint32_t) 170.0e-3 ... + 0.5  MIN_DELTA ...
+static volatile uint_fast8_t                    previous_irmp_protocol = IRMP_UNKNOWN_PROTOCOL;
 volatile uint_fast8_t                           same_key = 0;
 volatile uint_fast8_t                           keep_same_key = 0;
 volatile uint_fast8_t                           timeout = 1;
-volatile uint_fast8_t                           upper_border = 176;     // repeatrate plus jitter (threshold for timeout)
+volatile uint_fast8_t                           upper_border = 170 * (100 + JITTER_COMPENSATION) / 100;     // repeatrate plus jitter (threshold for timeout)
+volatile uint32_t                               po_upper_border = F_INTERRUPTS * 170 / 1000 * (100 + JITTER_COMPENSATION) / 100;     // repeatrate plus jitter (threshold for timeout)
 #endif
 
 #if defined(__MBED__)
@@ -2873,14 +2876,34 @@ irmp_get_data (IRMP_DATA * irmp_data_p)
             irmp_data_p->command  = irmp_command;
 
 #if IRMP_AUTODETECT_REPEATRATE
-            tmp_delta = (pass_on_delta_detection * (1000000 / F_INTERRUPTS)) / 1000; // ms, this division is not precise
+#if (1)
+            if (irmp_protocol != previous_irmp_protocol) { // reset
+                pass_on_min_delta = F_INTERRUPTS * 170 / 1000; // 170 ms
+                po_upper_border = pass_on_min_delta * (100 + JITTER_COMPENSATION) / 100; // pass_on_min_delta + pass_on_min_delta >> 5 ;
+                timeout = 1;
+                keep_same_key = 0;
+                previous_irmp_protocol = irmp_protocol;
+            } else {
+                if (!(irmp_protocol == IRMP_NEC_PROTOCOL && pass_on_delta_detection < F_INTERRUPTS * 75 / 1000)) { // if NEC, ignore first short interval, 75 ms
+                    if (pass_on_delta_detection < pass_on_min_delta && same_key)
+                        pass_on_min_delta = pass_on_delta_detection;
+                }
+                po_upper_border = pass_on_min_delta * (100 + JITTER_COMPENSATION) / 100; // pass_on_min_delta + pass_on_min_delta >> 5; // >> 5 is 1 / 32 is 3,125 %
+                timeout = (pass_on_delta_detection > po_upper_border);
+                if (same_key && !timeout) // timeout is not needed for toggling protocols, but we want to support fake protocols, which should toggle, but don't
+                    irmp_flags |= IRMP_FLAG_REPETITION;
+                keep_same_key = same_key;
+                same_key = 0;
+            }
+#else
+            tmp_delta = (pass_on_delta_detection * (1000000 / F_INTERRUPTS)) / 1000; // convert to ms, this division is not precise, matches add_repeating_timer_us(-1000000 / F_INTERRUPTS, ...) // / (uint32) (.... / 1000.0 + 0.5)?!
             if (tmp_delta > 0xFF ) // reduce to uint8_t
                 delta = 0xFF;
             else
                 delta = tmp_delta; 
             if (irmp_protocol != previous_irmp_protocol) { // reset
                 min_delta = 170;
-                upper_border = min_delta * (100 + JITTER_COMPENSATION) / 100 + 1;
+                upper_border = min_delta * (100 + JITTER_COMPENSATION) / 100;
                 timeout = 1;
                 keep_same_key = 0;
                 previous_irmp_protocol = irmp_protocol;
@@ -2889,8 +2912,8 @@ irmp_get_data (IRMP_DATA * irmp_data_p)
                     if (delta < min_delta && same_key)
                         min_delta = delta;
                 }
-                upper_border = min_delta * (100 + JITTER_COMPENSATION) / 100 + 1;
-                timeout = (delta >= upper_border);
+                upper_border = min_delta * (100 + JITTER_COMPENSATION) / 100; // compensate error from reducing to uint8_t and divisions, 3% +2?!
+                timeout = (delta > upper_border);
                 if (irmp_protocol == IRMP_RC5_PROTOCOL || irmp_protocol == IRMP_RC6_PROTOCOL /*|| irmp_protocol == IRMP_RC6A_PROTOCOL*/ || irmp_protocol == IRMP_RECS80_PROTOCOL \
                     || irmp_protocol == IRMP_RECS80EXT_PROTOCOL || irmp_protocol == IRMP_RCMM24_PROTOCOL || irmp_protocol == IRMP_RCMM32_PROTOCOL \
                     || irmp_protocol == IRMP_THOMSON_PROTOCOL || irmp_protocol == IRMP_S100_PROTOCOL || irmp_protocol == IRMP_METZ_PROTOCOL) {
@@ -2903,6 +2926,7 @@ irmp_get_data (IRMP_DATA * irmp_data_p)
                 keep_same_key = same_key;
                 same_key = 0;
             }
+#endif
 #endif
 
             irmp_data_p->flags    = irmp_flags;
