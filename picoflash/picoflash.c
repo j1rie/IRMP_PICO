@@ -182,19 +182,23 @@ int main(int argc, const char **argv)
 		picoboot_write(dev_handle, 0x10000000 + offset, (uint8_t*)&fw_buf[offset], MIN(4096,firmwareSize - offset));
 		picoboot_exit_xip(dev_handle);
 		picoboot_read(dev_handle, 0x10000000 + offset, (uint8_t*)&read_buf[offset], MIN(4096,firmwareSize - offset));
-		printf("Progress: %d%%\n", MIN((offset+4096)*100/firmwareSize, 100));
+		uint8_t length = MIN((offset+4096)*100/firmwareSize, 100) / 4;
+		char progress[26] = "=========================";
+		char prog[26] = "                         ";
+		memcpy(prog, progress, length);
+		printf("Progress: [%s] %d%%\r", prog, MIN((offset+4096)*100/firmwareSize, 100));
 		fflush(stdout);
 	}
 
 	if (!memcmp(fw_buf, read_buf, firmwareSize))
-		printf("=== verify successful ===\n");
+		printf("\n=== verify successful ===\n");
 
 	if (strcmp(model,"RP2040"))
 		sram_end = SRAM_END_RP2040;
 	else if (strcmp(model,"RP2350"))
 		sram_end = SRAM_END_RP2350;
 
-	picoboot_reboot(dev_handle, 0, sram_end, 500);
+	picoboot_reboot(dev_handle, 0, sram_end, 500); // ...failed to send command -9 am Pico2
 	picoboot_exclusive_access(dev_handle, 0);
 
 	libusb_release_interface(dev_handle, 0);

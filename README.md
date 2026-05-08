@@ -99,9 +99,6 @@ The TSOP is connected directly to the 3,3V, GND and IR_IN pins, the pair of cabl
 ![Zero with cabling](img/RP2040-Zero+cabling.jpg)
 [3]  
 
-## First test
-Press the BOOTSEL button in suspend mode, and the PC should wake up.
-
 ## Pin-Out
 See /src/config.h.
 

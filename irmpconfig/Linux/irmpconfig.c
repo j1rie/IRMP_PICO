@@ -143,7 +143,7 @@ static void write_irmp(int idx) {
 
 void write_and_check(int idx, int show_len) {
 	write_irmp(idx);
-	usleep(3000);
+	//usleep(3000);
 	read_irmp(in_size, show_len); // blocking per default, waits until data arrive
 	while (inBuf[0] == REPORT_ID_KBD || inBuf[0] == REPORT_ID_IR)
 		read_irmp(in_size, show_len);
@@ -505,7 +505,7 @@ caps:			jump_to_firmware = 0;
 			for (l = 0; l < 20; l++) { // for safety stop after 20 loops
 				outBuf[idx] = l;
 				write_irmp(idx+1);
-				usleep(3000);
+				//usleep(3000);
 				read_irmp(in_size, l == 0 ? 9 : in_size); // TODO does this still hang every other time on my Asus P8H67-M Evo USB 3.0 port?
 				while (inBuf[0] == REPORT_ID_KBD || inBuf[0] == REPORT_ID_IR)
 					read_irmp(in_size, l == 0 ? 9 : in_size);
@@ -548,16 +548,16 @@ again:			;
 				outBuf[idx++] = CMD_IRDATA;
 				outBuf[idx++] = l;
 				write(irmpfd, outBuf, idx);
-				usleep(3000);
+				//usleep(3000);
 				read(irmpfd, inBuf, 10);
 				printf("%02hhx%02hhx%02hhx%02hhx%02hhx%02hhx", inBuf[4],inBuf[6],inBuf[5],inBuf[8],inBuf[7],inBuf[9]);
 				printf(" ");
 				idx = 3;
 				outBuf[idx++] = CMD_KEY;
 				outBuf[idx++] = l;
-				usleep(3000);
+				//usleep(3000);
 				write(irmpfd, outBuf, idx);
-				usleep(3000);
+				//usleep(3000);
 				read(irmpfd, inBuf, 6);
 				for(n=0; n < lines-1; n++) {
 					if(mapusb[n].usb_hid_key == inBuf[5]) {
@@ -570,7 +570,7 @@ again:			;
 					}
 				}
 				printf("\n");
-				usleep(3000);
+				//usleep(3000);
 				idx = 3;
 			}
 			goto out;
@@ -582,7 +582,7 @@ again:			;
 				for(l = 0; l < 32; l++) { // size / 32
 					outBuf[idx+1] = l;
 					write(irmpfd, outBuf, idx+2);
-					usleep(3000);
+					//usleep(3000);
 					retValm = read(irmpfd, inBuf, in_size);
 					if (retValm < 0) {
 						printf("read error\n");
@@ -769,9 +769,9 @@ reset:		printf("reset wakeup(w)\nreset macro slot(m)\nreset IR-data(i)\nreset ke
 monit:	memset(inBuf, 0, sizeof(inBuf));
 	while(true) {
 		retValm = read(irmpfd, inBuf, in_size);
-		if (retValm >= 0) {
+		if (retValm >= 0 && (inBuf[0] == REPORT_ID_KBD || inBuf[0] == REPORT_ID_IR)) {
 			printf("read %d bytes:\n\t", retValm);
-			for (l = 0; l < 64; l++)
+			for (l = 0; l < retValm; l++)
 				printf("%02hhx ", inBuf[l]);
 			printf("\n");
 
@@ -784,8 +784,7 @@ monit:	memset(inBuf, 0, sizeof(inBuf));
 
 			if (inBuf[0] == REPORT_ID_IR) {
 				printf("converted to protocoladdresscommandflag:\n\t");
-				//printf("%02hhx%02hhx%02hhx%02hhx%02hhx%02hhx   pass_on_delta_detection_f: %f delta: %d min_delta: %d upper_border: %d same key: %d timeout: %d repeat detected: %d", inBuf[1],inBuf[3],inBuf[2],inBuf[5],inBuf[4],inBuf[6], ((float)(inBuf[58] * 0xFF + inBuf[57]) * inBuf[56]) / 1000, inBuf[63], inBuf[62], inBuf[59], inBuf[54], inBuf[61], inBuf[60]);
-				printf("%02hhx%02hhx%02hhx%02hhx%02hhx%02hhx   pass_on_delta_detection_f: %f pass_on_min_delta: %f po_upper_border: %f same key: %d timeout: %d repeat detected: %d", inBuf[1],inBuf[3],inBuf[2],inBuf[5],inBuf[4],inBuf[6], ((float)(inBuf[58] * 0xFF + inBuf[57]) * inBuf[56]) / 1000, ((float)(inBuf[53] * 0xFF + inBuf[52]) * inBuf[56]) / 1000, ((float)(inBuf[51] * 0xFF + inBuf[50]) * inBuf[56]) / 1000, inBuf[54], inBuf[61], inBuf[60]);
+				printf("%02hhx%02hhx%02hhx%02hhx%02hhx%02hhx   delta: %f min_delta: %f max_delta: %f upper_border: %f same key: %d timeout: %d repeat detected: %d", inBuf[1],inBuf[3],inBuf[2],inBuf[5],inBuf[4],inBuf[6], ((float)(inBuf[58] * 0xFF + inBuf[57]) * inBuf[56]) / 1000, ((float)(inBuf[53] * 0xFF + inBuf[52]) * inBuf[56]) / 1000, ((float)(inBuf[49] * 0xFF + inBuf[48]) * inBuf[56]) / 1000, ((float)(inBuf[51] * 0xFF + inBuf[50]) * inBuf[56]) / 1000, inBuf[54], inBuf[61], inBuf[60]);
 				printf("\n\n");
 			}
 		}
@@ -814,11 +813,14 @@ rate:	while(true) {
 							if (min_diff_us > diff_us)
 								min_diff_us = diff_us;
 							pc_rate[(diff_us + 500) / 1000]++;
-							uc_rate[(((inBuf[58] * 0xFF + inBuf[57]) * 52) + 500) / 1000]++;
-							if (min_dd > (uint32_t)((inBuf[58] * 0xFF + inBuf[57]) * 52))
+							uc_rate[(((inBuf[58] * 0xFF + inBuf[57]) * inBuf[56]) + 500) / 1000]++;
+							if (min_dd > (uint32_t)((inBuf[58] * 0xFF + inBuf[57]) * inBuf[56]))
 								min_dd = (inBuf[58] * 0xFF + inBuf[57]) * 52;
 							//printf("min_delta: %d\n", inBuf[62]);
-							printf("po_min_delta: %f\n", ((float)(inBuf[58] * 0xFF + inBuf[57]) * inBuf[56]) / 1000);
+							printf("delta: %f\n", ((float)(inBuf[58] * 0xFF + inBuf[57]) * inBuf[56]) / 1000);
+							printf("min_delta: %f\n", ((float)(inBuf[53] * 0xFF + inBuf[52]) * inBuf[56]) / 1000);
+							printf("max_delta: %f\n", ((float)(inBuf[49] * 0xFF + inBuf[48]) * inBuf[56]) / 1000);
+							printf("max/min: %f %%\n", (((float)(inBuf[49] * 0xFF + inBuf[48]))/((float)(inBuf[53] * 0xFF + inBuf[52])) - 1) * 100);
 						}
 					} else {
 						for(l=0;l<5;l++) {

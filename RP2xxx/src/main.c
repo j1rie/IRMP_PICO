@@ -925,8 +925,8 @@ int main(void)
 			}
 		}
 
-		if (board_button_read() && !tud_ready())
-			Wakeup();
+		//if (board_button_read() && !tud_ready()) // bad trap: this disturbs the continuity of the irmp_ISR()!
+			//Wakeup();
 
 		if (!AlarmValue && !tud_ready())
 			Wakeup();
@@ -1023,7 +1023,7 @@ int main(void)
 
 		/* send release */
 		// since last time >= timeout
-		if (PrevXferComplete && release_needed && (repeat_timer - last_sent >= (get_repeat(release) ? get_repeat(release) : upper_border))) {
+		if (PrevXferComplete && release_needed && (repeat_timer - last_sent >= (get_repeat(release) ? get_repeat(release) : upper_border * INV_F_INT_US / 1000))) { // ticks to ms
 			release_needed = 0;
 			USB_KBD_SendData(0, 0);
 		}

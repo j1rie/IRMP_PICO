@@ -17,16 +17,16 @@ msgstr ""
 msgid "show vdr status on irmp device"
 msgstr "VDR-Status ueber irmp Empfänger anzeigen"
 
-msgid "Setup.StatusLeds2irmplhidkbd$Prewarn beep"
+msgid "Setup.StatusLeds2irmp$Prewarn beep"
 msgstr "Vorwarn Signal"
 
 msgid "Setup.StatusLeds2irmp$Prewarn time (s)"
 msgstr "Vorwarnzeit (s)"
 
-msgid "Setup.StatusLeds2irmp$Beeps"
+msgid "Setup.StatusLeds2irmp$Prewarn Beeps"
 msgstr "Vorwarn Anzahl"
 
-msgid "Setup.StatusLeds2irmp$Pause (100ms)"
+msgid "Setup.StatusLeds2irmp$Prewarn Pause (100ms)"
 msgstr "Vorwarn Pause (100ms)"
 
 msgid "Setup.StatusLeds2irmp$Prewarn On time (100ms)"

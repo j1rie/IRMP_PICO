@@ -308,7 +308,7 @@
 
 /*---------------------------------------------------------------------------------------------------------------------------------------------------
  * Autodetect repeat rate
- * For precise detection of fast key repetitions (and key release)
+ * For precise detection of fast key repetitions (and key release, if enabled)
  *---------------------------------------------------------------------------------------------------------------------------------------------------
  */
 #ifndef IRMP_AUTODETECT_REPEATRATE

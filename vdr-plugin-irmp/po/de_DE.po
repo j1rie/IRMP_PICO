@@ -18,5 +18,5 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-msgid "Send keypresses from IRMP HID-KBD-Device to VDR"
-msgstr "Sende Tastendrücke vom IRMP HID-KBD-Device zum VDR"
+msgid "Send keypresses from IRMP Pico Device to VDR"
+msgstr "Sende Tastendruecke vom IRMP Pico Device zum VDR"
