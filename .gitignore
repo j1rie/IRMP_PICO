@@ -12,4 +12,5 @@ binaries_for_Windows/
 *.zip
 picoflash/picoflash
 picoflash/*.bin
-
+irmpconfig/Linux/test*
+irmpemit/irmpemit

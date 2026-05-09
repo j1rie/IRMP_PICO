@@ -74,7 +74,7 @@ for irdata in	01081f003f01 \
 		3c001f003f01 ;
 do
 	echo "${irdata}"
-	./irctl -dstm32 -e -s0x${irdata} /dev/hidraw1 > /dev/null 2>&1
+	../irmpemit/irmpemit -i0x${irdata} /dev/hidraw0 > /dev/null 2>&1
 	sleep 0.3
 done
 done

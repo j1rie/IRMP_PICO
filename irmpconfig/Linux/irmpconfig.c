@@ -82,6 +82,10 @@ enum color {
 	strong_white
 };
 
+#define IRMP_FLAG_NEW                   0x00
+#define IRMP_FLAG_REPETITION            0x01
+#define IRMP_FLAG_RELEASE               0x02
+
 #define NUM_PIXELS 64
 
 static int irmpfd = -1;
@@ -187,8 +191,6 @@ int main(int argc, const char **argv) {
 	uint32_t now_us;
 	uint32_t last_us;
 	uint32_t diff_us;
-	uint32_t min_diff_us = 0xFFFFFFFF;
-	uint32_t min_dd = 0xFFFFFFFF;
 	uint8_t rrBuf[12];
 	uint8_t first_time = 1;
 
@@ -793,7 +795,7 @@ monit:	memset(inBuf, 0, sizeof(inBuf));
 rate:	while(true) {
 		retValm = read(irmpfd, inBuf, in_size);
 		if (retValm >= 0) {
-			if (inBuf[0] == REPORT_ID_IR && inBuf[6] != 0x02) { // IRMP_FLAG_RELEASE
+			if (inBuf[0] == REPORT_ID_IR && inBuf[6] != IRMP_FLAG_RELEASE) {
 				printf("%02hhx%02hhx%02hhx%02hhx%02hhx%02hhx\n", inBuf[1],inBuf[3],inBuf[2],inBuf[5],inBuf[4],inBuf[6]);
 				now_us = GetUsTicks();
 				diff_us = now_us - last_us;
@@ -808,38 +810,38 @@ rate:	while(true) {
 						printf("protocol changed, stopping\n");
 						goto exit;
 					}
-					if (inBuf[1] == rrBuf[0] && inBuf[2] == rrBuf[1] && inBuf[3] == rrBuf[2] && inBuf[4] == rrBuf[3] && inBuf[5] == rrBuf[4]) { // same key
+					uint8_t same_key = inBuf[2] == rrBuf[1] && inBuf[3] == rrBuf[2] && inBuf[4] == rrBuf[3] && inBuf[5] == rrBuf[4];
+					if (same_key && inBuf[6] == IRMP_FLAG_REPETITION) {
 						if ((diff_us + 500) / 1000 <= 255) {
-							if (min_diff_us > diff_us)
-								min_diff_us = diff_us;
 							pc_rate[(diff_us + 500) / 1000]++;
 							uc_rate[(((inBuf[58] * 0xFF + inBuf[57]) * inBuf[56]) + 500) / 1000]++;
-							if (min_dd > (uint32_t)((inBuf[58] * 0xFF + inBuf[57]) * inBuf[56]))
-								min_dd = (inBuf[58] * 0xFF + inBuf[57]) * 52;
-							//printf("min_delta: %d\n", inBuf[62]);
 							printf("delta: %f\n", ((float)(inBuf[58] * 0xFF + inBuf[57]) * inBuf[56]) / 1000);
 							printf("min_delta: %f\n", ((float)(inBuf[53] * 0xFF + inBuf[52]) * inBuf[56]) / 1000);
 							printf("max_delta: %f\n", ((float)(inBuf[49] * 0xFF + inBuf[48]) * inBuf[56]) / 1000);
 							printf("max/min: %f %%\n", (((float)(inBuf[49] * 0xFF + inBuf[48]))/((float)(inBuf[53] * 0xFF + inBuf[52])) - 1) * 100);
 						}
-					} else {
-						for(l=0;l<5;l++) {
+						printf("***********************\n");
+						printf("*** pc rate - count ***\n");
+						for(l=0;l<255;l++) {
+							if (pc_rate[l]) printf("***     %03d - %04d  ***\n", l, pc_rate[l]);
+						}
+						printf("***********************\n");
+						printf("*** uc rate - count ***\n");
+						for(l=0;l<255;l++) {
+							if (uc_rate[l]) printf("***     %03d - %04d  ***\n", l, uc_rate[l]);
+						}
+						printf("***********************\n");
+					}
+					if (!same_key) {
+						printf("key changed, diff_ms: %d, delta: %f\n\n", (diff_us + 500) / 1000, ((float)(inBuf[58] * 0xFF + inBuf[57]) * inBuf[56]) / 1000);
+						for(l=1;l<5;l++) {
 							rrBuf[l] = inBuf[l+1];
 						}
-						printf("key changed\n");
 						continue;
 					}
-					printf("***********************\n");
-					printf("*** pc rate - count ***\n");
-					for(l=0;l<255;l++) {
-						if (pc_rate[l]) printf("***     %03d - %04d  ***\n", l, pc_rate[l]);
+					if (inBuf[6] == IRMP_FLAG_NEW) {
+						printf("new key, diff_ms: %d, delta: %f\n", (diff_us + 500) / 1000, ((float)(inBuf[58] * 0xFF + inBuf[57]) * inBuf[56]) / 1000);
 					}
-					printf("***********************\n");
-					printf("*** uc rate - count ***\n");
-					for(l=0;l<255;l++) {
-						if (uc_rate[l]) printf("***     %03d - %04d  ***\n", l, uc_rate[l]);
-					}
-					printf("***********************\n");
 				}
 				printf("\n");
 			}

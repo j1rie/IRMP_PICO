@@ -925,8 +925,7 @@ int main(void)
 			}
 		}
 
-		//if (board_button_read() && !tud_ready()) // bad trap: this disturbs the continuity of the irmp_ISR()!
-			//Wakeup();
+		// don't use board_button_read() here, it disables and enables interrupts and disturbs the steadiness of the pulse of the irmp_ISR()
 
 		if (!AlarmValue && !tud_ready())
 			Wakeup();
