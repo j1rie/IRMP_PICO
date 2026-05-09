@@ -34,8 +34,8 @@
 # 2d S100 conflicts with RC5, can't send
 # 2e ACP24 conflicts with Denon
 # 2f Technics
-# 30 Panasonic conflicts with Kaseikyo and Mitsu-Heavy 
-# 31 Mitsu-Heavy conflicts with Kaseikyo and Panasonic 
+# 30 Panasonic conflicts with Kaseikyo and Mitsu-Heavy
+# 31 Mitsu-Heavy conflicts with Kaseikyo and Panasonic
 # 3c Melinera 0 address bits
 for i in $(seq 0 199); do
 for irdata in	01081f003f01 \

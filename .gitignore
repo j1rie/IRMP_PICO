@@ -14,3 +14,4 @@ picoflash/picoflash
 picoflash/*.bin
 irmpconfig/Linux/test*
 irmpemit/irmpemit
+testergebnisse/

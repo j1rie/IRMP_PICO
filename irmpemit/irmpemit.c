@@ -1,5 +1,5 @@
 /**********************************************************************************************************  
-    irmpemit: sendIR on IRMP Pico
+    irmpemit: send IR on IRMP Pico
 
     Copyright (C) 2014-2026 Joerg Riechardt
 
@@ -129,7 +129,7 @@ int main(int argc, char *argv[]) {
 	}
 
 	open_irmp(dvalue != NULL ? dvalue : "/dev/irmp_pico");
-        outBuf[0] = REPORT_ID_CONFIG_OUT;
+	outBuf[0] = REPORT_ID_CONFIG_OUT;
 	outBuf[1] = STAT_CMD;
 	idx = 2;
 
@@ -145,7 +145,7 @@ int main(int argc, char *argv[]) {
 	    outBuf[idx++] = i & 0xFF;
 	    write_irmp();
 	    //usleep(3000);
-	    read_irmp(); /* necessary to avoid, that echo is read by first alarm read */
+	    read_irmp();
 	    while (inBuf[0] == REPORT_ID_KBD || inBuf[0] == REPORT_ID_IR)
 		read_irmp();
 
