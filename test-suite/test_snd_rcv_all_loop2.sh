@@ -37,44 +37,44 @@
 # 30 Panasonic conflicts with Kaseikyo and Mitsu-Heavy
 # 31 Mitsu-Heavy conflicts with Kaseikyo and Panasonic
 # 3c Melinera 0 address bits
-for i in $(seq 0 199); do
-for irdata in	01081f003f01 \
-		02001f003f01 \
-		03001f003f01 \
-		04001f003f01 \
-		05001f003f01 \
-		06001f003f01 \
-		07001f003f01 \
-		08001f003e01 \
-		09001f003f01 \
-		0a001f003f01 \
-		0b001f003f01 \
-		0c001f003f01 \
-		0d001f003f01 \
-		0f001f003f01 \
-		10001f003f01 \
-		11001f003e01 \
-		12003f002f01 \
-		13001f003f01 \
-		14001f003f01 \
-		15001f003f01 \
-		16001f003f01 \
-		18001f003f01 \
-		1b001f003f01 \
-		1c001f003f01 \
-		1d001f003f01 \
-		1e001f003f01 \
-		1f001f003f01 \
-		20004f003f01 \
-		22001f003f01 \
-		27001f003f01 \
-		28001f003f01 \
-		29001f003f01 \
-		2f001f003f01 \
-		3c001f003f01 ;
+#for i in $(seq 0 199); do
+for irdata in	01081f003f0f \
+		02001f003f0f \
+		03001f003f0f \
+		04001f003f0f \
+		05001f003f0f \
+		06001f003f0f \
+		07001f003f0f \
+		08001f003e0f \
+		09001f003f0f \
+		0a001f003f0f \
+		0b001f003f0f \
+		0c001f003f0f \
+		0d001f003f0f \
+		0f001f003f0f \
+		10001f003f0f \
+		11001f003e0f \
+		12003f002f0f \
+		13001f003f0f \
+		14001f003f0f \
+		15001f003f0f \
+		16001f003f0f \
+		18001f003f0f \
+		1b001f003f0f \
+		1c001f003f0f \
+		1d001f003f0f \
+		1e001f003f0f \
+		1f001f003f0f \
+		20004f003f0f \
+		22001f003f0f \
+		27001f003f0f \
+		28001f003f0f \
+		29001f003f0f \
+		2f001f003f0f \
+		3c001f003f0f ;
 do
 	echo "${irdata}"
-	../irmpemit/irmpemit -i 0x${irdata} -d /dev/hidraw0 > /dev/null 2>&1
+	../irmpemit/irmpemit -i 0x${irdata} -d /dev/hidraw2 > /dev/null 2>&1
 	sleep 0.005
 done
-done
+#done

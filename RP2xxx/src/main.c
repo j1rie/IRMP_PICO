@@ -56,6 +56,7 @@ enum command {
 	CMD_MACRO_REMOTE,
 	CMD_SEND_AFTER_WAKEUP,
 	CMD_EEPROM_DIRTY,
+	CMD_IRSND_BUSY,
 };
 
 enum status {
@@ -658,6 +659,10 @@ int8_t get_handler(uint8_t *buf)
 		break;
 	case CMD_EEPROM_DIRTY:
 		buf[4] = _dirty;
+		ret += 1;
+		break;
+	case CMD_IRSND_BUSY:
+		buf[4] = irsnd_is_busy();
 		ret += 1;
 		break;
 	default:

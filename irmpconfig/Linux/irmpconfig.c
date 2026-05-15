@@ -53,6 +53,7 @@ enum command {
 	CMD_MACRO_REMOTE,
 	CMD_SEND_AFTER_WAKEUP,
 	CMD_EEPROM_DIRTY,
+	CMD_IRSND_BUSY,
 };
 
 enum status {
@@ -189,10 +190,11 @@ int main(int argc, const char **argv) {
 	uint16_t pc_rate[256] = {0};
 	uint16_t uc_rate[256] = {0};
 	uint32_t now_us;
-	uint32_t last_us;
+	uint32_t last_us = 0;
 	uint32_t diff_us;
 	uint8_t rrBuf[12];
 	uint8_t first_time = 1;
+	int count = 0;
 
 	open_irmp(argc>1 ? argv[1] : "/dev/irmp_pico");
 
@@ -201,7 +203,7 @@ int main(int argc, const char **argv) {
 	outBuf[2] = ACC_GET;
 	goto caps;
 
-cont:	printf("set: wakeups, macros, IR-data, keys, repeat, send_after_wakeup, alarm, commit, statusled and neopixel(s)\nset by remote: wakeups, macros and IR-data (q)\nget: wakeups, macros, IR-data, keys, repeat, send_after_wakeup, alarm, capabilities, eeprom, raw eeprom and dirty eeprom from RP2xxx (g)\nreset: wakeups, macros, IR-data, keys, repeat, send_after_wakeup, alarm and eeprom (r)\nsend IR (i)\nreboot (b)\nmonitor until ^C (m)\nrepeat rate statistics until ^C (y)\nrun test (t)\nhid test (h)\nneopixel test (n)\nexit (x)\n");
+cont:	printf("set: wakeups, macros, IR-data, keys, repeat, send_after_wakeup, alarm, commit, statusled and neopixel(s)\nset by remote: wakeups, macros and IR-data (q)\nget: wakeups, macros, IR-data, keys, repeat, send_after_wakeup, alarm, capabilities, eeprom, raw eeprom and dirty eeprom from RP2xxx (g)\nreset: wakeups, macros, IR-data, keys, repeat, send_after_wakeup, alarm and eeprom (r)\nsend IR (i)\nreboot (b)\nmonitor until ^C (m)\nrepeat rate statistics until ^C (y)\nrun test (t)\nhid test (h)\nneopixel test (n)\nrun test2 (u)\nexit (x)\n");
 	scanf("%s", &c);
 
 	switch (c) {
@@ -449,7 +451,7 @@ Set:		printf("set wakeup with remote control(w)\nset macro with remote control(m
 		break;
 
 	case 'g':
-get:		printf("get wakeup(w)\nget macro(m)\nget IR-data (i)\nget key(k)\nget repeat(r)\nget send_after_weakeup(x)\nget caps(c)\nget alarm(a)\nget eeprom(e)\nget raw eeprom from RP2xxx(p)\nget dirty eeprom from RP2xxx(d)\n");
+get:		printf("get wakeup(w)\nget macro(m)\nget IR-data (i)\nget key(k)\nget repeat(r)\nget send_after_weakeup(x)\nget caps(c)\nget alarm(a)\nget eeprom(e)\nget raw eeprom from RP2xxx(p)\nget dirty eeprom from RP2xxx(d)\nget irsnd busy (b)\n");
 		scanf("%s", &d);
 		memset(&outBuf[2], 0, sizeof(outBuf) - 2);
 		idx = 2;
@@ -598,6 +600,10 @@ again:			;
 			break;
 		case 'd':
 			outBuf[idx++] = CMD_EEPROM_DIRTY;
+			write_and_check(idx, 5);
+			break;
+		case 'b':
+			outBuf[idx++] = CMD_IRSND_BUSY;
 			write_and_check(idx, 5);
 			break;
 		default:
@@ -749,6 +755,10 @@ reset:		printf("reset wakeup(w)\nreset macro slot(m)\nreset IR-data(i)\nreset ke
 		goto test;
 		break;
 
+	case 'u':
+		goto test2;
+		break;
+
 	case 'x':
 		goto exit;
 		break;
@@ -864,6 +874,58 @@ test:	sprintf(testfilename, "test%u", j); printf("write into %s\n", testfilename
 					goto exit;
 				}
 				goto test;
+			}
+		}
+	}
+
+test2:	sprintf(testfilename, "test2_%u", j); printf("write into %s\n", testfilename); // if directory, it needs to exist (or be created)!
+	fp = fopen(testfilename, "w");
+	while(true) {
+		retValm = read(irmpfd, inBuf, in_size);
+		if (retValm >= 0) {
+			printf("%02hhx%02hhx%02hhx%02hhx%02hhx%02hhx\n", inBuf[1],inBuf[3],inBuf[2],inBuf[5],inBuf[4],inBuf[6]);
+				//now_us = GetUsTicks();
+				//diff_us = now_us - last_us;
+				//last_us = now_us;
+			if (first_time) {
+				fprintf(fp, "-----NEW-----\n%02hhx%02hhx%02hhx%02hhx%02hhx%02hhx\n", inBuf[1],inBuf[3],inBuf[2],inBuf[5],inBuf[4],inBuf[6]);
+				for(l=0;l<5;l++) {
+					rrBuf[l] = inBuf[l+1];
+				first_time = 0;
+				}
+			} else {
+				uint8_t same_key = inBuf[1] == rrBuf[0] && inBuf[2] == rrBuf[1] && inBuf[3] == rrBuf[2] && inBuf[4] == rrBuf[3] && inBuf[5] == rrBuf[4];
+				if (same_key && inBuf[6] != IRMP_FLAG_NEW) {
+					if (!count) fprintf(fp, "%02hhx%02hhx%02hhx%02hhx%02hhx%02hhx\n", inBuf[1],inBuf[3],inBuf[2],inBuf[5],inBuf[4],inBuf[6]);
+					count++;
+					}
+				else if (inBuf[6] == IRMP_FLAG_NEW && inBuf[1] != 0x29) {
+					printf("new key, count: %d %s\n", count, count == 256 ? "OK" : "");
+					fprintf(fp, "-----new----- count: %d %s\n%02hhx%02hhx%02hhx%02hhx%02hhx%02hhx\n", count, count == 256 ? "OK" : "", inBuf[1],inBuf[3],inBuf[2],inBuf[5],inBuf[4],inBuf[6]);
+					for(l=0;l<5;l++) {
+						rrBuf[l] = inBuf[l+1];
+					}
+					count = 0;
+				}
+				else if (!same_key) {
+					printf("key changed, count: %d %s\n", count, count == 256 ? "OK" : "");
+					fprintf(fp, "-----changed----- count: %d %s\n%02hhx%02hhx%02hhx%02hhx%02hhx%02hhx\n", count, count == 256 ? "OK" : "", inBuf[1],inBuf[3],inBuf[2],inBuf[5],inBuf[4],inBuf[6]);
+					for(l=0;l<5;l++) {
+						rrBuf[l] = inBuf[l+1];
+					}
+					count = 0;
+				}
+				if (inBuf[1] == 0x3c && inBuf[3] == 0 && inBuf[2] == 0 && inBuf[5] == 0 && inBuf[4] == 0x3f && inBuf[6] == 2) { // 3c0000003f02, stopsequence TODO make configurable
+					printf("received stopsequence, count: %d %s\n", count, count == 256 ? "OK" : "");
+					fprintf(fp, "-----STOP----- count: %d %s\n", count, count == 256 ? "OK" : "");
+					fclose(fp);
+					j++;
+					if (j >= 1) { // TODO make number of tests configurable
+						printf("exit\n");
+						goto exit;
+					}
+					goto test2;
+				}
 			}
 		}
 	}

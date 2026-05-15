@@ -50,6 +50,7 @@ enum command {
 	CMD_MACRO_REMOTE,
 	CMD_SEND_AFTER_WAKEUP,
 	CMD_EEPROM_DIRTY,
+	CMD_IRSND_BUSY,
 };
 
 enum status {
@@ -66,7 +67,7 @@ enum report_id {
 };
 
 static int irmpfd = -1;
-uint8_t inBuf[4];
+uint8_t inBuf[5];
 uint8_t outBuf[10];
 
 static bool open_irmp(const char *devicename) {
@@ -149,13 +150,19 @@ int main(int argc, char *argv[]) {
 	    while (inBuf[0] == REPORT_ID_KBD || inBuf[0] == REPORT_ID_IR)
 		read_irmp();
 
-	    /*printf("%llX\n", strtoull(ivalue, NULL, 0));
-	    printf("%x\n", (i>>40) & 0xFF);
-	    printf("%x\n", (i>>24) & 0xFF);
-	    printf("%x\n", (i>>32) & 0xFF);
-	    printf("%x\n", (i>>8) & 0xFF);
-	    printf("%x\n", (i>>16) & 0xFF);
-	    printf("%x\n", i & 0xFF);*/
+	    idx = 2;
+	    outBuf[idx++] = ACC_GET;
+	    outBuf[idx++] = CMD_IRSND_BUSY;
+	    write_irmp();
+	    //usleep(3000);
+	    read_irmp();
+	    while (inBuf[0] == REPORT_ID_KBD || inBuf[0] == REPORT_ID_IR)
+		read_irmp();
+	    while (inBuf[4] == 1) { // wait for irsnd finished
+		write_irmp();
+		usleep(30000);
+		read_irmp();
+	    }
 	}
 
 	if (irmpfd >= 0) close(irmpfd);
