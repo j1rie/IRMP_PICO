@@ -68,6 +68,9 @@ Wakeup mit irmpconfig_gui ändern: set by remote - wakeup drücken, Taste auf de
 Wichtig zum Testen: Wakeup findet nur statt, wenn der PC ausgeschaltet ist.  
 Wenn der PC eingeschaltet ist, wird nur die Taste an den PC gesendet (man kann also die gleiche Taste zum Ein- und Ausschalten verwenden).  
 
+## IR senden
+Die Eigenheiten der Protokolle müssen beachtet werden. Das sind invertierte Bits, Prüfsummen etc..
+
 ## Aus den Quellen bauen
 Siehe [Getting Started with the Raspberry Pi Pico](https://rptl.io/pico-get-started)  
 -> SDK und die Beispiele herunterladen  

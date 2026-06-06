@@ -68,6 +68,10 @@ Change wakeup with irmpconfig_gui: press set by remote - wakeup, press button on
 Important for testing: wakeup only happens, if the PC is switched off.  
 If the PC is powered on, only the key is sent to the PC (so you can use the same button to switch on and off).  
 
+## Sending IR
+
+The specific characteristics of the protocols must be taken into account. These include inverted bits, checksums, etc.
+
 ## Building from source
 See [Getting Started with the Raspberry Pi Pico](https://rptl.io/pico-get-started)  
 -> Get the SDK and examples  
