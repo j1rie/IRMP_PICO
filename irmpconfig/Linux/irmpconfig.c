@@ -883,10 +883,7 @@ test2:	sprintf(testfilename, "test2_%u", j); printf("write into %s\n", testfilen
 	while(true) {
 		retValm = read(irmpfd, inBuf, in_size);
 		if (retValm >= 0) {
-			printf("%02hhx%02hhx%02hhx%02hhx%02hhx%02hhx\n", inBuf[1],inBuf[3],inBuf[2],inBuf[5],inBuf[4],inBuf[6]);
-				//now_us = GetUsTicks();
-				//diff_us = now_us - last_us;
-				//last_us = now_us;
+			printf("%s%02hhx%02hhx%02hhx%02hhx%02hhx%02hhx\n", first_time? "-----NEW-----\n" : "", inBuf[1],inBuf[3],inBuf[2],inBuf[5],inBuf[4],inBuf[6]);
 			if (first_time) {
 				fprintf(fp, "-----NEW-----\n%02hhx%02hhx%02hhx%02hhx%02hhx%02hhx\n", inBuf[1],inBuf[3],inBuf[2],inBuf[5],inBuf[4],inBuf[6]);
 				for(l=0;l<5;l++) {
@@ -898,25 +895,36 @@ test2:	sprintf(testfilename, "test2_%u", j); printf("write into %s\n", testfilen
 				if (same_key && inBuf[6] != IRMP_FLAG_NEW) {
 					if (!count) fprintf(fp, "%02hhx%02hhx%02hhx%02hhx%02hhx%02hhx\n", inBuf[1],inBuf[3],inBuf[2],inBuf[5],inBuf[4],inBuf[6]);
 					count++;
+					uc_rate[(((inBuf[58] * 0xFF + inBuf[57]) * inBuf[56]) + 500) / 1000]++;
 					}
-				else if (inBuf[6] == IRMP_FLAG_NEW && inBuf[1] != 0x29) {
-					printf("new key, count: %d %s\n", count, count == 256 ? "OK" : "");
+				else if (inBuf[6] == IRMP_FLAG_NEW) {
+					printf("*** uc rate - count ***\n");
+					fprintf(fp, "*** uc rate - count ***\n");
+					for(l=0;l<255;l++) {
+						if (uc_rate[l]) {
+							printf("***     %03d - %04d  ***\n", l, uc_rate[l]);
+							fprintf(fp, "***     %03d - %04d  ***\n", l, uc_rate[l]);
+						}
+					}
+					printf("***********************\n");
+					printf("-----new-----, count: %d %s\n", count, count == 256 || (count == 512 && inBuf[1] == 0x29) ? "OK" : "");
 					fprintf(fp, "-----new----- count: %d %s\n%02hhx%02hhx%02hhx%02hhx%02hhx%02hhx\n", count, count == 256 ? "OK" : "", inBuf[1],inBuf[3],inBuf[2],inBuf[5],inBuf[4],inBuf[6]);
 					for(l=0;l<5;l++) {
 						rrBuf[l] = inBuf[l+1];
 					}
 					count = 0;
+					memset(uc_rate, 0, sizeof(uc_rate));
 				}
 				else if (!same_key) {
-					printf("key changed, count: %d %s\n", count, count == 256 ? "OK" : "");
-					fprintf(fp, "-----changed----- count: %d %s\n%02hhx%02hhx%02hhx%02hhx%02hhx%02hhx\n", count, count == 256 ? "OK" : "", inBuf[1],inBuf[3],inBuf[2],inBuf[5],inBuf[4],inBuf[6]);
+					printf("-----change----- count: %d %s\n", count, count == 256 ? "OK" : "");
+					fprintf(fp, "-----change----- count: %d %s\n%02hhx%02hhx%02hhx%02hhx%02hhx%02hhx\n", count, count == 256 ? "OK" : "", inBuf[1],inBuf[3],inBuf[2],inBuf[5],inBuf[4],inBuf[6]);
 					for(l=0;l<5;l++) {
 						rrBuf[l] = inBuf[l+1];
 					}
 					count = 0;
 				}
 				if (inBuf[1] == 0x3c && inBuf[3] == 0 && inBuf[2] == 0 && inBuf[5] == 0 && inBuf[4] == 0x3f && inBuf[6] == 2) { // 3c0000003f02, stopsequence TODO make configurable
-					printf("received stopsequence, count: %d %s\n", count, count == 256 ? "OK" : "");
+					printf("-----STOP----- count: %d %s\n", count, count == 256 ? "OK" : "");
 					fprintf(fp, "-----STOP----- count: %d %s\n", count, count == 256 ? "OK" : "");
 					fclose(fp);
 					j++;
