@@ -695,6 +695,8 @@ MainWindow::MainWindow(FXApp *app)
 	template_mode = 0;
 	in_size = 64;
 	out_size = 64;
+	hid_init();
+	//hid_error(NULL);
 }
 
 MainWindow::~MainWindow()
@@ -1142,21 +1144,21 @@ MainWindow::Read(int show_len)
 {
 	memset(buf, 0, sizeof(buf));
 	FXString s;
-	if (!connected_device) {
-		FXMessageBox::error(this, MBOX_OK, "Device Error R", "Unable To Connect to Device");
-		s = "Unable To Connect to Device R\n";
-		debug_messages_text->appendText(s);
-		debug_messages_text->setBottomLine(INT_MAX);
-		return -1;
-	}
 
 	int res = hid_read(connected_device, buf, in_size); // nonblocking, must read full length (because of Windows, µC sends full length)!
 	
 	if (res < 0) {
-		FXMessageBox::error(this, MBOX_OK, "Error Reading", "Could not read from device. Error reported was: %ls", hid_error(connected_device));
-		onRescan(NULL, 0, NULL);
-		debug_messages_text->appendText("read error\n");
+#ifdef _WIN32
+		FXnchar* error = (wchar_t*)(hid_error(connected_device));
+#else
+		FXwchar* error = (wchar_t*)(hid_error(connected_device));
+#endif
+		FXMessageBox::error(this, MBOX_OK, "Read error", "%ls", error);
+		debug_messages_text->appendText("\nread error: ");
+		debug_messages_text->appendText(error);
+		debug_messages_text->appendText("\n");
 		debug_messages_text->setBottomLine(INT_MAX);
+		onRescan(NULL, 0, NULL);
 		return -1;
 	} else {
 		if (res == 0)
@@ -1412,18 +1414,17 @@ MainWindow::Write(int out_len)
 	bufw[45] = (timestamp >> 8) & 0xFF;
 	bufw[46] = timestamp & 0xFF;
 
-	if (!connected_device) {
-		FXMessageBox::error(this, MBOX_OK, "Device Error W", "Unable To Connect to Device");
-		s = "Unable To Connect to Device W\n";
-		debug_messages_text->appendText(s);
-		debug_messages_text->setBottomLine(INT_MAX);
-		return -1;
-	}
-
 	int res = hid_write(connected_device, bufw, out_len); // may write arbitrary length
 	if (res < 0) {
-		FXMessageBox::error(this, MBOX_OK, "Error Writing", "Could not write to device. Error reported was: %ls", hid_error(connected_device));
-		debug_messages_text->appendText("write error\n");
+#ifdef _WIN32
+		FXnchar* error = (wchar_t*)(hid_error(connected_device));
+#else
+		FXwchar* error = (wchar_t*)(hid_error(connected_device));
+#endif
+		FXMessageBox::error(this, MBOX_OK, "Write error", "%ls", error);
+		debug_messages_text->appendText("\nwrite error: ");
+		debug_messages_text->appendText(error);
+		debug_messages_text->appendText("\n");
 		debug_messages_text->setBottomLine(INT_MAX);
 		onRescan(NULL, 0, NULL);
 		return -1;
@@ -1449,6 +1450,7 @@ MainWindow::Write_and_Check(int out_len, int show_len)
 	int read, count = 0;
 	long retVal = 1;
 	s = "";
+
 #if (0)
 	// before writing first empty buffers and read away old stuff
 	read = Read(show_len);
@@ -1474,36 +1476,26 @@ MainWindow::Write_and_Check(int out_len, int show_len)
 		FXThread::sleep(3000000); // 3ms
 	}
 #endif
-	if(Write(out_len) == -1) {
-		s = "W&C Write(): -1\n";
-		debug_messages_text->appendText(s);
-		debug_messages_text->setBottomLine(INT_MAX);
+
+	if(Write(out_len) == -1)
 		return -1;
-	}
 
 	FXThread::sleep(3000000); // 3ms
 
 	read = Read(show_len);
-	if(read  == -1) {
-		s = "W&C first Read(): -1\n";
-		debug_messages_text->appendText(s);
-		debug_messages_text->setBottomLine(INT_MAX);
+	if(read  == -1)
 		return -1;
-	}
 
 	//TODO consider making Write_and_Check a background thread in order to stay responsive to user interactions, otherwise the user just has to wait during "set by remote"
 	while ((buf[0] == REPORT_ID_KBD || buf[0] == REPORT_ID_IR || read == 0) && count < 5500 ) { // over 5 sec for "set by remote", Read() is nonblocking
 		//printf("buf[0] %d, read %d, loop %d\n", buf[0], read, count);
 		FXThread::sleep(1000000); // 1ms
 		read = Read(show_len);
-		if(read == -1) {
-			s = "W&C loop Read(): -1\n";
-			debug_messages_text->appendText(s);
-			debug_messages_text->setBottomLine(INT_MAX);
+		if(read == -1)
 			return -1;
-		}
 		count++;
 	}
+
 #if (0)
 	while(buf[3] != CMD_CAPS  && (buf[43] != bufw[43] || (buf[44] != bufw[44]) || (buf[45] != bufw[45]) || (buf[46] != bufw[46])) && count < 200) {
 		s += "*****************WRONG TIMESTAMP*********************\n";
@@ -1521,6 +1513,7 @@ MainWindow::Write_and_Check(int out_len, int show_len)
 		count++;
 	}
 #endif
+
 	if((buf[0] == REPORT_ID_CONFIG_IN) && (buf[1] == STAT_SUCCESS) && (buf[2] == bufw[2]) && (buf[3] == bufw[3])) {
 		s += "************************OK***************************\n";
 		retVal = 1;
