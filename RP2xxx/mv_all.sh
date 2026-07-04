@@ -20,3 +20,11 @@ cd build_seeed_xiao_rp2350
 mv *.bin /root/IRMP_PICO/RP2xxx/build
 mv *.uf2 /root/IRMP_PICO/RP2xxx/build
 cd ..
+
+cd build_zero_rp2350
+mv *.bin /root/IRMP_PICO/RP2xxx/build
+mv *.uf2 /root/IRMP_PICO/RP2xxx/build
+
+cd build_weact_studio_rp2350a_core_v10_4mb
+mv *.bin /root/IRMP_PICO/RP2xxx/build
+mv *.uf2 /root/IRMP_PICO/RP2xxx/build

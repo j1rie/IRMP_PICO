@@ -29,3 +29,15 @@ cmake -D"PICO_BOARD=seeed_xiao_rp2350" ..
 make -j5
 cd ..
 rm ./generated/ws2812.pio.h
+mkdir build_zero_rp2350
+cd build_zero_rp2350
+cmake  -D"PICO_BOARD=waveshare_rp2350_pizero" ..
+make -j5
+cd ..
+rm ./generated/ws2812.pio.h
+mkdir build_weact_studio_rp2350a_core_v10_4mb
+cd build_weact_studio_rp2350a_core_v10_4mb
+cmake  -D"PICO_BOARD=weact_studio_rp2350a_core_v10_4mb" ..
+make -j5
+cd ..
+rm ./generated/ws2812.pio.h
