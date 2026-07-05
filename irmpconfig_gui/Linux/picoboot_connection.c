@@ -11,7 +11,7 @@
 
 #include "picoboot_connection.h"
 //#include "boot/bootrom_constants.h"
-//#include "pico/stdio_usb/reset_interface.h"
+//#include "pico/usb_reset_interface.h"
 
 //#if ENABLE_DEBUG_LOG
 #if (1)
@@ -70,7 +70,7 @@ unsigned int in_ep;
     int ret = libusb_get_device_descriptor(device, &desc);
     enum picoboot_device_result res = dr_vidpid_unknown;
     if (ret && verbose) {
-        output("Failed to read device descriptor\n");
+        output("Failed to read device descriptor %s\n", libusb_error_name(ret));
     }
     if (!ret) {
         if (pid >= 0) {
@@ -108,14 +108,14 @@ unsigned int in_ep;
         }
         ret = libusb_get_active_config_descriptor(device, &config);
         if (ret && verbose) {
-            output("Failed to read config descriptor\n");
+            output("Failed to read config descriptor %s\n", libusb_error_name(ret));
         }
     }
 
     if (!ret) {
         ret  = libusb_open(device, dev_handle);
         if (ret && verbose) {
-            output("Failed to open device %d\n", ret);
+            output("Failed to open device %s\n", libusb_error_name(ret));
         }
         if (ret) {
             if (vid == 0 || strlen(ser) != 0) {
@@ -170,7 +170,7 @@ unsigned int in_ep;
             if (verbose) output("Found PICOBOOT interface\n");
             ret = libusb_claim_interface(*dev_handle, interface);
             if (ret) {
-                if (verbose) output("Failed to claim interface\n");
+                if (verbose) output("Failed to claim interface %s\n", libusb_error_name(ret));
                 return dr_vidpid_bootrom_no_interface;
             }
         } else {
@@ -181,16 +181,22 @@ unsigned int in_ep;
 
     if (!ret) {
         if (*chip == unknown) {
+            if (desc.idVendor == VENDOR_ID_RASPBERRY_PI && desc.idProduct == PRODUCT_ID_RP2040_USBBOOT) {
+                // Set model based on bootrom vid/pid for RP2040, as it cannot be white-labelled
+                *chip = rp2040;
+            } else {
+                // Otherwise check the chip info command exists
             struct picoboot_get_info_cmd info_cmd;
             info_cmd.bType = PICOBOOT_GET_INFO_SYS,
             info_cmd.dParams[0] = (uint32_t) (SYS_INFO_CHIP_INFO);
             uint32_t word_buf[64];
-            // RP2040 doesn't have this function, so returns non-zero
+                // Other devices don't have this function, so will return errors
             int info_ret = picoboot_get_info(*dev_handle, &info_cmd, (uint8_t*)word_buf, sizeof(word_buf));
             if (info_ret) {
-                *chip = rp2040;
+                    return dr_vidpid_unknown;
             } else {
                 *chip = rp2350;
+                }
             }
         }
         if (strlen(ser) != 0) {
@@ -302,7 +308,7 @@ int picoboot_cmd(libusb_device_handle *usb_device, struct picoboot_cmd *cmd, uin
     ret = libusb_bulk_transfer(usb_device, out_ep, (uint8_t *) cmd, sizeof(struct picoboot_cmd), &sent, 3000);
 
     if (ret != 0 || sent != sizeof(struct picoboot_cmd)) {
-        output("   ...failed to send command %d\n", ret);
+        output("   ...failed to send command %s\n", libusb_error_name(ret));
         return ret;
     }
 
@@ -322,7 +328,7 @@ int picoboot_cmd(libusb_device_handle *usb_device, struct picoboot_cmd *cmd, uin
             int received = 0;
             ret = libusb_bulk_transfer(usb_device, in_ep, buffer, cmd->dTransferLength, &received, timeout);
             if (ret != 0 || received != (int) cmd->dTransferLength) {
-                output("  ...failed to receive data %d %d/%d\n", ret, received, cmd->dTransferLength);
+                output("  ...failed to receive data %s %d/%d\n", libusb_error_name(ret), received, cmd->dTransferLength);
                 if (!ret) ret = 1;
                 return ret;
             }
@@ -330,7 +336,7 @@ int picoboot_cmd(libusb_device_handle *usb_device, struct picoboot_cmd *cmd, uin
             if (verbose) output("  send %d...\n", cmd->dTransferLength);
             ret = libusb_bulk_transfer(usb_device, out_ep, buffer, cmd->dTransferLength, &sent, timeout);
             if (ret != 0 || sent != (int) cmd->dTransferLength) {
-                output("  ...failed to send data %d %d/%d\n", ret, sent, cmd->dTransferLength);
+                output("  ...failed to send data %s %d/%d\n", libusb_error_name(ret), sent, cmd->dTransferLength);
                 if (!ret) ret = 1;
                 picoboot_cmd_status_verbose(usb_device, NULL, true);
                 return ret;
@@ -399,7 +405,7 @@ int picoboot_exclusive_access(libusb_device_handle *usb_device, uint8_t exclusiv
 
 int picoboot_exit_xip(libusb_device_handle *usb_device) {
     if (definitely_exclusive && xip_state == XIP_INACTIVE) {
-        if (verbose) output("Skipping EXIT_XIP\n");
+        if (verbose) output("Skipping EXIT_XIP");
         return 0;
     }
     struct picoboot_cmd cmd;
@@ -454,19 +460,6 @@ int picoboot_exec(libusb_device_handle *usb_device, uint32_t addr) {
     cmd.address_only_cmd.dAddr = addr;
     return picoboot_cmd(usb_device, &cmd, NULL, 0);
 }
-
-// int picoboot_exec2(libusb_device_handle *usb_device, struct picoboot_exec2_cmd *exec2_cmd) {
-//     struct picoboot_cmd cmd;
-//     // shouldn't be necessary any more
-//     // addr |= 1u; // Thumb bit
-//     //if (verbose) output("EXEC2 %08x\n", (unsigned int) exec2_cmd->scan_base);
-//     cmd.bCmdId = PC_EXEC2;
-//     cmd.bCmdSize = sizeof(cmd.exec2_cmd);
-//     cmd.dTransferLength = 0;
-//     cmd.exec2_cmd = *exec2_cmd;
-//     return picoboot_cmd(usb_device, &cmd, NULL, 0);
-// } // currently unused
-
 
 int picoboot_flash_erase(libusb_device_handle *usb_device, uint32_t addr, uint32_t len) {
     struct picoboot_cmd cmd;

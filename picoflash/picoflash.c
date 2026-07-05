@@ -194,9 +194,9 @@ int main(int argc, const char **argv)
 	else if (!strcmp(model,"RP2350")) {
 		struct picoboot_reboot2_cmd cmd = {
 		    .dFlags = 4, // FLASH_UPDATE
+		    .dDelayMS = 500,
 		    .dParam0 = 0x10000000, // FLASH_START
 		    .dParam1 = 0,
-		    .dDelayMS = 500,
 		};
 		picoboot_reboot2(dev_handle, &cmd);
 	}

@@ -27,8 +27,6 @@
 	#include <windows.h>
 	#include <FXCP1252Codec.h>
 #endif
-#define SRAM_END_RP2040      0x20042000
-#define SRAM_END_RP2350      0x20082000
 
 class MainWindow : public FXMainWindow {
 	FXDECLARE(MainWindow)
@@ -2621,7 +2619,6 @@ int MainWindow::picoflash(char const* firmwarefile)
 	int firmwareSize;
 	uint8_t *fw_buf;
 	int ret;
-	uint32_t sram_end = 0;
 
 	print_output("===  Pico Firmware Upgrade  ===\n");
 
@@ -2655,12 +2652,18 @@ int MainWindow::picoflash(char const* firmwarefile)
 	if (!memcmp(fw_buf, read_buf, firmwareSize))
 		print_output("===  verify successful  ===\n");
 
-	if (strcmp(model,"RP2040"))
-		sram_end = SRAM_END_RP2040;
-	else if (strcmp(model,"RP2350"))
-		sram_end = SRAM_END_RP2350;
+	if (!strcmp(model,"RP2040"))
+		picoboot_reboot(dev_handle, 0, 0, 500);
+	else if (!strcmp(model,"RP2350")) {
+		struct picoboot_reboot2_cmd cmd = {
+		    .dFlags = 4, // FLASH_UPDATE
+		    .dDelayMS = 500,
+		    .dParam0 = 0x10000000, // FLASH_START
+		    .dParam1 = 0,
+		};
+		picoboot_reboot2(dev_handle, &cmd);
+	}
 
-	picoboot_reboot(dev_handle, 0, sram_end, 500);
 	picoboot_exclusive_access(dev_handle, 0);
 
 	libusb_release_interface(dev_handle, 0);
