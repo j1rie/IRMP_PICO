@@ -22,9 +22,6 @@
 #include "picoboot_connection.h"
 #include <string.h>
 
-#define SRAM_END_RP2040      0x20042000
-#define SRAM_END_RP2350      0x20082000
-
 char model[8];
 	libusb_device_handle *dev_handle = NULL;
 	libusb_device *device = NULL;
@@ -150,7 +147,6 @@ int main(int argc, const char **argv)
 	int firmwareSize;
 	uint8_t *fw_buf;
 	int ret;
-	uint32_t sram_end = 0;
 
 	printf("\n=== Pico Firmware Upgrade ===\n");
 
@@ -193,12 +189,18 @@ int main(int argc, const char **argv)
 	if (!memcmp(fw_buf, read_buf, firmwareSize))
 		printf("\n=== verify successful ===\n");
 
-	if (strcmp(model,"RP2040"))
-		sram_end = SRAM_END_RP2040;
-	else if (strcmp(model,"RP2350"))
-		sram_end = SRAM_END_RP2350;
+	if (!strcmp(model,"RP2040"))
+		picoboot_reboot(dev_handle, 0, 0, 500);
+	else if (!strcmp(model,"RP2350")) {
+		struct picoboot_reboot2_cmd cmd = {
+		    .dFlags = 4, // FLASH_UPDATE
+		    .dParam0 = 0x10000000, // FLASH_START
+		    .dParam1 = 0,
+		    .dDelayMS = 500,
+		};
+		picoboot_reboot2(dev_handle, &cmd);
+	}
 
-	picoboot_reboot(dev_handle, 0, sram_end, 500); // ...failed to send command -9 am Pico2
 	picoboot_exclusive_access(dev_handle, 0);
 
 	libusb_release_interface(dev_handle, 0);
