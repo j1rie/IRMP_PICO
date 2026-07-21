@@ -19,6 +19,9 @@ static const char *DESCRIPTION    = tr("Send keypresses from IRMP Pico Device to
 #define DEBUG 1
 #define RECONNECTDELAY 3000 // ms
 #define REPORT_ID_IR 1
+#define IRMP_FLAG_NEW                   0x00
+#define IRMP_FLAG_REPETITION            0x01
+#define IRMP_FLAG_RELEASE               0x02
 
 const char* irmp_device = "/dev/irmp_pico";
 int fd;
@@ -107,7 +110,7 @@ void cIrmpRemote::Action(void)
 
         if (DEBUG) printf("key: %s, lastkey: %s, irmp_flags: %d\n", (const char*)key, (const char*)lastkey, irmp_flags);
 
-        if (irmp_flags == 0) { // new key
+        if (irmp_flags == IRMP_FLAG_NEW) { // new key
             if (DEBUG) printf("new key\n");
             if (repeat) {
                 if (DEBUG) printf("put release for %s\n", (const char*)lastkey);
@@ -117,7 +120,7 @@ void cIrmpRemote::Action(void)
             repeat = false;
             FirstTime.Set();
         }
-        if (irmp_flags == 1) { // repeat
+        else if (irmp_flags == IRMP_FLAG_REPETITION) { // repeat
             if (DEBUG) printf("repeat\n");
             if (FirstTime.Elapsed() < (uint)Setup.RcRepeatDelay) {
                 if (DEBUG) printf("continue Delay\n\n");
@@ -130,7 +133,7 @@ void cIrmpRemote::Action(void)
             repeat = true;
         }
 
-        if (irmp_flags == 0 || irmp_flags == 1) {
+        if (irmp_flags == IRMP_FLAG_NEW || irmp_flags == IRMP_FLAG_REPETITION) {
             /* send key */
             if(DEBUG) printf("delta send: %ld\n", LastTime.Elapsed());
             LastTime.Set();
@@ -138,7 +141,7 @@ void cIrmpRemote::Action(void)
             Put(key, repeat);
         }
 
-        if (irmp_flags == 2) { // release
+        if (irmp_flags == IRMP_FLAG_RELEASE) { // release
             if (repeat) {
                 /* send release */
                 if (DEBUG) printf("release\n");
@@ -225,7 +228,6 @@ void cReadIR::Action(void)
         }
     }
 
-    //if(DEBUG) printf("IR report: %016lx\n", *((uint64_t*)buf));
     if (buf[0] == REPORT_ID_IR) {
         //if(DEBUG) printf("IR report: %016lx\n", *((uint64_t*)buf));
         myIrmpRemote->Receive();

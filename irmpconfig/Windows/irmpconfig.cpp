@@ -56,6 +56,7 @@ enum command {
 	CMD_MACRO_REMOTE,
 	CMD_SEND_AFTER_WAKEUP,
 	CMD_EEPROM_DIRTY,
+	CMD_IRSND_BUSY,
 };
 
 enum status {
@@ -84,6 +85,10 @@ enum color {
 	purple,
 	strong_white
 };
+
+#define IRMP_FLAG_NEW                   0x00
+#define IRMP_FLAG_REPETITION            0x01
+#define IRMP_FLAG_RELEASE               0x02
 
 #define NUM_PIXELS 64
 
@@ -207,10 +212,9 @@ int main(int argc, char* argv[])
 	uint32_t now_us;
 	uint32_t last_us;
 	uint32_t diff_us;
-	uint32_t min_diff_us = 0xFFFFFFFF;
-	uint32_t min_dd = 0xFFFFFFFF;
 	uint8_t rrBuf[12];
 	uint8_t first_time = 1;
+	int count = 0;
 
 #ifdef WIN32
 	UNREFERENCED_PARAMETER(argc);
@@ -227,7 +231,7 @@ int main(int argc, char* argv[])
 	outBuf[2] = ACC_GET;
 	goto caps;
 
-cont:	printf("set: wakeups, macros, IR-data, keys, repeat, send_after_wakeup, alarm, commit, statusled and neopixel(s)\nset by remote: wakeups, macros and IR-data (q)\nget: wakeups, macros, IR-data, keys, repeat, send_after_wakeup, alarm, capabilities, eeprom, raw eeprom and dirty eeprom from RP2xxx (g)\nreset: wakeups, macros, IR-data, keys, repeat, send_after_wakeup, alarm and eeprom (r)\nsend IR (i)\nreboot (b)\nmonitor until ^C (m)\nrepeat rate statistics until ^C (y)\nrun test (t)\nhid test (h)\nneopixel test (n)\nexit (x)\n");
+cont:	printf("set: wakeups, macros, IR-data, keys, repeat, send_after_wakeup, alarm, commit, statusled and neopixel(s)\nset by remote: wakeups, macros and IR-data (q)\nget: wakeups, macros, IR-data, keys, repeat, send_after_wakeup, alarm, capabilities, eeprom, raw eeprom and dirty eeprom from RP2xxx (g)\nreset: wakeups, macros, IR-data, keys, repeat, send_after_wakeup, alarm and eeprom (r)\nsend IR (i)\nreboot (b)\nmonitor until ^C (m)\nrepeat rate statistics until ^C (y)\nrun test (t)\nhid test (h)\nneopixel test (n)\nrun test2 (u)\nexit (x)\n");
 	scanf("%s", &c);
 
 	switch (c) {
@@ -475,7 +479,7 @@ Set:		printf("set wakeup with remote control(w)\nset macro with remote control(m
 		break;
 
 	case 'g':
-get:		printf("get wakeup(w)\nget macro(m)\nget IR-data (i)\nget key(k)\nget repeat(r)\nget send_after_weakeup(x)\nget caps(c)\nget alarm(a)\nget eeprom(e)\nget raw eeprom from RP2xxx(p)\nget dirty eeprom from RP2xxx(d)\n");
+get:		printf("get wakeup(w)\nget macro(m)\nget IR-data (i)\nget key(k)\nget repeat(r)\nget send_after_weakeup(x)\nget caps(c)\nget alarm(a)\nget eeprom(e)\nget raw eeprom from RP2xxx(p)\nget dirty eeprom from RP2xxx(d)\nget irsnd busy (b)\n");
 		scanf("%s", &d);
 		memset(&outBuf[2], 0, sizeof(outBuf) - 2);
 		idx = 2;
@@ -485,7 +489,7 @@ get:		printf("get wakeup(w)\nget macro(m)\nget IR-data (i)\nget key(k)\nget repe
 			printf("enter wakeup number (starting with 0)\n");
 			scanf("%u", &s);
 			outBuf[idx++] = CMD_WAKE;
-			outBuf[idx++] = s;    // (s+1)-th slot
+			outBuf[idx++] = s;
 			write_and_check(idx, 10);
 			break;
 		case 'm':
@@ -650,6 +654,10 @@ again:			;
 			outBuf[idx++] = CMD_EEPROM_DIRTY;
 			write_and_check(idx, 5);
 			break;
+		case 'b':
+			outBuf[idx++] = CMD_IRSND_BUSY;
+			write_and_check(idx, 5);
+			break;
 		default:
 			goto get;
 		}
@@ -807,6 +815,10 @@ reset:		printf("reset wakeup(w)\nreset macro slot(m)\nreset IR-data(i)\nreset ke
 		goto test;
 		break;
 
+	case 'u':
+		goto test2;
+		break;
+
 	case 'x':
 		goto exit;
 		break;
@@ -844,7 +856,7 @@ monit:	memset(inBuf, 0, sizeof(inBuf));
 
 			if (inBuf[0] == REPORT_ID_IR) {
 				printf("converted to protocoladdresscommandflag:\n\t");
-				printf("%02hhx%02hhx%02hhx%02hhx%02hhx%02hhx   pass_on_delta_detection_f: %f delta: %d min_delta: %d upper_border: %d same key: %d timeout: %d repeat detected: %d", inBuf[1],inBuf[3],inBuf[2],inBuf[5],inBuf[4],inBuf[6], ((float)(inBuf[58] * 0xFF + inBuf[57]) * inBuf[56]) / 1000, inBuf[63], inBuf[62], inBuf[59], inBuf[54], inBuf[61], inBuf[60]);
+				printf("%02hhx%02hhx%02hhx%02hhx%02hhx%02hhx   delta: %f min_delta: %f max_delta: %f upper_border: %f same key: %d timeout: %d repeat detected: %d", inBuf[1],inBuf[3],inBuf[2],inBuf[5],inBuf[4],inBuf[6], ((float)(inBuf[58] * 0xFF + inBuf[57]) * inBuf[56]) / 1000, ((float)(inBuf[53] * 0xFF + inBuf[52]) * inBuf[56]) / 1000, ((float)(inBuf[49] * 0xFF + inBuf[48]) * inBuf[56]) / 1000, ((float)(inBuf[51] * 0xFF + inBuf[50]) * inBuf[56]) / 1000, inBuf[54], inBuf[61], inBuf[60]);
 				printf("\n\n");
 			}
 		}
@@ -853,7 +865,7 @@ monit:	memset(inBuf, 0, sizeof(inBuf));
 rate:	while(true) {
 		retValm = hid_read(handle, inBuf, in_size);
 		if (retValm >= 0) {
-			if (inBuf[0] == REPORT_ID_IR) {
+			if (inBuf[0] == REPORT_ID_IR && inBuf[6] != IRMP_FLAG_RELEASE) {
 				printf("%02hhx%02hhx%02hhx%02hhx%02hhx%02hhx\n", inBuf[1],inBuf[3],inBuf[2],inBuf[5],inBuf[4],inBuf[6]);
 				now_us = GetUsTicks();
 				diff_us = now_us - last_us;
@@ -868,22 +880,15 @@ rate:	while(true) {
 						printf("protocol changed, stopping\n");
 						goto exit;
 					}
-					if (inBuf[1] == rrBuf[0] && inBuf[2] == rrBuf[1] && inBuf[3] == rrBuf[2] && inBuf[4] == rrBuf[3] && inBuf[5] == rrBuf[4]) { // same key
+					uint8_t same_key = inBuf[2] == rrBuf[1] && inBuf[3] == rrBuf[2] && inBuf[4] == rrBuf[3] && inBuf[5] == rrBuf[4];
+					if (same_key && inBuf[6] == IRMP_FLAG_REPETITION) {
 						if ((diff_us + 500) / 1000 <= 255) {
-							if (min_diff_us > diff_us)
-								min_diff_us = diff_us;
 							pc_rate[(diff_us + 500) / 1000]++;
-							uc_rate[(((inBuf[58] * 0xFF + inBuf[57]) * 52) + 500) / 1000]++;
-							if (min_dd > (uint32_t)((inBuf[58] * 0xFF + inBuf[57]) * 52))
-								min_dd = (inBuf[58] * 0xFF + inBuf[57]) * 52;
-							printf("min_delta: %d\n", inBuf[62]);
-						}
-					} else {
-						for(l=0;l<5;l++) {
-							rrBuf[l] = inBuf[l+1];
-						}
-						printf("key changed\n");
-						continue;
+							uc_rate[(((inBuf[58] * 0xFF + inBuf[57]) * inBuf[56]) + 500) / 1000]++;
+							printf("delta: %f\n", ((float)(inBuf[58] * 0xFF + inBuf[57]) * inBuf[56]) / 1000);
+							printf("min_delta: %f\n", ((float)(inBuf[53] * 0xFF + inBuf[52]) * inBuf[56]) / 1000);
+							printf("max_delta: %f\n", ((float)(inBuf[49] * 0xFF + inBuf[48]) * inBuf[56]) / 1000);
+							printf("max/min: %f %%\n", (((float)(inBuf[49] * 0xFF + inBuf[48]))/((float)(inBuf[53] * 0xFF + inBuf[52])) - 1) * 100);
 					}
 					printf("***********************\n");
 					printf("*** pc rate - count ***\n");
@@ -896,6 +901,17 @@ rate:	while(true) {
 						if (uc_rate[l]) printf("***     %03d - %04d  ***\n", l, uc_rate[l]);
 					}
 					printf("***********************\n");
+				}
+					if (!same_key) {
+						printf("key changed, diff_ms: %d, delta: %f\n\n", (diff_us + 500) / 1000, ((float)(inBuf[58] * 0xFF + inBuf[57]) * inBuf[56]) / 1000);
+						for(l=1;l<5;l++) {
+							rrBuf[l] = inBuf[l+1];
+						}
+						continue;
+					}
+					if (inBuf[6] == IRMP_FLAG_NEW) {
+						printf("new key, diff_ms: %d, delta: %f\n", (diff_us + 500) / 1000, ((float)(inBuf[58] * 0xFF + inBuf[57]) * inBuf[56]) / 1000);
+					}
 				}
 				printf("\n");
 			}
@@ -918,6 +934,66 @@ test:	sprintf(testfilename, "test%u", j); printf("write into %s\n", testfilename
 					goto exit;
 				}
 				goto test;
+			}
+		}
+	}
+
+test2:	sprintf(testfilename, "test2_%u", j); printf("write into %s\n", testfilename); // if directory, it needs to exist (or be created)!
+	fp = fopen(testfilename, "w");
+	while(true) {
+		retValm = hid_read(handle, inBuf, in_size);
+		if (retValm >= 0) {
+			printf("%s%02hhx%02hhx%02hhx%02hhx%02hhx%02hhx\n", first_time? "-----NEW-----\n" : "", inBuf[1],inBuf[3],inBuf[2],inBuf[5],inBuf[4],inBuf[6]);
+			if (first_time) {
+				fprintf(fp, "-----NEW-----\n%02hhx%02hhx%02hhx%02hhx%02hhx%02hhx\n", inBuf[1],inBuf[3],inBuf[2],inBuf[5],inBuf[4],inBuf[6]);
+				for(l=0;l<5;l++) {
+					rrBuf[l] = inBuf[l+1];
+				first_time = 0;
+				}
+			} else {
+				uint8_t same_key = inBuf[1] == rrBuf[0] && inBuf[2] == rrBuf[1] && inBuf[3] == rrBuf[2] && inBuf[4] == rrBuf[3] && inBuf[5] == rrBuf[4];
+				if (same_key && inBuf[6] != IRMP_FLAG_NEW) {
+					if (!count) fprintf(fp, "%02hhx%02hhx%02hhx%02hhx%02hhx%02hhx\n", inBuf[1],inBuf[3],inBuf[2],inBuf[5],inBuf[4],inBuf[6]);
+					count++;
+					uc_rate[(((inBuf[58] * 0xFF + inBuf[57]) * inBuf[56]) + 500) / 1000]++;
+					}
+				else if (inBuf[6] == IRMP_FLAG_NEW) {
+					printf("*** uc rate - count ***\n");
+					fprintf(fp, "*** uc rate - count ***\n");
+					for(l=0;l<255;l++) {
+						if (uc_rate[l]) {
+							printf("***     %03d - %04d  ***\n", l, uc_rate[l]);
+							fprintf(fp, "***     %03d - %04d  ***\n", l, uc_rate[l]);
+						}
+					}
+					printf("***********************\n");
+					printf("-----new-----, count: %d %s\n", count, count == 256 || (count == 512 && inBuf[1] == 0x29) ? "OK" : "");
+					fprintf(fp, "-----new----- count: %d %s\n%02hhx%02hhx%02hhx%02hhx%02hhx%02hhx\n", count, count == 256 ? "OK" : "", inBuf[1],inBuf[3],inBuf[2],inBuf[5],inBuf[4],inBuf[6]);
+					for(l=0;l<5;l++) {
+						rrBuf[l] = inBuf[l+1];
+					}
+					count = 0;
+					memset(uc_rate, 0, sizeof(uc_rate));
+				}
+				else if (!same_key) {
+					printf("-----change----- count: %d %s\n", count, count == 256 ? "OK" : "");
+					fprintf(fp, "-----change----- count: %d %s\n%02hhx%02hhx%02hhx%02hhx%02hhx%02hhx\n", count, count == 256 ? "OK" : "", inBuf[1],inBuf[3],inBuf[2],inBuf[5],inBuf[4],inBuf[6]);
+					for(l=0;l<5;l++) {
+						rrBuf[l] = inBuf[l+1];
+					}
+					count = 0;
+				}
+				if (inBuf[1] == 0x3c && inBuf[3] == 0 && inBuf[2] == 0 && inBuf[5] == 0 && inBuf[4] == 0x3f && inBuf[6] == 2) { // 3c0000003f02, stopsequence TODO make configurable
+					printf("-----STOP----- count: %d %s\n", count, count == 256 ? "OK" : "");
+					fprintf(fp, "-----STOP----- count: %d %s\n", count, count == 256 ? "OK" : "");
+					fclose(fp);
+					j++;
+					if (j >= 1) { // TODO make number of tests configurable
+						printf("exit\n");
+						goto exit;
+					}
+					goto test2;
+				}
 			}
 		}
 	}

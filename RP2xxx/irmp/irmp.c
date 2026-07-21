@@ -2883,8 +2883,8 @@ irmp_get_data (IRMP_DATA * irmp_data_p)
                 upper_border = min_delta * (100 + JITTER_COMPENSATION) / 100;
                 previous_irmp_protocol = irmp_protocol;
             } else {
-                if (!((irmp_protocol == IRMP_NEC_PROTOCOL || irmp_protocol == IRMP_APPLE_PROTOCOL || irmp_protocol == IRMP_ONKYO_PROTOCOL) && delta < F_INTERRUPTS * 75 / 1000 || // if NEC, APPLE, ONKYO, ignore first short interval, 75 ms
-                    irmp_protocol == IRMP_SAMSUNG48_PROTOCOL && delta < F_INTERRUPTS * 106 / 1000)) { // if SAMSUNG48 ignore first standard repetition, 106 ms
+                if (!(((irmp_protocol == IRMP_NEC_PROTOCOL || irmp_protocol == IRMP_APPLE_PROTOCOL || irmp_protocol == IRMP_ONKYO_PROTOCOL) && delta < F_INTERRUPTS * 75 / 1000) || // if NEC, APPLE, ONKYO, ignore first short interval, 75 ms
+                    (irmp_protocol == IRMP_SAMSUNG48_PROTOCOL && delta < F_INTERRUPTS * 106 / 1000))) { // if SAMSUNG48 ignore first standard repetition, 106 ms
                     if (delta < min_delta && same_key)
                         min_delta = delta;
                 }

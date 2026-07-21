@@ -358,13 +358,14 @@ void fast_toggle(void)
 	}
 }
 
-void yellow_short_on(void)
+void yellow_on(uint8_t on)
 {
 	toggle_led();
-	set_rgb_led(yellow, 1);
-	sleep_ms(130);
-	toggle_led();
-	set_rgb_led(statusled_state, 1);
+	if (on) {
+		set_rgb_led(yellow, 1);
+	} else {
+		set_rgb_led(statusled_state, 1);
+	}
 }
 
 void statusled_write(uint8_t led_state) {
@@ -525,7 +526,7 @@ void transmit_macro(uint8_t macro)
 	uint8_t buf[SIZEOF_IR];
 	uint8_t zeros[SIZEOF_IR] = {0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF};
 	uint8_t delay[SIZEOF_IR - 3] = {0xFF, 0x11, 0x11};
-	/* we start from 1, since we don't want to tx the trigger code of the macro*/
+	/* we start from 1, since we don't want to tx the trigger code of the macro */
 	for (i=1; i < MACRO_DEPTH + 1; i++) {
 		idx = 2*FLASH_PAGE_SIZE + (MACRO_DEPTH + 1) * SIZEOF_IR * macro + SIZEOF_IR * i;
 		eeprom_restore(buf, idx);
@@ -537,11 +538,11 @@ void transmit_macro(uint8_t macro)
 			continue;
 		}
 		/* if macros are sent already, while the trigger IR data are still repeated,
-		* the receiving device may crash
-		* Depending on the protocol we need a pause between the trigger and the transmission
-		* and between two transmissions. The highest known pause is 130 ms for Denon. */
-		yellow_short_on(); // 130 ms
-		irsnd_send_data((IRMP_DATA *) buf, 1);
+		 * the receiving device may crash
+		 * we may need a pause between the trigger and the transmission */
+		yellow_on(1);
+		irsnd_send_data((IRMP_DATA *) buf, 1); // send data and trailing pause
+		yellow_on(0);
 	}
 }
 
@@ -678,8 +679,9 @@ int8_t set_handler(uint8_t *buf)
 	uint16_t idx;
 	switch (buf[3]) {
 	case CMD_EMIT:
-		yellow_short_on();
-		irsnd_send_data((IRMP_DATA *) &buf[4], 1);
+		yellow_on(1);
+		irsnd_send_data((IRMP_DATA *) &buf[4], 1); // send data and trailing pause
+		yellow_on(0);
 		break;
 	case CMD_ALARM:
 		memcpy(&AlarmValue, &buf[4], sizeof(AlarmValue));
@@ -898,8 +900,8 @@ int main(void)
 	IRMP_DATA myIRData;
 	int8_t ret;
 	uint8_t last_magic_sent = 0;
-	uint16_t key, last_sent, last_received;
-	uint8_t num, release_needed = 0, send_ir_needed = 0, send_key_needed = 0;
+	uint16_t key, last_sent;
+	uint8_t num, kbd_release_needed = 0, send_ir_needed = 0, send_key_needed = 0;
 	uint8_t old_usb_state_color = usb_state_color;
 
 #if PICO_RP2350 // overclock  a little
@@ -982,8 +984,8 @@ int main(void)
 		/* poll IR-data */
 		if (PrevXferComplete && irmp_get_data(&myIRData)) {
 			if (myIRData.flags == IRMP_FLAG_NEW ) { // new
-				if (release_needed) { // generate release for previous not yet released key
-					release_needed = 0;
+				if (kbd_release_needed) { // generate release for previous not yet released key
+					kbd_release_needed = 0;
 					USB_KBD_SendData(0, 0);
 				}
 				// first time
@@ -994,7 +996,7 @@ int main(void)
 				check_reboot(&myIRData);
 				send_key_needed = 1;
 			}
-			if (myIRData.flags == IRMP_FLAG_REPETITION) { // repeat, or possibly unrecognized new if non toggling protocol
+			else if (myIRData.flags == IRMP_FLAG_REPETITION) { // repeat, or possibly unrecognized new if non toggling protocol
 				// since  first time, since last time
 				if ((repeat_timer < get_repeat(delay)) || (repeat_timer - last_sent) < get_repeat(period)) {
 					continue; // don't send key
@@ -1018,7 +1020,7 @@ int main(void)
 				key = get_key(num);
 				if (key != 0xFFFF) {
 					USB_KBD_SendData(key >> 8, key & 0xFF); // modifier, key
-					release_needed = 1;
+					kbd_release_needed = 1;
 					// last time
 					last_sent = repeat_timer;
 				}
@@ -1026,9 +1028,9 @@ int main(void)
 		}
 
 		/* send release */
-		// since last time >= timeout
-		if (PrevXferComplete && release_needed && (repeat_timer - last_sent >= (get_repeat(release) ? get_repeat(release) : upper_border * INV_F_INT_US / 1000))) { // ticks to ms
-			release_needed = 0;
+		// since last time >= timeout, don't use IRMP_FLAG_RELEASE for backward compability
+		if (PrevXferComplete && kbd_release_needed && (repeat_timer - last_sent >= (get_repeat(release) ? get_repeat(release) : upper_border * INV_F_INT_US / 1000))) { // ticks to ms
+			kbd_release_needed = 0;
 			USB_KBD_SendData(0, 0);
 		}
 	}

@@ -149,20 +149,6 @@ int main(int argc, char *argv[]) {
 	    read_irmp();
 	    while (inBuf[0] == REPORT_ID_KBD || inBuf[0] == REPORT_ID_IR)
 		read_irmp();
-
-	    idx = 2;
-	    outBuf[idx++] = ACC_GET;
-	    outBuf[idx++] = CMD_IRSND_BUSY;
-	    write_irmp();
-	    //usleep(3000);
-	    read_irmp();
-	    while (inBuf[0] == REPORT_ID_KBD || inBuf[0] == REPORT_ID_IR)
-		read_irmp();
-	    while (inBuf[4] == 1) { // wait for irsnd finished
-		write_irmp();
-		usleep(30000);
-		read_irmp();
-	    }
 	}
 
 	if (irmpfd >= 0) close(irmpfd);
