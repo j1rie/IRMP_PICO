@@ -50,7 +50,6 @@ enum command {
 	CMD_MACRO_REMOTE,
 	CMD_SEND_AFTER_WAKEUP,
 	CMD_EEPROM_DIRTY,
-	CMD_IRSND_BUSY,
 };
 
 enum status {
