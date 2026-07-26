@@ -792,8 +792,13 @@ monit:	memset(inBuf, 0, sizeof(inBuf));
 			if (inBuf[0] == REPORT_ID_IR) {
 				printf("converted to protocoladdresscommandflag:\n\t");
 				printf("%02hhx%02hhx%02hhx%02hhx%02hhx%02hhx   delta: %f min_delta: %f max_delta: %f upper_border: %f same key: %d timeout: %d repeat detected: %d", inBuf[1],inBuf[3],inBuf[2],inBuf[5],inBuf[4],inBuf[6], ((float)(inBuf[58] * 0xFF + inBuf[57]) * inBuf[56]) / 1000, ((float)(inBuf[53] * 0xFF + inBuf[52]) * inBuf[56]) / 1000, ((float)(inBuf[49] * 0xFF + inBuf[48]) * inBuf[56]) / 1000, ((float)(inBuf[51] * 0xFF + inBuf[50]) * inBuf[56]) / 1000, inBuf[54], inBuf[61], inBuf[60]);
-				printf("\n\n");
+				//(printf("\n\n");
+				printf("\n");
 			}
+			now_us = GetUsTicks();
+			diff_us = now_us - last_us;
+			last_us = now_us;
+			printf("\tdiff: %d\n\n", diff_us / 1000);
 		}
 	}
 

@@ -74,7 +74,7 @@ for irdata in	01081f003f0f \
 		3c001f003f0f ;
 do
 	echo "${irdata}"
-	../irmpemit/irmpemit -i 0x${irdata} -d /dev/hidraw2 > /dev/null 2>&1
-	sleep 0.005
+	../irmpemit/irmpemit -i 0x${irdata} -d /dev/hidraw1 > /dev/null 2>&1
+	sleep 0.135
 done
 #done

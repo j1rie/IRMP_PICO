@@ -69,6 +69,21 @@ static int irmpfd = -1;
 uint8_t inBuf[5];
 uint8_t outBuf[10];
 
+static inline uint32_t GetUsTicks(void)
+{
+#ifdef CLOCK_MONOTONIC
+    struct timespec tspec;
+    clock_gettime(CLOCK_MONOTONIC, &tspec);
+    return (tspec.tv_sec * 1000 * 1000) + (tspec.tv_nsec / 1000);
+#else
+    struct timeval tval;
+    if (gettimeofday(&tval, NULL) < 0) {
+	return 0;
+    }
+    return (tval.tv_sec * 1000 * 1000) + (tval.tv_usec);
+#endif
+}
+
 static bool open_irmp(const char *devicename) {
 	irmpfd = open(devicename, O_RDWR);
 	if (irmpfd == -1) {
@@ -114,6 +129,9 @@ int main(int argc, char *argv[]) {
 	char *ivalue = NULL;
 	uint64_t i = 0;
 	uint8_t idx;
+	uint32_t now_us;
+	uint32_t last_us = 0;
+	uint32_t diff_us;
 
 	while ((opt = getopt(argc, argv, ":d:i:")) != -1) {
 	    switch (opt) {
@@ -143,9 +161,14 @@ int main(int argc, char *argv[]) {
 	    outBuf[idx++] = (i>>8) & 0xFF;
 	    outBuf[idx++] = (i>>16) & 0xFF;
 	    outBuf[idx++] = i & 0xFF;
+	    now_us = GetUsTicks();
+	    printf("\nms-ticks vor write: %d\n", now_us / 1000);
 	    write_irmp();
 	    //usleep(3000);
 	    read_irmp();
+	    last_us = GetUsTicks();
+	    diff_us = last_us - now_us;
+	    printf("ms-ticks nach read: %d diff: %d\n\n", last_us / 1000, diff_us / 1000);
 	    while (inBuf[0] == REPORT_ID_KBD || inBuf[0] == REPORT_ID_IR)
 		read_irmp();
 	}
