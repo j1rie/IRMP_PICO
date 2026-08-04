@@ -134,7 +134,6 @@ int main(int argc, char *argv[]) {
 	    setalarm = strtoul(svalue, NULL, 0);
 	    memcpy(&outBuf[4], &setalarm, sizeof(setalarm));
 	    write_irmp();
-	    usleep(3000);
 	    read_irmp(); /* necessary to avoid, that echo is read by first alarm read */
 	    while (inBuf[0] == REPORT_ID_KBD || inBuf[0] == REPORT_ID_IR)
 		read_irmp();
@@ -145,7 +144,6 @@ int main(int argc, char *argv[]) {
 	    outBuf[2] = ACC_GET;
 	    outBuf[3] = CMD_ALARM;
 	    write_irmp();
-	    usleep(3000);
 	    read_irmp();
 	    while (inBuf[0] == REPORT_ID_KBD || inBuf[0] == REPORT_ID_IR)
 		read_irmp();
