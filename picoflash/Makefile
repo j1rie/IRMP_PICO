@@ -17,6 +17,11 @@ all: $(OUTFILE)
 $(OUTFILE) $(OUTFILE).exe: $(OBJ)
 	$(CC) $(CFLAGS) -o $@ $^ $(LDFLAGS)
 
+#reboot: reboot
+
+reboot: reboot.o picoboot_connection.o
+	$(CC) $(CFLAGS) -o $@ $^ $(LDFLAGS)
+
 .PHONY: clean
 clean:
 	rm -f $(OUTFILE) $(OUTFILE).exe *.o

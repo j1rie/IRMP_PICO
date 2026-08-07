@@ -75,6 +75,5 @@ for irdata in	01081f003f01 \
 do
 	echo "${irdata}"
 	../irmpemit/irmpemit -i 0x${irdata} -d /dev/hidraw1 > /dev/null 2>&1
-	sleep 0.135 # wait for release, needed for NEC and Apple
 done
 done

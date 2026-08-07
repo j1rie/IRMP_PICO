@@ -17,3 +17,5 @@ irmpemit/irmpemit
 testergebnisse/
 testergebnisse2/
 testergebnisse3/
+test-suite/test_snd_rcv_all_loop3.sh
+test-suite/test_snd_rcv_all_loop4.sh

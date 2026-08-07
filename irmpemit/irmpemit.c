@@ -66,7 +66,7 @@ enum report_id {
 };
 
 static int irmpfd = -1;
-uint8_t inBuf[5];
+uint8_t inBuf[4];
 uint8_t outBuf[10];
 
 static inline uint32_t GetUsTicks(void)
@@ -164,13 +164,12 @@ int main(int argc, char *argv[]) {
 	    now_us = GetUsTicks();
 	    printf("\nms-ticks vor write: %d\n", now_us / 1000);
 	    write_irmp();
-	    //usleep(3000);
+	    now_us = GetUsTicks();
+	    printf("\nms-ticks nach write/vor read: %d\n", now_us / 1000);
 	    read_irmp();
 	    last_us = GetUsTicks();
 	    diff_us = last_us - now_us;
 	    printf("ms-ticks nach read: %d diff: %d\n\n", last_us / 1000, diff_us / 1000);
-	    while (inBuf[0] == REPORT_ID_KBD || inBuf[0] == REPORT_ID_IR)
-		read_irmp();
 	}
 
 	if (irmpfd >= 0) close(irmpfd);
