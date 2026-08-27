@@ -38,7 +38,8 @@ enum color {
 	strong_red,
 	orange,
 	purple,
-	strong_white
+	strong_white,
+	strong_yellow
 };
 
 //extern uint8_t buf[BUFFER_SIZE];

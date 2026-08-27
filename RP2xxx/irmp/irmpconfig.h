@@ -250,7 +250,7 @@
  * Enable detection of key releases
  *
  * If user releases a key on the remote control, last protocol/address/command will be returned with flag IRMP_FLAG_RELEASE set
- * TODO this does not work, if the next key comes in, before the previous key was released
+ * This does not work, if the next key comes in, before the release for the previous key was sent
  *---------------------------------------------------------------------------------------------------------------------------------------------------
  */
 #ifndef IRMP_ENABLE_RELEASE_DETECTION

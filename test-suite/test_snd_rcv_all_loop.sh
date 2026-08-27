@@ -1,8 +1,8 @@
 #!/bin/bash
 
-# 01 Sony needs address greater 0x0100
+# 01 Sony
 # 06 Recs80 3 address bits
-# 08 Denon only even commands
+# 08 Denon/Sharp only even commands, last 2 command bits 00 = Denon, 10 = Sharp
 # 0c Recs80ext 4 address bits
 # 0d Nubert 0 address bits
 # 0e B&O 455kHz, 0 address bits
@@ -38,7 +38,8 @@
 # 31 Mitsu-Heavy conflicts with Kaseikyo and Panasonic
 # 3c Melinera 0 address bits
 for i in $(seq 0 199); do
-for irdata in	01081f003f01 \
+for irdata in \
+		01001f003f01 \
 		02001f003f01 \
 		03001f003f01 \
 		04001f003f01 \
@@ -54,7 +55,7 @@ for irdata in	01081f003f01 \
 		0f001f003f01 \
 		10001f003f01 \
 		11001f003e01 \
-		12003f002f01 \
+		12001f003f01 \
 		13001f003f01 \
 		14001f003f01 \
 		15001f003f01 \

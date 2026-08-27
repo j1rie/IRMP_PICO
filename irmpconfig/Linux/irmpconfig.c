@@ -901,7 +901,7 @@ test2:	sprintf(testfilename, "test2_%u", j); printf("write into %s\n", testfilen
 					}
 					printf("***********************\n");
 					printf("-----new-----, count: %d %s\n", count, count == 256 || (count == 512 && inBuf[1] == 0x29) ? "OK" : "");
-					fprintf(fp, "-----new----- count: %d %s\n%02hhx%02hhx%02hhx%02hhx%02hhx%02hhx\n", count, count == 256 ? "OK" : "", inBuf[1],inBuf[3],inBuf[2],inBuf[5],inBuf[4],inBuf[6]);
+					fprintf(fp, "-----new----- count: %d %s\n%02hhx%02hhx%02hhx%02hhx%02hhx%02hhx\n", count, (count == 256 || count == 258 || count == 512) ? "OK" : "", inBuf[1],inBuf[3],inBuf[2],inBuf[5],inBuf[4],inBuf[6]);
 					for(l=0;l<5;l++) {
 						rrBuf[l] = inBuf[l+1];
 					}

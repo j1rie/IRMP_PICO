@@ -8,3 +8,6 @@ The distance and angle from the transmitting LED to the TSOP will also affect th
 With identical TSOPs under difficult conditions one lost more and different protocols than the other.
 
 To receive all protocols, the IR receiver must be able to decode short bursts/gaps. I used a TSOP 34338.
+
+For testing purposes, a wire can be used instead of a TSOP.
+This eliminates errors from the TSOP and reveals other errors.

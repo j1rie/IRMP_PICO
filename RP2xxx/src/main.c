@@ -262,6 +262,7 @@ void LED_Switch_init(void)
 	gpio_init(WAKEUP_GPIO);
 	gpio_init(EXTLED_GPIO);
 	gpio_init(STATUSLED_GPIO);
+	gpio_init(WIRE_OUT_GPIO);
 	gpio_set_drive_strength(IR_OUT_GPIO, GPIO_DRIVE_STRENGTH_12MA);
 	gpio_set_drive_strength(EXTLED_GPIO, GPIO_DRIVE_STRENGTH_12MA);
 	gpio_set_drive_strength(STATUSLED_GPIO, GPIO_DRIVE_STRENGTH_12MA);
@@ -275,6 +276,7 @@ void LED_Switch_init(void)
 	gpio_set_dir(PICO_DEFAULT_WS2812_POWER_PIN, GPIO_OUT);
 	gpio_put(PICO_DEFAULT_WS2812_POWER_PIN, 1);
 #endif
+	gpio_set_dir(WIRE_OUT_GPIO, GPIO_OUT);
 }
 
 void toggle_led(void)
@@ -328,6 +330,9 @@ void set_rgb_led(enum color led_color, bool store)
 		break;
 	case strong_white:
 		put_pixel(255,255,255);
+		break;
+	case strong_yellow:
+		put_pixel(255,160,0);
 		break;
 	}
 	if (store)
@@ -984,7 +989,6 @@ int main(void)
 		if (PrevXferComplete && irmp_get_data(&myIRData)) {
 			if (myIRData.flags == IRMP_FLAG_NEW ) { // new
 				if (ir_release_needed) { // generate release for previous not yet released IR-data
-					ir_release_needed = 0;
 					USB_HID_SendData(REPORT_ID_IR, (uint8_t *) &oldIRData, sizeof(oldIRData));
 					while (!PrevXferComplete) tud_task();
 				}

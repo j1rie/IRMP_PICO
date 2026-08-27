@@ -618,6 +618,8 @@ irsnd_on (void)
         pwm_set_enabled(slice_num, true);               // enable counter
         gpio_set_outover(IRSND_BIT, GPIO_OVERRIDE_NORMAL);
 
+        gpio_put(WIRE_OUT_GPIO, 0);                     // set WIRE_OUT_GPIO to low
+
 #  elif defined (TEENSY_ARM_CORTEX_M4)                  // TEENSY
         analogWrite(IRSND_PIN, 33 * 255 / 100);         // pwm 33%
 
@@ -702,6 +704,8 @@ irsnd_off (void)
 #  elif defined (ARM_RP2xxx)                                                            // ARM_RP2xxx
         pwm_set_enabled(slice_num, false);                                              // disable counter
         gpio_set_outover(IRSND_BIT, GPIO_OVERRIDE_LOW);                                 // set IRSND_BIT to low
+
+        gpio_put(WIRE_OUT_GPIO, 1);                                                     // set WIRE_OUT_GPIO to high
 
 #  elif defined (TEENSY_ARM_CORTEX_M4)                                                  // TEENSY
         analogWrite(IRSND_PIN, 0);                                                      // pwm off, LOW level
@@ -1087,6 +1091,8 @@ irsnd_init (void)
 
         irsnd_set_freq (IRSND_FREQ_36_KHZ);                                         // set default frequency
 
+        gpio_put(WIRE_OUT_GPIO, 1);                                                 // set WIRE_OUT_GPIO high
+
 #  elif defined (TEENSY_ARM_CORTEX_M4)
         if (!digitalPinHasPWM(IRSND_PIN))
         {
@@ -1250,11 +1256,11 @@ irsnd_send_data (IRMP_DATA * irmp_data_p, uint8_t do_wait)
         case IRMP_SIRCS_PROTOCOL:
         {
             // uint8_t  sircs_additional_command_len;
-            uint8_t  sircs_additional_address_len;
+            /*uint8_t  sircs_additional_address_len;
 
             sircs_additional_bitlen = (irmp_data_p->address & 0xFF00) >> 8;                             // additional bitlen
 
-            if (sircs_additional_bitlen > 15 - SIRCS_MINIMUM_DATA_LEN)
+            if (sircs_additional_bitlen > 15 - SIRCS_MINIMUM_DATA_LEN) // 15-12=3
             {
                 // sircs_additional_command_len = 15 - SIRCS_MINIMUM_DATA_LEN;
                 sircs_additional_address_len = sircs_additional_bitlen - (15 - SIRCS_MINIMUM_DATA_LEN);
@@ -1263,19 +1269,19 @@ irsnd_send_data (IRMP_DATA * irmp_data_p, uint8_t do_wait)
             {
                 // sircs_additional_command_len = sircs_additional_bitlen;
                 sircs_additional_address_len = 0;
-            }
+            }*/
 
             command = bitsrevervse (irmp_data_p->command, 15);
 
             irsnd_buffer[0] = (command & 0x7F80) >> 7;                                                  // CCCCCCCC
             irsnd_buffer[1] = (command & 0x007F) << 1;                                                  // CCCC****
 
-            if (sircs_additional_address_len > 0)
-            {
+            //if (sircs_additional_address_len > 0)
+            //{
                 address = bitsrevervse (irmp_data_p->address, 5);
                 irsnd_buffer[1] |= (address & 0x0010) >> 4;
                 irsnd_buffer[2] =  (address & 0x000F) << 4;
-            }
+            //}
             irsnd_busy      = TRUE;
             break;
         }

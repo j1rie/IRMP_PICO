@@ -14,8 +14,7 @@ picoflash/picoflash
 picoflash/*.bin
 irmpconfig/Linux/test*
 irmpemit/irmpemit
-testergebnisse/
-testergebnisse2/
-testergebnisse3/
+testergebnisse*/
 test-suite/test_snd_rcv_all_loop3.sh
 test-suite/test_snd_rcv_all_loop4.sh
+irmpconfig/Linux/compare_testfiles.sh

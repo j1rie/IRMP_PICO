@@ -43,6 +43,8 @@
 // pio pins need to be consecutive
 #define WS2812_PIN_2		WS2812_PIN - 1  /* GPIO 15 (Pico(2) Pin 20, One+Zero Pin 15), GPIO 21 (Seeed XIAO RP2350 D11) */
 #define NUM_PIXELS		64
-#define APA106_PIN		0  /* GPIO 0  (Pico(2) Pin 1,  One+Zero Pin 0,  Seeed XIAO RP2350 D6 */
+#define APA106_PIN		0  /* GPIO 0  (Pico(2) Pin 1,  One+Zero Pin 0,  Seeed XIAO RP2350 D6) */
+// IR out without modulation for wired connection (for testing)
+#define WIRE_OUT_GPIO		26 /* GPIO 26 (Pico(2) Pin 31, One+Zero Pin 26, Seeed XIAO RP2350 D0) */
 
 #endif /* __CONFIG_H */

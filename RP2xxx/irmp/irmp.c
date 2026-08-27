@@ -2475,7 +2475,7 @@ static volatile uint_fast8_t                    irmp_flags;
 #if IRMP_AUTODETECT_REPEATRATE
 volatile uint_fast16_t                          delta_detection = 0;    // interval between two detections in ticks
 volatile uint32_t                               delta = 0;    // interval between two detections in ticks
-volatile uint32_t                               min_delta = F_INTERRUPTS * 170 / 1000;  // detected repeat rate, preset to greatest known repeat rate
+volatile uint32_t                               min_delta = F_INTERRUPTS * 170 / 1000;  // detected repeat rate, preset to greatest known repeat rate // senken auf 150?!
 volatile uint32_t                               max_delta = 0;
 static volatile uint_fast8_t                    previous_irmp_protocol = IRMP_UNKNOWN_PROTOCOL;
 volatile uint_fast8_t                           same_key = 0;
