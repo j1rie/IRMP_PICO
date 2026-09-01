@@ -785,6 +785,8 @@ monit:	memset(inBuf, 0, sizeof(inBuf));
 			if (inBuf[0] == REPORT_ID_IR) {
 				printf("converted to protocoladdresscommandflag:\n\t");
 				printf("%02hhx%02hhx%02hhx%02hhx%02hhx%02hhx   delta: %f min_delta: %f max_delta: %f upper_border: %f same key: %d timeout: %d repeat detected: %d\n", inBuf[1],inBuf[3],inBuf[2],inBuf[5],inBuf[4],inBuf[6], ((float)(inBuf[58] * 0xFF + inBuf[57]) * inBuf[56]) / 1000, ((float)(inBuf[53] * 0xFF + inBuf[52]) * inBuf[56]) / 1000, ((float)(inBuf[49] * 0xFF + inBuf[48]) * inBuf[56]) / 1000, ((float)(inBuf[51] * 0xFF + inBuf[50]) * inBuf[56]) / 1000, inBuf[54], inBuf[61], inBuf[60]);
+				//printf("pulse: %d pause: %d\n", ((int)(inBuf[21] * 0xFF + inBuf[22]) * (inBuf[56] / 1000)), ((int)(inBuf[23] * 0xFF + inBuf[24]) * (inBuf[56] / 1000)));
+				printf("pulse: %d pause: %d\n", ((int)(inBuf[21] * 0xFF + inBuf[22])), ((int)(inBuf[23] * 0xFF + inBuf[24])));
 				if (inBuf[6] == IRMP_FLAG_RELEASE)
 					printf("release\n");
 			}
@@ -900,8 +902,8 @@ test2:	sprintf(testfilename, "test2_%u", j); printf("write into %s\n", testfilen
 						}
 					}
 					printf("***********************\n");
-					printf("-----new-----, count: %d %s\n", count, count == 256 || (count == 512 && inBuf[1] == 0x29) ? "OK" : "");
-					fprintf(fp, "-----new----- count: %d %s\n%02hhx%02hhx%02hhx%02hhx%02hhx%02hhx\n", count, (count == 256 || count == 258 || count == 512) ? "OK" : "", inBuf[1],inBuf[3],inBuf[2],inBuf[5],inBuf[4],inBuf[6]);
+					printf("-----new-----, count: %d %s\n", count, count == 256 || (count == 258 && inBuf[1] == 0x02) || (count == 255 && inBuf[1] == 0x13) || (count == 512 && inBuf[1] == 0x2f) ? "OK" : "");
+					fprintf(fp, "-----new----- count: %d %s\n%02hhx%02hhx%02hhx%02hhx%02hhx%02hhx\n", count, (count == 256 || (count == 258 && inBuf[1] == 0x02) || (count == 255 && inBuf[1] == 0x13) || (count == 512 && inBuf[1] == 0x2f)) ? "OK" : "", inBuf[1],inBuf[3],inBuf[2],inBuf[5],inBuf[4],inBuf[6]);
 					for(l=0;l<5;l++) {
 						rrBuf[l] = inBuf[l+1];
 					}
