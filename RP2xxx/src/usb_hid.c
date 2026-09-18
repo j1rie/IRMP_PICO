@@ -50,6 +50,10 @@ void USB_HID_SendData(uint8_t Report_ID, uint8_t *ptr, uint8_t len)
 		memset(&ptr[len], 0, HID_IN_REPORT_COUNT - len);
 		tud_hid_report(Report_ID, ptr + 1, HID_IN_REPORT_COUNT - 1);
 	}
+	else if (Report_ID == REPORT_ID_LOGGING)
+	{
+		tud_hid_report(Report_ID, ptr, HID_IN_REPORT_COUNT - 1);
+	}
 	PrevXferComplete = 0;
 }
 

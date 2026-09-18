@@ -233,12 +233,12 @@
 #define RC5_START_BIT_LEN_MIN                   ((uint_fast8_t)(F_INTERRUPTS * RC5_BIT_TIME * MIN_TOLERANCE_05 + 0.5) - 1)
 #define RC5_START_BIT_LEN_MAX                   ((uint_fast8_t)(F_INTERRUPTS * RC5_BIT_TIME * MAX_TOLERANCE_05 + 0.5) + 1)
 #else
-#define RC5_START_BIT_LEN_MIN                   ((uint_fast8_t)(F_INTERRUPTS * RC5_BIT_TIME * MIN_TOLERANCE_10 + 0.5) - 1)
-#define RC5_START_BIT_LEN_MAX                   ((uint_fast8_t)(F_INTERRUPTS * RC5_BIT_TIME * MAX_TOLERANCE_10 + 0.5) + 1)
+#define RC5_START_BIT_LEN_MIN                   (uint_fast8_t)(F_INTERRUPTS * RC5_BIT_TIME * MIN_TOLERANCE_15 + 0.5)
+#define RC5_START_BIT_LEN_MAX                   (uint_fast8_t)(F_INTERRUPTS * RC5_BIT_TIME * MAX_TOLERANCE_15 + 0.5)
 #endif
 
-#define RC5_BIT_LEN_MIN                         ((uint_fast8_t)(F_INTERRUPTS * RC5_BIT_TIME * MIN_TOLERANCE_10 + 0.5) - 1)
-#define RC5_BIT_LEN_MAX                         ((uint_fast8_t)(F_INTERRUPTS * RC5_BIT_TIME * MAX_TOLERANCE_10 + 0.5) + 1)
+#define RC5_BIT_LEN_MIN                         (uint_fast8_t)(F_INTERRUPTS * RC5_BIT_TIME * MIN_TOLERANCE_15 + 0.5)
+#define RC5_BIT_LEN_MAX                         (uint_fast8_t)(F_INTERRUPTS * RC5_BIT_TIME * MAX_TOLERANCE_15 + 0.5)
 
 #define RCII_START_BIT_PULSE_LEN_MIN            ((uint_fast8_t)(F_INTERRUPTS * RCII_START_BIT_PULSE_TIME * MIN_TOLERANCE_05 + 0.5) - 1)
 #define RCII_START_BIT_PULSE_LEN_MAX            ((uint_fast8_t)(F_INTERRUPTS * RCII_START_BIT_PULSE_TIME * MAX_TOLERANCE_05 + 0.5) + 1)
@@ -870,6 +870,7 @@ irmp_protocol_names[IRMP_N_PROTOCOLS + 1] PROGMEM =
 #  include "stm32f4xx_usart.h"
 #elif defined(ARM_STM32F10X) || defined(ARM_STM32F30X)
 #  define  STM32_UART_COM     USART3                                    // UART3 on PB10
+#elif defined(ARM_RP2xxx)
 #elif defined(ARDUINO)                                                  // Arduino Serial implementation
 #  if defined(USB_SERIAL)
 #    include "usb_serial.h"
@@ -1047,6 +1048,7 @@ irmp_uart_init (void)
     // UART enable
     USART_Cmd(STM32_UART_COM, ENABLE);
 
+#elif defined(ARM_RP2xxx)
 #elif defined(ARDUINO)
     // we use the Arduino Serial Implementation
     // you have to call Serial.begin(SER_BAUD); in Arduino setup() function
@@ -1112,6 +1114,7 @@ irmp_uart_putc (unsigned char ch)
         USART_SendData(STM32_UART_COM, '\r');
     }
 
+#elif defined(ARM_RP2xxx)
 #elif defined(ARDUINO)
     // we use the Arduino Serial Implementation
     usb_serial_putchar(ch);
@@ -1160,6 +1163,7 @@ irmp_uart_putc (unsigned char ch)
 #define STARTCYCLES                       2                                 // min count of zeros before start of logging
 #define ENDBITS                        1000                                 // number of sequenced highbits to detect end
 #define DATALEN                         700                                 // log buffer size
+#include "usb_hid.h"
 
 static void
 irmp_log (uint_fast8_t val)
@@ -1186,11 +1190,12 @@ irmp_log (uint_fast8_t val)
 
                 if (val && cnt > ENDBITS)                                   // if high received then look at log-stop condition
                 {                                                           // if stop condition is true, output on uart
-                    uint_fast8_t     i8;
+                    USB_HID_SendData(REPORT_ID_LOGGING, &buf[1], HID_IN_REPORT_COUNT - 1); // buf[1] += 2; in app for ignored starting zeros by STARTCYCLES!
+                    /*uint_fast8_t     i8;
                     uint_fast16_t    i;
                     uint_fast16_t    j;
-                    uint_fast8_t     v = '1';
-                    uint_fast16_t    d;
+                    uint_fast8_t     v = '1';                               // alternate sending ones and zeros, first 1 because buf[0] is 0 and will be toggled to 0 immediately
+                    uint_fast16_t    d;                                     // how many ones or zeros
 
                     for (i8 = 0; i8 < STARTCYCLES; i8++)
                     {
@@ -1217,12 +1222,12 @@ irmp_log (uint_fast8_t val)
                         v = (v == '1') ? '0' : '1';
                     }
 
-                    for (i8 = 0; i8 < 20; i8++)
+                    for (i8 = 0; i8 < 20; i8++)                             // make it appear the end
                     {
                         irmp_uart_putc ('1');
                     }
 
-                    irmp_uart_putc ('\n');
+                    irmp_uart_putc ('\n');*/
                     buf_idx = 0;
                     last_val = 1;
                     cnt = 0;
@@ -3259,7 +3264,7 @@ irmp_ISR (void)
     static uint_fast8_t     wait_for_space;                                         // flag: wait for data bit space
     static uint_fast8_t     wait_for_start_space;                                   // flag: wait for start bit space
 #if __SIZEOF_INT__ == 4
-    static uint_fast16_t irmp_pulse_time;                                            // count bit time for pulse
+    static uint_fast16_t    irmp_pulse_time;                                        // count bit time for pulse
 #else
     static uint_fast8_t     irmp_pulse_time;                                        // count bit time for pulse
 #endif

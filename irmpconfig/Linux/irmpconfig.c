@@ -65,7 +65,8 @@ enum report_id {
 	REPORT_ID_IR = 1,
 	REPORT_ID_CONFIG_IN = 2,
 	REPORT_ID_CONFIG_OUT = 3,
-	REPORT_ID_KBD = 4
+	REPORT_ID_KBD = 4,
+	REPORT_ID_LOGGING = 5
 };
 
 enum color {
@@ -193,6 +194,7 @@ int main(int argc, const char **argv) {
 	uint8_t rrBuf[12];
 	uint8_t first_time = 1;
 	int count = 0;
+	int INV_F_INT_US = 0;
 
 	open_irmp(argc>1 ? argv[1] : "/dev/irmp_pico");
 
@@ -769,7 +771,7 @@ reset:		printf("reset wakeup(w)\nreset macro slot(m)\nreset IR-data(i)\nreset ke
 monit:	memset(inBuf, 0, sizeof(inBuf));
 	while(true) {
 		retValm = read(irmpfd, inBuf, in_size);
-		if (retValm >= 0 && (inBuf[0] == REPORT_ID_KBD || inBuf[0] == REPORT_ID_IR)) {
+		if (retValm >= 0 && (inBuf[0] == REPORT_ID_KBD || inBuf[0] == REPORT_ID_IR || inBuf[0] == REPORT_ID_LOGGING)) {
 			printf("read %d bytes:\n\t", retValm);
 			for (l = 0; l < retValm; l++)
 				printf("%02hhx ", inBuf[l]);
@@ -783,12 +785,26 @@ monit:	memset(inBuf, 0, sizeof(inBuf));
 			}
 
 			if (inBuf[0] == REPORT_ID_IR) {
+				INV_F_INT_US = inBuf[56];
 				printf("converted to protocoladdresscommandflag:\n\t");
 				printf("%02hhx%02hhx%02hhx%02hhx%02hhx%02hhx   delta: %f min_delta: %f max_delta: %f upper_border: %f same key: %d timeout: %d repeat detected: %d\n", inBuf[1],inBuf[3],inBuf[2],inBuf[5],inBuf[4],inBuf[6], ((float)(inBuf[58] * 0xFF + inBuf[57]) * inBuf[56]) / 1000, ((float)(inBuf[53] * 0xFF + inBuf[52]) * inBuf[56]) / 1000, ((float)(inBuf[49] * 0xFF + inBuf[48]) * inBuf[56]) / 1000, ((float)(inBuf[51] * 0xFF + inBuf[50]) * inBuf[56]) / 1000, inBuf[54], inBuf[61], inBuf[60]);
-				//printf("pulse: %d pause: %d\n", ((int)(inBuf[21] * 0xFF + inBuf[22]) * (inBuf[56] / 1000)), ((int)(inBuf[23] * 0xFF + inBuf[24]) * (inBuf[56] / 1000)));
-				printf("pulse: %d pause: %d\n", ((int)(inBuf[21] * 0xFF + inBuf[22])), ((int)(inBuf[23] * 0xFF + inBuf[24])));
 				if (inBuf[6] == IRMP_FLAG_RELEASE)
 					printf("release\n");
+			}
+			if (inBuf[0] == REPORT_ID_LOGGING) {
+				inBuf[1] += 2; // STARTCYCLES
+				printf("\t");
+				for (l = 1; l <= retValm; l++)
+					if (inBuf[l]) printf("%d%s ", inBuf[l], l%2 ? "x0" : "x1");
+				printf("\n\t");
+				for (l = 1; l <= retValm; l++) {
+					for(s = 0; s < inBuf[l]; s++)
+						printf("%s", l%2 ? "0" : "1");
+				}
+				printf("\n\t");
+				for (l = 1; l <= retValm; l++)
+					if (inBuf[l]) printf("%d%s ", inBuf[l] * INV_F_INT_US, l%2 ? "ms0" : "ms1");
+				printf("\n");
 			}
 			now_us = GetUsTicks();
 			diff_us = now_us - last_us;

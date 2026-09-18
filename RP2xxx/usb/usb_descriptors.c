@@ -102,6 +102,12 @@ uint8_t const * tud_descriptor_device_cb(void)
       HID_OUTPUT      ( HID_DATA | HID_VARIABLE | HID_ABSOLUTE ),\
     HID_COLLECTION_END, \
 \
+      /* RP2xxx->PC */ \
+      HID_REPORT_ID   ( REPORT_ID_LOGGING                      ) \
+      HID_USAGE       ( 0x05                                   ),\
+      HID_REPORT_COUNT( HID_IN_REPORT_COUNT-1                  ),\
+      HID_INPUT       ( HID_DATA | HID_VARIABLE | HID_ABSOLUTE ),\
+\
       /* RP2xxx->PC, HID Keyboard */ \
       /* PC->RP2xxx, LEDs */ \
     TUD_HID_REPORT_DESC_KEYBOARD( HID_REPORT_ID(REPORT_ID_KBD) )

@@ -26,6 +26,7 @@
 #define REPORT_ID_CONFIG_IN	0x02
 #define REPORT_ID_CONFIG_OUT	0x03
 #define REPORT_ID_KBD		0x04
+#define REPORT_ID_LOGGING	0x05
 
 enum color {
 	red,
