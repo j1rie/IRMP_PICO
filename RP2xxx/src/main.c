@@ -1041,7 +1041,7 @@ int main(void)
 
 		/* send ir release */
 		// since last time >= timeout
-		if (PrevXferComplete && ir_release_needed && (repeat_timer - last_ir_sent >= (get_repeat(release) ? get_repeat(release) : upper_border * INV_F_INT_US / 1000))) { // ticks to ms
+		if (PrevXferComplete && ir_release_needed && (repeat_timer - last_ir_sent > (get_repeat(release) ? get_repeat(release) : upper_border * INV_F_INT_US / 1000) + 3)) { // ticks to ms // TODO repeat_timer höher auflösen!
 			ir_release_needed = 0;
 			USB_HID_SendData(REPORT_ID_IR, (uint8_t *) &oldIRData, sizeof(oldIRData));
 		}

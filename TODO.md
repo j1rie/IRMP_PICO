@@ -4,4 +4,4 @@
 * Refactor the GUI.
 * Keep improving the READMEs.
 * Is it a good idea to use PIO for IRMP?
-* Is it a good idea to use a compensation for the prolonged pulses and shortened pauses introduced by the TSOP?
+

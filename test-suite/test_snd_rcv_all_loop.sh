@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# 01 Sony
+# 01 Sony, upper address byte 3 or 8 for sending address byte (special: 3 protocols in 1)
 # 06 Recs80 3 address bits
 # 08 Denon/Sharp only even commands, last 2 command bits 00 = Denon, 10 = Sharp
 # 0c Recs80ext 4 address bits
@@ -39,7 +39,7 @@
 # 3c Melinera 0 address bits
 for i in $(seq 0 199); do
 for irdata in \
-		01001f003f01 \
+		01081f003f01 \
 		02001f003f01 \
 		03001f003f01 \
 		04001f003f01 \

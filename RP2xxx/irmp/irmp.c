@@ -230,15 +230,15 @@
 
 #if (0) // IRMP_SUPPORT_BOSE_PROTOCOL == 1 // BOSE conflicts with RC5, so keep tolerance for RC5 minimal here:
 // start pause is well separated, so overlap in start pulse does not disturb, but reducing tolerance leads to worse RC5 recognition
-#define RC5_START_BIT_LEN_MIN                   ((uint_fast8_t)(F_INTERRUPTS * RC5_BIT_TIME * MIN_TOLERANCE_05 + 0.5) - 1)
-#define RC5_START_BIT_LEN_MAX                   ((uint_fast8_t)(F_INTERRUPTS * RC5_BIT_TIME * MAX_TOLERANCE_05 + 0.5) + 1)
+#define RC5_START_BIT_LEN_MIN                   (uint_fast8_t)(F_INTERRUPTS * RC5_BIT_TIME * MIN_TOLERANCE_10)
+#define RC5_START_BIT_LEN_MAX                   (uint_fast8_t)(F_INTERRUPTS * RC5_BIT_TIME * MAX_TOLERANCE_10 + 1)
 #else
-#define RC5_START_BIT_LEN_MIN                   (uint_fast8_t)(F_INTERRUPTS * RC5_BIT_TIME * MIN_TOLERANCE_15 + 0.5)
-#define RC5_START_BIT_LEN_MAX                   (uint_fast8_t)(F_INTERRUPTS * RC5_BIT_TIME * MAX_TOLERANCE_15 + 0.5)
+#define RC5_START_BIT_LEN_MIN                   (uint_fast8_t)(F_INTERRUPTS * RC5_BIT_TIME * MIN_TOLERANCE_15)
+#define RC5_START_BIT_LEN_MAX                   (uint_fast8_t)(F_INTERRUPTS * RC5_BIT_TIME * MAX_TOLERANCE_15 + 1)
 #endif
 
-#define RC5_BIT_LEN_MIN                         (uint_fast8_t)(F_INTERRUPTS * RC5_BIT_TIME * MIN_TOLERANCE_15 + 0.5)
-#define RC5_BIT_LEN_MAX                         (uint_fast8_t)(F_INTERRUPTS * RC5_BIT_TIME * MAX_TOLERANCE_15 + 0.5)
+#define RC5_BIT_LEN_MIN                         (uint_fast8_t)(F_INTERRUPTS * RC5_BIT_TIME * MIN_TOLERANCE_15)
+#define RC5_BIT_LEN_MAX                         (uint_fast8_t)(F_INTERRUPTS * RC5_BIT_TIME * MAX_TOLERANCE_15 + 1)
 
 #define RCII_START_BIT_PULSE_LEN_MIN            ((uint_fast8_t)(F_INTERRUPTS * RCII_START_BIT_PULSE_TIME * MIN_TOLERANCE_05 + 0.5) - 1)
 #define RCII_START_BIT_PULSE_LEN_MAX            ((uint_fast8_t)(F_INTERRUPTS * RCII_START_BIT_PULSE_TIME * MAX_TOLERANCE_05 + 0.5) + 1)
@@ -278,16 +278,16 @@
 #define THOMSON_0_PAUSE_LEN_MIN                 ((uint_fast8_t)(F_INTERRUPTS * THOMSON_0_PAUSE_TIME * MIN_TOLERANCE_30 + 0.5) - 1)
 #define THOMSON_0_PAUSE_LEN_MAX                 ((uint_fast8_t)(F_INTERRUPTS * THOMSON_0_PAUSE_TIME * MAX_TOLERANCE_10 + 0.5) + 1)
 
-#define RC6_START_BIT_PULSE_LEN_MIN             ((uint_fast8_t)(F_INTERRUPTS * RC6_START_BIT_PULSE_TIME * MIN_TOLERANCE_10 + 0.5) - 1)
-#define RC6_START_BIT_PULSE_LEN_MAX             ((uint_fast8_t)(F_INTERRUPTS * RC6_START_BIT_PULSE_TIME * MAX_TOLERANCE_10 + 0.5) + 1)
-#define RC6_START_BIT_PAUSE_LEN_MIN             ((uint_fast8_t)(F_INTERRUPTS * RC6_START_BIT_PAUSE_TIME * MIN_TOLERANCE_10 + 0.5) - 1)
-#define RC6_START_BIT_PAUSE_LEN_MAX             ((uint_fast8_t)(F_INTERRUPTS * RC6_START_BIT_PAUSE_TIME * MAX_TOLERANCE_10 + 0.5) + 1)
-#define RC6_TOGGLE_BIT_LEN_MIN                  ((uint_fast8_t)(F_INTERRUPTS * RC6_TOGGLE_BIT_TIME * MIN_TOLERANCE_10 + 0.5) - 1)
-#define RC6_TOGGLE_BIT_LEN_MAX                  ((uint_fast8_t)(F_INTERRUPTS * RC6_TOGGLE_BIT_TIME * MAX_TOLERANCE_10 + 0.5) + 1)
-#define RC6_BIT_PULSE_LEN_MIN                   ((uint_fast8_t)(F_INTERRUPTS * RC6_BIT_TIME * MIN_TOLERANCE_10 + 0.5) - 1)
-#define RC6_BIT_PULSE_LEN_MAX                   ((uint_fast8_t)(F_INTERRUPTS * RC6_BIT_TIME * MAX_TOLERANCE_60 + 0.5) + 1)       // pulses: 300 - 800
-#define RC6_BIT_PAUSE_LEN_MIN                   ((uint_fast8_t)(F_INTERRUPTS * RC6_BIT_TIME * MIN_TOLERANCE_10 + 0.5) - 1)
-#define RC6_BIT_PAUSE_LEN_MAX                   ((uint_fast8_t)(F_INTERRUPTS * RC6_BIT_TIME * MAX_TOLERANCE_20 + 0.5) + 1)       // pauses: 300 - 600
+#define RC6_START_BIT_PULSE_LEN_MIN             (uint_fast8_t)(F_INTERRUPTS * RC6_START_BIT_PULSE_TIME * MIN_TOLERANCE_25 + 0.5)
+#define RC6_START_BIT_PULSE_LEN_MAX             (uint_fast8_t)(F_INTERRUPTS * RC6_START_BIT_PULSE_TIME * MAX_TOLERANCE_25 + 0.5)
+#define RC6_START_BIT_PAUSE_LEN_MIN             (uint_fast8_t)(F_INTERRUPTS * RC6_START_BIT_PAUSE_TIME * MIN_TOLERANCE_25 + 0.5)
+#define RC6_START_BIT_PAUSE_LEN_MAX             (uint_fast8_t)(F_INTERRUPTS * RC6_START_BIT_PAUSE_TIME * MAX_TOLERANCE_25 + 0.5)
+#define RC6_TOGGLE_BIT_LEN_MIN                  (uint_fast8_t)(F_INTERRUPTS * RC6_TOGGLE_BIT_TIME * MIN_TOLERANCE_30 + 0.5)
+#define RC6_TOGGLE_BIT_LEN_MAX                  (uint_fast8_t)(F_INTERRUPTS * RC6_TOGGLE_BIT_TIME * MAX_TOLERANCE_30 + 0.5)
+#define RC6_BIT_PULSE_LEN_MIN                   (uint_fast8_t)(F_INTERRUPTS * RC6_BIT_TIME * MIN_TOLERANCE_30 + 0.5)
+#define RC6_BIT_PULSE_LEN_MAX                   (uint_fast8_t)(F_INTERRUPTS * RC6_BIT_TIME * MAX_TOLERANCE_70 + 0.5)       // pulses: 300 - 800
+#define RC6_BIT_PAUSE_LEN_MIN                   (uint_fast8_t)(F_INTERRUPTS * RC6_BIT_TIME * MIN_TOLERANCE_30 + 0.5)
+#define RC6_BIT_PAUSE_LEN_MAX                   (uint_fast8_t)(F_INTERRUPTS * RC6_BIT_TIME * MAX_TOLERANCE_40 + 0.5)       // pauses: 300 - 600
 
 #define RECS80EXT_START_BIT_PULSE_LEN_MIN       ((uint_fast8_t)(F_INTERRUPTS * RECS80EXT_START_BIT_PULSE_TIME * MIN_TOLERANCE_20 + 0.5) - 1)
 #define RECS80EXT_START_BIT_PULSE_LEN_MAX       ((uint_fast8_t)(F_INTERRUPTS * RECS80EXT_START_BIT_PULSE_TIME * MAX_TOLERANCE_20 + 0.5) + 1)
@@ -1190,7 +1190,8 @@ irmp_log (uint_fast8_t val)
 
                 if (val && cnt > ENDBITS)                                   // if high received then look at log-stop condition
                 {                                                           // if stop condition is true, output on uart
-                    USB_HID_SendData(REPORT_ID_LOGGING, &buf[1], HID_IN_REPORT_COUNT - 1); // buf[1] += 2; in app for ignored starting zeros by STARTCYCLES!
+                    buf[buf_idx] = 0;                                       // terminate
+                    USB_HID_SendData(REPORT_ID_LOGGING, &buf[1], HID_IN_REPORT_COUNT - 1); // buf[1] += 2; in app for ignored starting zeros by STARTCYCLES! 0xff handeln! TODO: falls buf_idx > HID_IN_REPORT_COUNT - 1 in mehreren Portionen senden?!
                     /*uint_fast8_t     i8;
                     uint_fast16_t    i;
                     uint_fast16_t    j;
@@ -2651,8 +2652,8 @@ irmp_get_data (IRMP_DATA * irmp_data_p)
             case IRMP_SIRCS_PROTOCOL:
                 // Concatenate high byte of command and low byte of address
                 irmp_address <<= 7;
-                irmp_address = irmp_address | irmp_command >> 8;
-                // Command is 7 bytes, so add the 8.th bit of command to address
+                irmp_address = irmp_address | irmp_command >> 8; // add 8 bit extended address
+                // Command is 7 bits, so add the 8.th bit of command to address
                 irmp_address <<= 1;
                 if ((irmp_command & 0x80))
                 {

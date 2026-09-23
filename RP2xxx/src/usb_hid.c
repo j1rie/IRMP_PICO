@@ -26,8 +26,8 @@ void USB_HID_SendData(uint8_t Report_ID, uint8_t *ptr, uint8_t len)
 		/* Windows needs HID_IN_REPORT_COUNT, for linux SIZEOF_IR + 1 is sufficient */
 		uint8_t buf[HID_IN_REPORT_COUNT - 1] = {0};
 		memcpy(buf, ptr, SIZEOF_IR);
-		//buf[62] = ;
-		//buf[61] = ;
+		buf[62] = F_INTERRUPTS >> 8;
+		buf[61] = F_INTERRUPTS & 0xFF;
 		buf[60] = timeout;
 		buf[59] = (keep_same_key && !timeout);
 		//buf[58] = ;

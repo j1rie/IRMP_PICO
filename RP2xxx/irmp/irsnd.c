@@ -1258,11 +1258,11 @@ irsnd_send_data (IRMP_DATA * irmp_data_p, uint8_t do_wait)
         case IRMP_SIRCS_PROTOCOL:
         {
             // uint8_t  sircs_additional_command_len;
-            /*uint8_t  sircs_additional_address_len;
+            uint8_t  sircs_additional_address_len;
 
             sircs_additional_bitlen = (irmp_data_p->address & 0xFF00) >> 8;                             // additional bitlen
 
-            if (sircs_additional_bitlen > 15 - SIRCS_MINIMUM_DATA_LEN) // 15-12=3
+            if (sircs_additional_bitlen > 15 - SIRCS_MINIMUM_DATA_LEN)                                  // 15-12=3
             {
                 // sircs_additional_command_len = 15 - SIRCS_MINIMUM_DATA_LEN;
                 sircs_additional_address_len = sircs_additional_bitlen - (15 - SIRCS_MINIMUM_DATA_LEN);
@@ -1271,19 +1271,19 @@ irsnd_send_data (IRMP_DATA * irmp_data_p, uint8_t do_wait)
             {
                 // sircs_additional_command_len = sircs_additional_bitlen;
                 sircs_additional_address_len = 0;
-            }*/
+            }
 
             command = bitsrevervse (irmp_data_p->command, 15);
 
-            irsnd_buffer[0] = (command & 0x7F80) >> 7;                                                  // CCCCCCCC
-            irsnd_buffer[1] = (command & 0x007F) << 1;                                                  // CCCC****
+            irsnd_buffer[0] = (command & 0x7F80) >> 7;                                                  // CCCCCCCC 8 bit extended address in command
+            irsnd_buffer[1] = (command & 0x007F) << 1;                                                  // CCCC**** 7 bit command
 
-            //if (sircs_additional_address_len > 0)
-            //{
+            if (sircs_additional_address_len > 0)
+            {
                 address = bitsrevervse (irmp_data_p->address, 5);
-                irsnd_buffer[1] |= (address & 0x0010) >> 4;
-                irsnd_buffer[2] =  (address & 0x000F) << 4;
-            //}
+                irsnd_buffer[1] |= (address & 0x0010) >> 4;                                             // 7 bit command + 1 bit address
+                irsnd_buffer[2] =  (address & 0x000F) << 4;                                             // 4 bit address
+            }
             irsnd_busy      = TRUE;
             break;
         }
@@ -1945,8 +1945,8 @@ irsnd_ISR (void)
     static uint8_t              new_frame                       = TRUE;
     static uint8_t              complete_data_len               = 0;
     static uint8_t              n_repeat_frames                 = 0;                                // number of repetition frames
-    static uint8_t              n_auto_repetitions              = 0;                                // number of frames inclusive auto_repetition frames
-    static uint8_t              auto_repetition_counter         = 0;                                // auto_repetition counter
+    static uint16_t             n_auto_repetitions              = 0;                                // number of frames inclusive auto_repetition frames
+    static uint16_t             auto_repetition_counter         = 0;                                // auto_repetition counter
     static uint16_t             auto_repetition_pause_len       = 0;                                // pause before auto_repetition, uint16_t!
     static uint16_t             auto_repetition_pause_counter   = 0;                                // pause before auto_repetition, uint16_t!
     static uint8_t              repeat_counter                  = 0;                                // repeat counter
@@ -2614,7 +2614,7 @@ irsnd_ISR (void)
                         pause_len                   = IRSND_GRUNDIG_NOKIA_IR60_BIT_LEN;
                         has_stop_bit                = GRUNDIG_NOKIA_IR60_STOP_BIT;
                         complete_data_len           = NOKIA_COMPLETE_DATA_LEN;
-                        n_auto_repetitions          = NOKIA_FRAMES;                                         // 2 frames
+                        n_auto_repetitions          = NOKIA_FRAMES;                                         // 3 frames
                         auto_repetition_pause_len   = IRSND_NOKIA_AUTO_REPETITION_PAUSE_LEN;                // 20 msec pause
                         repeat_frame_pause_len      = IRSND_GRUNDIG_NOKIA_IR60_FRAME_REPEAT_PAUSE_LEN;      // 117 msec pause
                         irsnd_set_freq (IRSND_FREQ_38_KHZ);
@@ -3189,7 +3189,7 @@ irsnd_ISR (void)
 
                                 if (repeat_counter < n_repeat_frames)       // tricky: repeat n info frames per auto repetition before sending last stop frame
                                 {
-                                    n_auto_repetitions++;                   // increment number of auto repetitions
+                                    n_auto_repetitions++;                   // increment number of auto repetitions, uint16_t!
                                     repeat_counter++;
                                 }
                                 else if (auto_repetition_counter == n_auto_repetitions)

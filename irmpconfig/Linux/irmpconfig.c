@@ -195,6 +195,8 @@ int main(int argc, const char **argv) {
 	uint8_t first_time = 1;
 	int count = 0;
 	int INV_F_INT_US = 0;
+	uint16_t f, g;
+	int F_INTERRUPTS = 0;
 
 	open_irmp(argc>1 ? argv[1] : "/dev/irmp_pico");
 
@@ -786,25 +788,60 @@ monit:	memset(inBuf, 0, sizeof(inBuf));
 
 			if (inBuf[0] == REPORT_ID_IR) {
 				INV_F_INT_US = inBuf[56];
+				F_INTERRUPTS = inBuf[63] << 8 | inBuf[62];
 				printf("converted to protocoladdresscommandflag:\n\t");
 				printf("%02hhx%02hhx%02hhx%02hhx%02hhx%02hhx   delta: %f min_delta: %f max_delta: %f upper_border: %f same key: %d timeout: %d repeat detected: %d\n", inBuf[1],inBuf[3],inBuf[2],inBuf[5],inBuf[4],inBuf[6], ((float)(inBuf[58] * 0xFF + inBuf[57]) * inBuf[56]) / 1000, ((float)(inBuf[53] * 0xFF + inBuf[52]) * inBuf[56]) / 1000, ((float)(inBuf[49] * 0xFF + inBuf[48]) * inBuf[56]) / 1000, ((float)(inBuf[51] * 0xFF + inBuf[50]) * inBuf[56]) / 1000, inBuf[54], inBuf[61], inBuf[60]);
 				if (inBuf[6] == IRMP_FLAG_RELEASE)
 					printf("release\n");
 			}
+
 			if (inBuf[0] == REPORT_ID_LOGGING) {
 				inBuf[1] += 2; // STARTCYCLES
 				printf("\t");
-				for (l = 1; l <= retValm; l++)
-					if (inBuf[l]) printf("%d%s ", inBuf[l], l%2 ? "x0" : "x1");
-				printf("\n\t");
 				for (l = 1; l <= retValm; l++) {
-					for(s = 0; s < inBuf[l]; s++)
-						printf("%s", l%2 ? "0" : "1");
+					f = inBuf[l];
+					if (f == 0xff) {
+						l++;
+						f = inBuf[l];
+						l++;
+						f |= inBuf[l] << 8;
+					}
+					if (f)
+						printf("%d%s ", f, l%2 ? "x0" : "x1");
+					else
+						break;
 				}
 				printf("\n\t");
-				for (l = 1; l <= retValm; l++)
-					if (inBuf[l]) printf("%d%s ", inBuf[l] * INV_F_INT_US, l%2 ? "ms0" : "ms1");
+				for (l = 1; l <= retValm; l++) {
+					f = inBuf[l];
+					if (f == 0xff) {
+						l++;
+						f = inBuf[l];
+						l++;
+						f |= inBuf[l] << 8;
+					}
+					if (f)
+						for(g = 0; g < f; g++)
+							printf("%s", l%2 ? "0" : "1");
+					else
+						break;
+				}
+				printf("\n\t");
+				for (l = 1; l <= retValm; l++) {
+					f = inBuf[l];
+					if (f == 0xff) {
+						l++;
+						f = inBuf[l];
+						l++;
+						f |= inBuf[l] << 8;
+					}
+					if (f)
+						printf("%d%s ", f * INV_F_INT_US, l%2 ? "ms0" : "ms1");
+					else
+					    break;
+				}
 				printf("\n");
+				printf("INV_F_INT_US: %d F_INTERRUPTS: %d\n", INV_F_INT_US, F_INTERRUPTS);
 			}
 			now_us = GetUsTicks();
 			diff_us = now_us - last_us;
@@ -873,7 +910,7 @@ test:	sprintf(testfilename, "test%u", j); printf("write into %s\n", testfilename
 	fp = fopen(testfilename, "w");
 	while(true) {
 		retValm = read(irmpfd, inBuf, in_size);
-		if (retValm >= 0) {
+		if (retValm >= 0 && inBuf[0] == REPORT_ID_IR) {
 			printf("%02hhx%02hhx%02hhx%02hhx%02hhx%02hhx\n", inBuf[1],inBuf[3],inBuf[2],inBuf[5],inBuf[4],inBuf[6]);
 			fprintf(fp, "%02hhx%02hhx%02hhx%02hhx%02hhx%02hhx\n", inBuf[1],inBuf[3],inBuf[2],inBuf[5],inBuf[4],inBuf[6]);
 			if (inBuf[1] == 0x3c && inBuf[3] == 0 && inBuf[2] == 0 && inBuf[5] == 0 && inBuf[4] == 0x3f && inBuf[6] == 2) { // 3c0000003f02, stopsequence TODO make configurable
@@ -894,7 +931,7 @@ test2:	sprintf(testfilename, "test2_%u", j); printf("write into %s\n", testfilen
 	while(true) {
 		retValm = read(irmpfd, inBuf, in_size);
 		if (retValm >= 0) {
-			printf("%s%02hhx%02hhx%02hhx%02hhx%02hhx%02hhx\n", first_time? "-----NEW-----\n" : "", inBuf[1],inBuf[3],inBuf[2],inBuf[5],inBuf[4],inBuf[6]);
+			printf("%s%02hhx%02hhx%02hhx%02hhx%02hhx%02hhx\n", first_time ? "-----NEW-----\n" : "", inBuf[1],inBuf[3],inBuf[2],inBuf[5],inBuf[4],inBuf[6]);
 			if (first_time) {
 				fprintf(fp, "-----NEW-----\n%02hhx%02hhx%02hhx%02hhx%02hhx%02hhx\n", inBuf[1],inBuf[3],inBuf[2],inBuf[5],inBuf[4],inBuf[6]);
 				for(l=0;l<5;l++) {
