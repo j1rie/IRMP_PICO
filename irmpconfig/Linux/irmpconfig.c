@@ -197,6 +197,7 @@ int main(int argc, const char **argv) {
 	int INV_F_INT_US = 0;
 	uint16_t f, g;
 	int F_INTERRUPTS = 0;
+	uint8_t failed = 0;
 
 	open_irmp(argc>1 ? argv[1] : "/dev/irmp_pico");
 
@@ -955,8 +956,12 @@ test2:	sprintf(testfilename, "test2_%u", j); printf("write into %s\n", testfilen
 						}
 					}
 					printf("***********************\n");
-					printf("-----new-----, count: %d %s\n", count, count == 256 || (count == 258 && inBuf[1] == 0x02) || (count == 255 && inBuf[1] == 0x13) || (count == 512 && inBuf[1] == 0x2f) ? "OK" : "");
-					fprintf(fp, "-----new----- count: %d %s\n%02hhx%02hhx%02hhx%02hhx%02hhx%02hhx\n", count, (count == 256 || (count == 258 && inBuf[1] == 0x02) || (count == 255 && inBuf[1] == 0x13) || (count == 512 && inBuf[1] == 0x2f)) ? "OK" : "", inBuf[1],inBuf[3],inBuf[2],inBuf[5],inBuf[4],inBuf[6]);
+					printf("-----new-----, count: %d %s\n", count, count == 256 || (count == 258 && inBuf[1] == 0x02) || (count == 1 && inBuf[1] == 0x12) || (count == 255 && inBuf[1] == 0x13) || (count == 512 && inBuf[1] == 0x2f) ? "OK" : "FAILED");
+					if (!(count == 256 || (count == 258 && inBuf[1] == 0x02) || (count == 1 && inBuf[1] == 0x12) || (count == 255 && inBuf[1] == 0x13) || (count == 512 && inBuf[1] == 0x2f))) {
+						failed = 1;
+						printf("FAILED\n");
+					}
+					fprintf(fp, "-----new----- count: %d %s\n%02hhx%02hhx%02hhx%02hhx%02hhx%02hhx\n", count, (count == 256 || (count == 258 && inBuf[1] == 0x02) || (count == 1 && inBuf[1] == 0x12 || (count == 255 && inBuf[1] == 0x13) || (count == 512 && inBuf[1] == 0x2f)) ? "OK" : "FAILED", inBuf[1],inBuf[3],inBuf[2],inBuf[5],inBuf[4],inBuf[6]);
 					for(l=0;l<5;l++) {
 						rrBuf[l] = inBuf[l+1];
 					}
@@ -974,6 +979,8 @@ test2:	sprintf(testfilename, "test2_%u", j); printf("write into %s\n", testfilen
 				if (inBuf[1] == 0x3c && inBuf[3] == 0 && inBuf[2] == 0 && inBuf[5] == 0 && inBuf[4] == 0x3f && inBuf[6] == 2) { // 3c0000003f02, stopsequence TODO make configurable
 					printf("-----STOP----- count: %d %s\n", count, count == 256 ? "OK" : "");
 					fprintf(fp, "-----STOP----- count: %d %s\n", count, count == 256 ? "OK" : "");
+					printf("TEST %s\n", failed ? "FAILED" : "PASSED");
+					fprintf(fp, "TEST %s\n", failed ? "FAILED" : "PASSED");
 					fclose(fp);
 					j++;
 					if (j >= 1) { // TODO make number of tests configurable
