@@ -1163,7 +1163,7 @@ irmp_uart_putc (unsigned char ch)
 #define STARTCYCLES                       2                                 // min count of zeros before start of logging
 #define ENDBITS                         300                                 // number of sequenced highbits to detect end // war 1000
 #define DATALEN                         700                                 // log buffer size
-#include "usb_hid.h"
+//#include "usb_hid.h"
 
 static void
 irmp_log (uint_fast8_t val)
@@ -1190,9 +1190,9 @@ irmp_log (uint_fast8_t val)
 
                 if (val && cnt > ENDBITS)                                   // if high received then look at log-stop condition
                 {                                                           // if stop condition is true, output on uart
-                    buf[buf_idx] = 0;                                       // terminate
-                    USB_HID_SendData(REPORT_ID_LOGGING, &buf[1], HID_IN_REPORT_COUNT - 1); // buf[1] += 2; in app for ignored starting zeros by STARTCYCLES! 0xff handeln! TODO: falls buf_idx > HID_IN_REPORT_COUNT - 1 in mehreren Portionen senden?!
-                    /*uint_fast8_t     i8;
+                    //buf[buf_idx] = 0;                                       // terminate
+                    //USB_HID_SendData(REPORT_ID_LOGGING, &buf[1], HID_IN_REPORT_COUNT - 1); // buf[1] += 2; in app for ignored starting zeros by STARTCYCLES! 0xff handeln! TODO: falls buf_idx > HID_IN_REPORT_COUNT - 1 in mehreren Portionen senden?!
+                    uint_fast8_t     i8;
                     uint_fast16_t    i;
                     uint_fast16_t    j;
                     uint_fast8_t     v = '1';                               // alternate sending ones and zeros, first 1 because buf[0] is 0 and will be toggled to 0 immediately
@@ -1228,7 +1228,7 @@ irmp_log (uint_fast8_t val)
                         irmp_uart_putc ('1');
                     }
 
-                    irmp_uart_putc ('\n');*/
+                    irmp_uart_putc ('\n');
                     buf_idx = 0;
                     last_val = 1;
                     cnt = 0;

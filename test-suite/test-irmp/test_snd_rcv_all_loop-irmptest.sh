@@ -15,7 +15,7 @@
 # 17 Ruwido conflicts with denon, 56kHz
 # 18 IR-60, 0 address bits
 # 19 Kathrein can't send
-# 1a Netbox can't send
+# 1a Netbox can't send, conflicts withRC6(A)
 # 1d Lego 0 address bits
 # 1e Thomson 4 address bits
 # 1f Bose 0 address bits
@@ -36,45 +36,44 @@
 # 2f Technics
 # 30 Panasonic conflicts with Kaseikyo and Mitsu-Heavy
 # 31 Mitsu-Heavy conflicts with Kaseikyo and Panasonic
-# 3c Melinera 0 address bits
-#for i in $(seq 0 199); do
+# 3c Melinera, conflicts with RC6(A), 0 address bits
+#for i in $(seq 0 0); do
 for irdata in \
-		01081f003f0f \
-		02001f003f0f \
-		03001f003f0f \
-		04001f003f0f \
-		05001f003f0f \
-		06001f003f0f \
-		07001f003f0f \
-		08001f003e0f \
-		09001f003f0f \
-		0a001f003f0f \
-		0b001f003f0f \
-		0c001f003f0f \
-		0d001f003f0f \
-		0f001f003f0f \
-		10001f003f0f \
-		11001f003e0f \
-		12001f003f0f \
-		13001f003f0f \
-		14001f003f0f \
-		15001f003f0f \
-		16001f003f0f \
-		18001f003f0f \
-		1b001f003f0f \
-		1c001f003f0f \
-		1d001f003f0f \
-		1e001f003f0f \
-		1f001f003f0f \
-		20004f003f0f \
-		22001f003f0f \
-		27001f003f0f \
-		28001f003f0f \
-		29001f003f0f \
-		2f001f003f0f \
-		3c001f003f0f ;
+		"01 081f 003f" \
+		"02 001f 003f" \
+		"03 001f 003f" \
+		"04 001f 003f" \
+		"05 001f 003f" \
+		"06 001f 003f" \
+		"07 001f 003f" \
+		"08 001f 003e" \
+		"09 001f 003f" \
+		"10 001f 003f" \
+		"11 001f 003f" \
+		"12 001f 003f" \
+		"13 001f 003f" \
+		"15 001f 003f" \
+		"16 001f 003f" \
+		"17 001f 003e" \
+		"18 001f 003f" \
+		"19 001f 003f" \
+		"20 001f 003f" \
+		"21 001f 003f" \
+		"22 001f 003f" \
+		"24 001f 003f" \
+		"27 001f 003f" \
+		"28 001f 003f" \
+		"29 001f 003f" \
+		"30 001f 003f" \
+		"31 001f 003f" \
+		"32 004f 003f" \
+		"34 001f 003f" \
+		"39 001f 003f" \
+		"40 001f 003f" \
+		"41 001f 003f" \
+		"47 001f 003f" ;
 do
 	echo "${irdata}"
-	../irmpemit/irmpemit -i 0x${irdata} -d /dev/hidraw1 > /dev/null 2>&1
+	./irsnd-25kHz ${irdata} | ./irmp-25kHz
 done
 #done

@@ -198,6 +198,7 @@ int main(int argc, const char **argv) {
 	uint16_t f, g;
 	int F_INTERRUPTS = 0;
 	uint8_t failed = 0;
+	uint8_t last_ir_was_rc6a = 1;
 
 	open_irmp(argc>1 ? argv[1] : "/dev/irmp_pico");
 
@@ -206,7 +207,7 @@ int main(int argc, const char **argv) {
 	outBuf[2] = ACC_GET;
 	goto caps;
 
-cont:	printf("set: wakeups, macros, IR-data, keys, repeat, send_after_wakeup, alarm, commit, statusled and neopixel(s)\nset by remote: wakeups, macros and IR-data (q)\nget: wakeups, macros, IR-data, keys, repeat, send_after_wakeup, alarm, capabilities, eeprom, raw eeprom and dirty eeprom from RP2xxx (g)\nreset: wakeups, macros, IR-data, keys, repeat, send_after_wakeup, alarm and eeprom (r)\nsend IR (i)\nreboot (b)\nmonitor until ^C (m)\nrepeat rate statistics until ^C (y)\nrun test (t)\nhid test (h)\nneopixel test (n)\nrun test2 (u)\nexit (x)\n");
+cont:	printf("set: wakeups, macros, IR-data, keys, repeat, send_after_wakeup, alarm, commit, statusled and neopixel(s)\nset by remote: wakeups, macros and IR-data (q)\nget: wakeups, macros, IR-data, keys, repeat, send_after_wakeup, alarm, capabilities, eeprom, raw eeprom and dirty eeprom from RP2xxx (g)\nreset: wakeups, macros, IR-data, keys, repeat, send_after_wakeup, alarm and eeprom (r)\nsend IR (i)\nreboot (b)\nmonitor until ^C (m)\nrepeat rate statistics until ^C (y)\nrun test (t)\nhid test (h)\nneopixel test (n)\nrun test2 (u)\nrun test_rc6a (6)\nexit (x)\n");
 	scanf("%s", &c);
 
 	switch (c) {
@@ -752,6 +753,10 @@ reset:		printf("reset wakeup(w)\nreset macro slot(m)\nreset IR-data(i)\nreset ke
 		goto test2;
 		break;
 
+	case '6':
+		goto test_rc6a;
+		break;
+
 	case 'x':
 		goto exit;
 		break;
@@ -931,7 +936,7 @@ test2:	sprintf(testfilename, "test2_%u", j); printf("write into %s\n", testfilen
 	fp = fopen(testfilename, "w");
 	while(true) {
 		retValm = read(irmpfd, inBuf, in_size);
-		if (retValm >= 0) {
+		if (retValm >= 0 && inBuf[0] == REPORT_ID_IR) {
 			printf("%s%02hhx%02hhx%02hhx%02hhx%02hhx%02hhx\n", first_time ? "-----NEW-----\n" : "", inBuf[1],inBuf[3],inBuf[2],inBuf[5],inBuf[4],inBuf[6]);
 			if (first_time) {
 				fprintf(fp, "-----NEW-----\n%02hhx%02hhx%02hhx%02hhx%02hhx%02hhx\n", inBuf[1],inBuf[3],inBuf[2],inBuf[5],inBuf[4],inBuf[6]);
@@ -961,7 +966,7 @@ test2:	sprintf(testfilename, "test2_%u", j); printf("write into %s\n", testfilen
 						failed = 1;
 						printf("FAILED\n");
 					}
-					fprintf(fp, "-----new----- count: %d %s\n%02hhx%02hhx%02hhx%02hhx%02hhx%02hhx\n", count, (count == 256 || (count == 258 && inBuf[1] == 0x02) || (count == 1 && inBuf[1] == 0x12 || (count == 255 && inBuf[1] == 0x13) || (count == 512 && inBuf[1] == 0x2f)) ? "OK" : "FAILED", inBuf[1],inBuf[3],inBuf[2],inBuf[5],inBuf[4],inBuf[6]);
+					fprintf(fp, "-----new----- count: %d %s\n%02hhx%02hhx%02hhx%02hhx%02hhx%02hhx\n", count, (count == 256 || (count == 258 && inBuf[1] == 0x02) || (count == 1 && inBuf[1] == 0x12) || (count == 255 && inBuf[1] == 0x13) || (count == 512 && inBuf[1] == 0x2f)) ? "OK" : "FAILED", inBuf[1],inBuf[3],inBuf[2],inBuf[5],inBuf[4],inBuf[6]);
 					for(l=0;l<5;l++) {
 						rrBuf[l] = inBuf[l+1];
 					}
@@ -990,6 +995,84 @@ test2:	sprintf(testfilename, "test2_%u", j); printf("write into %s\n", testfilen
 					goto test2;
 				}
 			}
+		}
+	}
+
+test_rc6a: memset(inBuf, 0, sizeof(inBuf));
+	while(true) {
+		retValm = read(irmpfd, inBuf, in_size);
+		if (retValm >= 0 && (inBuf[0] == REPORT_ID_IR || inBuf[0] == REPORT_ID_LOGGING)) {
+			/*printf("read %d bytes:\n\t", retValm);
+			for (l = 0; l < retValm; l++)
+				printf("%02hhx ", inBuf[l]);
+			printf("\n");*/
+
+			if (inBuf[0] == REPORT_ID_IR) {
+				INV_F_INT_US = inBuf[56];
+				F_INTERRUPTS = inBuf[63] << 8 | inBuf[62];
+				if (inBuf[1] != 0x15) { // !RC6A
+					printf("converted to protocoladdresscommandflag:\n\t");
+					printf("%02hhx%02hhx%02hhx%02hhx%02hhx%02hhx   delta: %f min_delta: %f max_delta: %f upper_border: %f same key: %d timeout: %d repeat detected: %d\n", inBuf[1],inBuf[3],inBuf[2],inBuf[5],inBuf[4],inBuf[6], ((float)(inBuf[58] * 0xFF + inBuf[57]) * inBuf[56]) / 1000, ((float)(inBuf[53] * 0xFF + inBuf[52]) * inBuf[56]) / 1000, ((float)(inBuf[49] * 0xFF + inBuf[48]) * inBuf[56]) / 1000, ((float)(inBuf[51] * 0xFF + inBuf[50]) * inBuf[56]) / 1000, inBuf[54], inBuf[61], inBuf[60]);
+					if (inBuf[6] == IRMP_FLAG_RELEASE)
+						printf("release\n");
+					last_ir_was_rc6a = 0;
+				} else {
+					last_ir_was_rc6a =1;
+				}
+			}
+
+			if (inBuf[0] == REPORT_ID_LOGGING && !last_ir_was_rc6a) {
+				inBuf[1] += 2; // STARTCYCLES
+				printf("\t");
+				for (l = 1; l <= retValm; l++) {
+					f = inBuf[l];
+					if (f == 0xff) {
+						l++;
+						f = inBuf[l];
+						l++;
+						f |= inBuf[l] << 8;
+					}
+					if (f)
+						printf("%d%s ", f, l%2 ? "x0" : "x1");
+					else
+						break;
+				}
+				printf("\n\t");
+				for (l = 1; l <= retValm; l++) {
+					f = inBuf[l];
+					if (f == 0xff) {
+						l++;
+						f = inBuf[l];
+						l++;
+						f |= inBuf[l] << 8;
+					}
+					if (f)
+						for(g = 0; g < f; g++)
+							printf("%s", l%2 ? "0" : "1");
+					else
+						break;
+				}
+				printf("\n\t");
+				for (l = 1; l <= retValm; l++) {
+					f = inBuf[l];
+					if (f == 0xff) {
+						l++;
+						f = inBuf[l];
+						l++;
+						f |= inBuf[l] << 8;
+					}
+					if (f)
+						printf("%d%s ", f * INV_F_INT_US, l%2 ? "ms0" : "ms1");
+					else
+					    break;
+				}
+				printf("\n");
+				printf("INV_F_INT_US: %d F_INTERRUPTS: %d\n", INV_F_INT_US, F_INTERRUPTS);
+			}
+			now_us = GetUsTicks();
+			diff_us = now_us - last_us;
+			if (!last_ir_was_rc6a) printf("\tdiff: %.2f\n\n", (double)(diff_us) / 1000);
+			last_us = now_us;
 		}
 	}
 
