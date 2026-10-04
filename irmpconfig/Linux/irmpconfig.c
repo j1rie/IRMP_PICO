@@ -199,6 +199,7 @@ int main(int argc, const char **argv) {
 	int F_INTERRUPTS = 0;
 	uint8_t failed = 0;
 	uint8_t last_ir_was_rc6a = 1;
+	uint8_t got_release = 0;
 
 	open_irmp(argc>1 ? argv[1] : "/dev/irmp_pico");
 
@@ -895,6 +896,7 @@ rate:	while(true) {
 							if (uc_rate[l]) printf("***     %03d - %04d  ***\n", l, uc_rate[l]);
 						}
 						printf("***********************\n");
+						if (got_release) printf("++++ RELEASE ++++\n");
 					}
 					if (!same_key) {
 						printf("key changed, diff_ms: %d, delta: %f\n\n", (diff_us + 500) / 1000, ((float)(inBuf[58] * 0xFF + inBuf[57]) * inBuf[56]) / 1000);
@@ -908,6 +910,10 @@ rate:	while(true) {
 					}
 				}
 				printf("\n");
+			}
+			if (inBuf[0] == REPORT_ID_IR && inBuf[6] == IRMP_FLAG_RELEASE) {
+				got_release = 1;
+				printf("%02hhx%02hhx%02hhx%02hhx%02hhx%02hhx\n", inBuf[1],inBuf[3],inBuf[2],inBuf[5],inBuf[4],inBuf[6]);
 			}
 		}
 	}

@@ -195,27 +195,27 @@
 #define MITSU_HEAVY_0_PAUSE_LEN_MIN             ((uint_fast8_t)(F_INTERRUPTS * MITSU_HEAVY_0_PAUSE_TIME * MIN_TOLERANCE_20 + 0.5) - 1)
 #define MITSU_HEAVY_0_PAUSE_LEN_MAX             ((uint_fast8_t)(F_INTERRUPTS * MITSU_HEAVY_0_PAUSE_TIME * MAX_TOLERANCE_20 + 0.5) + 1)
 
-#define VINCENT_START_BIT_PULSE_LEN_MIN         ((uint_fast8_t)(F_INTERRUPTS * VINCENT_START_BIT_PULSE_TIME * MIN_TOLERANCE_10 + 0.5) - 1)
-#define VINCENT_START_BIT_PULSE_LEN_MAX         ((uint_fast8_t)(F_INTERRUPTS * VINCENT_START_BIT_PULSE_TIME * MAX_TOLERANCE_10 + 0.5) + 1)
-#define VINCENT_START_BIT_PAUSE_LEN_MIN         ((uint_fast8_t)(F_INTERRUPTS * VINCENT_START_BIT_PAUSE_TIME * MIN_TOLERANCE_10 + 0.5) - 1)
-#define VINCENT_START_BIT_PAUSE_LEN_MAX         ((uint_fast8_t)(F_INTERRUPTS * VINCENT_START_BIT_PAUSE_TIME * MAX_TOLERANCE_10 + 0.5) + 1)
-#define VINCENT_PULSE_LEN_MIN                   ((uint_fast8_t)(F_INTERRUPTS * VINCENT_PULSE_TIME * MIN_TOLERANCE_40 + 0.5) - 1)
-#define VINCENT_PULSE_LEN_MAX                   ((uint_fast8_t)(F_INTERRUPTS * VINCENT_PULSE_TIME * MAX_TOLERANCE_40 + 0.5) + 1)
-#define VINCENT_1_PAUSE_LEN_MIN                 ((uint_fast8_t)(F_INTERRUPTS * VINCENT_1_PAUSE_TIME * MIN_TOLERANCE_20 + 0.5) - 1)
-#define VINCENT_1_PAUSE_LEN_MAX                 ((uint_fast8_t)(F_INTERRUPTS * VINCENT_1_PAUSE_TIME * MAX_TOLERANCE_20 + 0.5) + 1)
-#define VINCENT_0_PAUSE_LEN_MIN                 ((uint_fast8_t)(F_INTERRUPTS * VINCENT_0_PAUSE_TIME * MIN_TOLERANCE_20 + 0.5) - 1)
-#define VINCENT_0_PAUSE_LEN_MAX                 ((uint_fast8_t)(F_INTERRUPTS * VINCENT_0_PAUSE_TIME * MAX_TOLERANCE_20 + 0.5) + 1)
+#define VINCENT_START_BIT_PULSE_LEN_MIN         (uint_fast8_t)(F_INTERRUPTS * VINCENT_START_BIT_PULSE_TIME * 0.88 + 0.5)
+#define VINCENT_START_BIT_PULSE_LEN_MAX         (uint_fast8_t)(F_INTERRUPTS * VINCENT_START_BIT_PULSE_TIME * 1.12 + 0.5)
+#define VINCENT_START_BIT_PAUSE_LEN_MIN         (uint_fast8_t)(F_INTERRUPTS * VINCENT_START_BIT_PAUSE_TIME * MIN_TOLERANCE_10 + 0.5) // 0.89
+#define VINCENT_START_BIT_PAUSE_LEN_MAX         (uint_fast8_t)(F_INTERRUPTS * VINCENT_START_BIT_PAUSE_TIME * MAX_TOLERANCE_10 + 0.5) // 1.11
+#define VINCENT_PULSE_LEN_MIN                   (uint_fast8_t)(F_INTERRUPTS * VINCENT_PULSE_TIME * MIN_TOLERANCE_50 + 0.5) // 0.51
+#define VINCENT_PULSE_LEN_MAX                   (uint_fast8_t)(F_INTERRUPTS * VINCENT_PULSE_TIME * MAX_TOLERANCE_50 + 0.5) // 1.49
+#define VINCENT_1_PAUSE_LEN_MIN                 (uint_fast8_t)(F_INTERRUPTS * VINCENT_1_PAUSE_TIME * 0.77 + 0.5)
+#define VINCENT_1_PAUSE_LEN_MAX                 (uint_fast8_t)(F_INTERRUPTS * VINCENT_1_PAUSE_TIME * 1.23 + 0.5)
+#define VINCENT_0_PAUSE_LEN_MIN                 (uint_fast8_t)(F_INTERRUPTS * VINCENT_0_PAUSE_TIME * MIN_TOLERANCE_30 + 0.5) // 0.71
+#define VINCENT_0_PAUSE_LEN_MAX                 (uint_fast8_t)(F_INTERRUPTS * VINCENT_0_PAUSE_TIME * MAX_TOLERANCE_30 + 0.5) // 1.29
 
-#define PANASONIC_START_BIT_PULSE_LEN_MIN       ((uint_fast8_t)(F_INTERRUPTS * PANASONIC_START_BIT_PULSE_TIME * MIN_TOLERANCE_10 + 0.5) - 1)
-#define PANASONIC_START_BIT_PULSE_LEN_MAX       ((uint_fast8_t)(F_INTERRUPTS * PANASONIC_START_BIT_PULSE_TIME * MAX_TOLERANCE_10 + 0.5) + 1)
-#define PANASONIC_START_BIT_PAUSE_LEN_MIN       ((uint_fast8_t)(F_INTERRUPTS * PANASONIC_START_BIT_PAUSE_TIME * MIN_TOLERANCE_10 + 0.5) - 1)
-#define PANASONIC_START_BIT_PAUSE_LEN_MAX       ((uint_fast8_t)(F_INTERRUPTS * PANASONIC_START_BIT_PAUSE_TIME * MAX_TOLERANCE_10 + 0.5) + 1)
-#define PANASONIC_PULSE_LEN_MIN                 ((uint_fast8_t)(F_INTERRUPTS * PANASONIC_PULSE_TIME * MIN_TOLERANCE_40 + 0.5) - 1)
-#define PANASONIC_PULSE_LEN_MAX                 ((uint_fast8_t)(F_INTERRUPTS * PANASONIC_PULSE_TIME * MAX_TOLERANCE_40 + 0.5) + 1)
-#define PANASONIC_1_PAUSE_LEN_MIN               ((uint_fast8_t)(F_INTERRUPTS * PANASONIC_1_PAUSE_TIME * MIN_TOLERANCE_20 + 0.5) - 1)
-#define PANASONIC_1_PAUSE_LEN_MAX               ((uint_fast8_t)(F_INTERRUPTS * PANASONIC_1_PAUSE_TIME * MAX_TOLERANCE_20 + 0.5) + 1)
-#define PANASONIC_0_PAUSE_LEN_MIN               ((uint_fast8_t)(F_INTERRUPTS * PANASONIC_0_PAUSE_TIME * MIN_TOLERANCE_20 + 0.5) - 1)
-#define PANASONIC_0_PAUSE_LEN_MAX               ((uint_fast8_t)(F_INTERRUPTS * PANASONIC_0_PAUSE_TIME * MAX_TOLERANCE_20 + 0.5) + 1)
+#define PANASONIC_START_BIT_PULSE_LEN_MIN       (uint_fast8_t)(F_INTERRUPTS * PANASONIC_START_BIT_PULSE_TIME * MIN_TOLERANCE_10 + 0.5) // -1.4
+#define PANASONIC_START_BIT_PULSE_LEN_MAX       (uint_fast8_t)(F_INTERRUPTS * PANASONIC_START_BIT_PULSE_TIME * MAX_TOLERANCE_10 + 0.5) // +1.4
+#define PANASONIC_START_BIT_PAUSE_LEN_MIN       (uint_fast8_t)(F_INTERRUPTS * PANASONIC_START_BIT_PAUSE_TIME * 0.87 + 0.5)
+#define PANASONIC_START_BIT_PAUSE_LEN_MAX       (uint_fast8_t)(F_INTERRUPTS * PANASONIC_START_BIT_PAUSE_TIME * 1.13 + 0.5)
+#define PANASONIC_PULSE_LEN_MIN                 (uint_fast8_t)(F_INTERRUPTS * PANASONIC_PULSE_TIME * 0.48 + 0.5)
+#define PANASONIC_PULSE_LEN_MAX                 (uint_fast8_t)(F_INTERRUPTS * PANASONIC_PULSE_TIME * 1.52 + 0.5)
+#define PANASONIC_1_PAUSE_LEN_MIN               (uint_fast8_t)(F_INTERRUPTS * PANASONIC_1_PAUSE_TIME * MIN_TOLERANCE_25 + 0.5) // -.24
+#define PANASONIC_1_PAUSE_LEN_MAX               (uint_fast8_t)(F_INTERRUPTS * PANASONIC_1_PAUSE_TIME * MAX_TOLERANCE_30 + 0.5) + 1) // 1.29
+#define PANASONIC_0_PAUSE_LEN_MIN               (uint_fast8_t)(F_INTERRUPTS * PANASONIC_0_PAUSE_TIME * 0.68 + 0.5)
+#define PANASONIC_0_PAUSE_LEN_MAX               (uint_fast8_t)(F_INTERRUPTS * PANASONIC_0_PAUSE_TIME * 1.32 + 0.5)
 
 #define RECS80_START_BIT_PULSE_LEN_MIN          (uint_fast8_t)(F_INTERRUPTS * RECS80_START_BIT_PULSE_TIME * 0.53 + 0.5)
 #define RECS80_START_BIT_PULSE_LEN_MAX          (uint_fast8_t)(F_INTERRUPTS * RECS80_START_BIT_PULSE_TIME * 1.53 + 0.5)
@@ -233,12 +233,12 @@
 #define RC5_START_BIT_LEN_MIN                   (uint_fast8_t)(F_INTERRUPTS * RC5_BIT_TIME * MIN_TOLERANCE_10 + 0.5)
 #define RC5_START_BIT_LEN_MAX                   (uint_fast8_t)(F_INTERRUPTS * RC5_BIT_TIME * MAX_TOLERANCE_10 + 0.5)
 #else
-#define RC5_START_BIT_LEN_MIN                   (uint_fast8_t)(F_INTERRUPTS * RC5_BIT_TIME * MIN_TOLERANCE_15 + 0.5)
-#define RC5_START_BIT_LEN_MAX                   (uint_fast8_t)(F_INTERRUPTS * RC5_BIT_TIME * MAX_TOLERANCE_15 + 0.5)
+#define RC5_START_BIT_LEN_MIN                   (uint_fast8_t)(F_INTERRUPTS * RC5_BIT_TIME * 0.84 + 0.5) // war 15
+#define RC5_START_BIT_LEN_MAX                   (uint_fast8_t)(F_INTERRUPTS * RC5_BIT_TIME * 1.19 + 0.5) // war 15
 #endif
 
-#define RC5_BIT_LEN_MIN                         (uint_fast8_t)(F_INTERRUPTS * RC5_BIT_TIME * MIN_TOLERANCE_15 + 0.5)
-#define RC5_BIT_LEN_MAX                         (uint_fast8_t)(F_INTERRUPTS * RC5_BIT_TIME * MAX_TOLERANCE_15 + 0.5)
+#define RC5_BIT_LEN_MIN                         (uint_fast8_t)(F_INTERRUPTS * RC5_BIT_TIME * 0.84 + 0.5) // war 15
+#define RC5_BIT_LEN_MAX                         (uint_fast8_t)(F_INTERRUPTS * RC5_BIT_TIME * 1.19 + 0.5) // war 15
 
 #define RCII_START_BIT_PULSE_LEN_MIN            ((uint_fast8_t)(F_INTERRUPTS * RCII_START_BIT_PULSE_TIME * MIN_TOLERANCE_05 + 0.5) - 1)
 #define RCII_START_BIT_PULSE_LEN_MAX            ((uint_fast8_t)(F_INTERRUPTS * RCII_START_BIT_PULSE_TIME * MAX_TOLERANCE_05 + 0.5) + 1)
@@ -251,16 +251,17 @@
 #define RCII_BIT_LEN                            ((uint_fast8_t)(F_INTERRUPTS * RCII_BIT_TIME))
 #define RCII_BIT_LEN_MAX                        ((uint_fast8_t)(F_INTERRUPTS * RCII_BIT_TIME * MAX_TOLERANCE_30 + 0.5) + 1)
 
-#if IRMP_SUPPORT_BOSE_PROTOCOL == 1 // BOSE conflicts with S100, so keep tolerance for S100 minimal here:
+#if (0) // IRMP_SUPPORT_BOSE_PROTOCOL == 1 // BOSE conflicts with S100, so keep tolerance for S100 minimal here:
+// start pause is well separated, so overlap in start pulse does not disturb, but reducing tolerance leads to worse RC5 recognition
 #define S100_START_BIT_LEN_MIN                   ((uint_fast8_t)(F_INTERRUPTS * S100_BIT_TIME * MIN_TOLERANCE_05 + 0.5) - 1)
 #define S100_START_BIT_LEN_MAX                   ((uint_fast8_t)(F_INTERRUPTS * S100_BIT_TIME * MAX_TOLERANCE_05 + 0.5) + 1)
 #else
-#define S100_START_BIT_LEN_MIN                   ((uint_fast8_t)(F_INTERRUPTS * S100_BIT_TIME * MIN_TOLERANCE_10 + 0.5) - 1)
-#define S100_START_BIT_LEN_MAX                   ((uint_fast8_t)(F_INTERRUPTS * S100_BIT_TIME * MAX_TOLERANCE_10 + 0.5) + 1)
+#define S100_START_BIT_LEN_MIN                   (uint_fast8_t)(F_INTERRUPTS * S100_BIT_TIME * 0.84 + 0.5)
+#define S100_START_BIT_LEN_MAX                   (uint_fast8_t)(F_INTERRUPTS * S100_BIT_TIME * 1.19 + 0.5)
 #endif
 
-#define S100_BIT_LEN_MIN                         ((uint_fast8_t)(F_INTERRUPTS * S100_BIT_TIME * MIN_TOLERANCE_10 + 0.5) - 1)
-#define S100_BIT_LEN_MAX                         ((uint_fast8_t)(F_INTERRUPTS * S100_BIT_TIME * MAX_TOLERANCE_10 + 0.5) + 1)
+#define S100_BIT_LEN_MIN                         (uint_fast8_t)(F_INTERRUPTS * S100_BIT_TIME * 0.84 + 0.5)
+#define S100_BIT_LEN_MAX                         (uint_fast8_t)(F_INTERRUPTS * S100_BIT_TIME * 1.19 + 0.5)
 
 #define DENON_PULSE_LEN_MIN                     (uint_fast8_t)(F_INTERRUPTS * DENON_PULSE_TIME * MIN_TOLERANCE_30 + 0.5)
 #define DENON_PULSE_LEN_MAX                     (uint_fast8_t)(F_INTERRUPTS * DENON_PULSE_TIME * MAX_TOLERANCE_40 + 0.5)
@@ -436,20 +437,20 @@
 #define NIKON_0_PAUSE_LEN_MAX                   (uint_fast8_t)(F_INTERRUPTS * NIKON_0_PAUSE_TIME * MAX_TOLERANCE_25 + 0.5)
 #define NIKON_FRAME_REPEAT_PAUSE_LEN_MAX        (uint_fast16_t)(F_INTERRUPTS * NIKON_FRAME_REPEAT_PAUSE_TIME * MAX_TOLERANCE_20 + 0.5)
 
-#define KATHREIN_START_BIT_PULSE_LEN_MIN        ((uint_fast8_t)(F_INTERRUPTS * KATHREIN_START_BIT_PULSE_TIME * MIN_TOLERANCE_10 + 0.5) - 1)
-#define KATHREIN_START_BIT_PULSE_LEN_MAX        ((uint_fast8_t)(F_INTERRUPTS * KATHREIN_START_BIT_PULSE_TIME * MAX_TOLERANCE_10 + 0.5) + 1)
-#define KATHREIN_START_BIT_PAUSE_LEN_MIN        ((uint_fast8_t)(F_INTERRUPTS * KATHREIN_START_BIT_PAUSE_TIME * MIN_TOLERANCE_10 + 0.5) - 1)
-#define KATHREIN_START_BIT_PAUSE_LEN_MAX        ((uint_fast8_t)(F_INTERRUPTS * KATHREIN_START_BIT_PAUSE_TIME * MAX_TOLERANCE_10 + 0.5) + 1)
-#define KATHREIN_1_PULSE_LEN_MIN                ((uint_fast8_t)(F_INTERRUPTS * KATHREIN_1_PULSE_TIME * MIN_TOLERANCE_10 + 0.5) - 1)
-#define KATHREIN_1_PULSE_LEN_MAX                ((uint_fast8_t)(F_INTERRUPTS * KATHREIN_1_PULSE_TIME * MAX_TOLERANCE_10 + 0.5) + 1)
-#define KATHREIN_1_PAUSE_LEN_MIN                ((uint_fast8_t)(F_INTERRUPTS * KATHREIN_1_PAUSE_TIME * MIN_TOLERANCE_10 + 0.5) - 1)
-#define KATHREIN_1_PAUSE_LEN_MAX                ((uint_fast8_t)(F_INTERRUPTS * KATHREIN_1_PAUSE_TIME * MAX_TOLERANCE_10 + 0.5) + 1)
-#define KATHREIN_0_PULSE_LEN_MIN                ((uint_fast8_t)(F_INTERRUPTS * KATHREIN_0_PULSE_TIME * MIN_TOLERANCE_10 + 0.5) - 1)
-#define KATHREIN_0_PULSE_LEN_MAX                ((uint_fast8_t)(F_INTERRUPTS * KATHREIN_0_PULSE_TIME * MAX_TOLERANCE_10 + 0.5) + 1)
-#define KATHREIN_0_PAUSE_LEN_MIN                ((uint_fast8_t)(F_INTERRUPTS * KATHREIN_0_PAUSE_TIME * MIN_TOLERANCE_10 + 0.5) - 1)
-#define KATHREIN_0_PAUSE_LEN_MAX                ((uint_fast8_t)(F_INTERRUPTS * KATHREIN_0_PAUSE_TIME * MAX_TOLERANCE_10 + 0.5) + 1)
-#define KATHREIN_SYNC_BIT_PAUSE_LEN_MIN         ((uint_fast8_t)(F_INTERRUPTS * KATHREIN_SYNC_BIT_PAUSE_LEN_TIME * MIN_TOLERANCE_10 + 0.5) - 1)
-#define KATHREIN_SYNC_BIT_PAUSE_LEN_MAX         ((uint_fast8_t)(F_INTERRUPTS * KATHREIN_SYNC_BIT_PAUSE_LEN_TIME * MAX_TOLERANCE_10 + 0.5) + 1)
+#define KATHREIN_START_BIT_PULSE_LEN_MIN        (uint_fast8_t)(F_INTERRUPTS * KATHREIN_START_BIT_PULSE_TIME * 0.65 + 0.5)
+#define KATHREIN_START_BIT_PULSE_LEN_MAX        (uint_fast8_t)(F_INTERRUPTS * KATHREIN_START_BIT_PULSE_TIME * 1.35 + 0.5)
+#define KATHREIN_START_BIT_PAUSE_LEN_MIN        (uint_fast8_t)(F_INTERRUPTS * KATHREIN_START_BIT_PAUSE_TIME * MIN_TOLERANCE_10 + 0.5) // 0.89
+#define KATHREIN_START_BIT_PAUSE_LEN_MAX        (uint_fast8_t)(F_INTERRUPTS * KATHREIN_START_BIT_PAUSE_TIME * MAX_TOLERANCE_10 + 0.5) // 1.11
+#define KATHREIN_1_PULSE_LEN_MIN                (uint_fast8_t)(F_INTERRUPTS * KATHREIN_1_PULSE_TIME * 0.65 + 0.5)
+#define KATHREIN_1_PULSE_LEN_MAX                (uint_fast8_t)(F_INTERRUPTS * KATHREIN_1_PULSE_TIME * 1.35 + 0.5)
+#define KATHREIN_1_PAUSE_LEN_MIN                (uint_fast8_t)(F_INTERRUPTS * KATHREIN_1_PAUSE_TIME * MIN_TOLERANCE_10 + 0.5) // 0.88
+#define KATHREIN_1_PAUSE_LEN_MAX                (uint_fast8_t)(F_INTERRUPTS * KATHREIN_1_PAUSE_TIME * MAX_TOLERANCE_10 + 0.5) // 1.12
+#define KATHREIN_0_PULSE_LEN_MIN                (uint_fast8_t)(F_INTERRUPTS * KATHREIN_0_PULSE_TIME * 0.65 + 0.5)
+#define KATHREIN_0_PULSE_LEN_MAX                (uint_fast8_t)(F_INTERRUPTS * KATHREIN_0_PULSE_TIME * 1.35 + 0.5)
+#define KATHREIN_0_PAUSE_LEN_MIN                (uint_fast8_t)(F_INTERRUPTS * KATHREIN_0_PAUSE_TIME * MIN_TOLERANCE_15 + 0.5) // 0.86
+#define KATHREIN_0_PAUSE_LEN_MAX                (uint_fast8_t)(F_INTERRUPTS * KATHREIN_0_PAUSE_TIME * MAX_TOLERANCE_15 + 0.5) // 1.14
+#define KATHREIN_SYNC_BIT_PAUSE_LEN_MIN         (uint_fast8_t)(F_INTERRUPTS * KATHREIN_SYNC_BIT_PAUSE_LEN_TIME * MIN_TOLERANCE_10 + 0.5) // 0.89
+#define KATHREIN_SYNC_BIT_PAUSE_LEN_MAX         (uint_fast8_t)(F_INTERRUPTS * KATHREIN_SYNC_BIT_PAUSE_LEN_TIME * MAX_TOLERANCE_10 + 0.5) // 1.11
 
 #define NETBOX_START_BIT_PULSE_LEN_MIN          (uint_fast8_t)(F_INTERRUPTS * NETBOX_START_BIT_PULSE_TIME * MIN_TOLERANCE_15 + 0.5) //0.94
 #define NETBOX_START_BIT_PULSE_LEN_MAX          (uint_fast8_t)(F_INTERRUPTS * NETBOX_START_BIT_PULSE_TIME * MAX_TOLERANCE_15 + 0.5) //05
@@ -514,14 +515,14 @@
 #define A1TVBOX_BIT_PAUSE_LEN_MIN               (uint_fast8_t)(F_INTERRUPTS * A1TVBOX_BIT_PAUSE_TIME * MIN_TOLERANCE_40 + 0.5)
 #define A1TVBOX_BIT_PAUSE_LEN_MAX               (uint_fast8_t)(F_INTERRUPTS * A1TVBOX_BIT_PAUSE_TIME * 1.33 + 0.5) // <> Siemens
 
-#define MERLIN_START_BIT_PULSE_LEN_MIN          ((uint_fast8_t)(F_INTERRUPTS * MERLIN_START_BIT_PULSE_TIME * MIN_TOLERANCE_10 + 0.5) - 1)
-#define MERLIN_START_BIT_PULSE_LEN_MAX          ((uint_fast8_t)(F_INTERRUPTS * MERLIN_START_BIT_PULSE_TIME * MAX_TOLERANCE_10 + 0.5) + 1)
-#define MERLIN_START_BIT_PAUSE_LEN_MIN          ((uint_fast8_t)(F_INTERRUPTS * MERLIN_START_BIT_PAUSE_TIME * MIN_TOLERANCE_10 + 0.5) - 1)
-#define MERLIN_START_BIT_PAUSE_LEN_MAX          ((uint_fast8_t)(F_INTERRUPTS * MERLIN_START_BIT_PAUSE_TIME * MAX_TOLERANCE_10 + 0.5) + 1)
-#define MERLIN_BIT_PULSE_LEN_MIN                ((uint_fast8_t)(F_INTERRUPTS * MERLIN_BIT_PULSE_TIME * MIN_TOLERANCE_30 + 0.5) - 1)
-#define MERLIN_BIT_PULSE_LEN_MAX                ((uint_fast8_t)(F_INTERRUPTS * MERLIN_BIT_PULSE_TIME * MAX_TOLERANCE_30 + 0.5) + 1)
-#define MERLIN_BIT_PAUSE_LEN_MIN                ((uint_fast8_t)(F_INTERRUPTS * MERLIN_BIT_PAUSE_TIME * MIN_TOLERANCE_30 + 0.5) - 1)
-#define MERLIN_BIT_PAUSE_LEN_MAX                ((uint_fast8_t)(F_INTERRUPTS * MERLIN_BIT_PAUSE_TIME * MAX_TOLERANCE_30 + 0.5) + 1)
+#define MERLIN_START_BIT_PULSE_LEN_MIN          (uint_fast8_t)(F_INTERRUPTS * MERLIN_START_BIT_PULSE_TIME * 0.65 + 0.5)
+#define MERLIN_START_BIT_PULSE_LEN_MAX          (uint_fast8_t)(F_INTERRUPTS * MERLIN_START_BIT_PULSE_TIME * 1.35 + 0.5)
+#define MERLIN_START_BIT_PAUSE_LEN_MIN          (uint_fast8_t)(F_INTERRUPTS * MERLIN_START_BIT_PAUSE_TIME * 0.78 + 0.5)
+#define MERLIN_START_BIT_PAUSE_LEN_MAX          (uint_fast8_t)(F_INTERRUPTS * MERLIN_START_BIT_PAUSE_TIME * 1.22 + 0.5)
+#define MERLIN_BIT_PULSE_LEN_MIN                (uint_fast8_t)(F_INTERRUPTS * MERLIN_BIT_PULSE_TIME * 0.45 + 0.5)
+#define MERLIN_BIT_PULSE_LEN_MAX                (uint_fast8_t)(F_INTERRUPTS * MERLIN_BIT_PULSE_TIME * 1.54 + 0.5)
+#define MERLIN_BIT_PAUSE_LEN_MIN                (uint_fast8_t)(F_INTERRUPTS * MERLIN_BIT_PAUSE_TIME * 0.45 + 0.5)
+#define MERLIN_BIT_PAUSE_LEN_MAX                (uint_fast8_t)(F_INTERRUPTS * MERLIN_BIT_PAUSE_TIME * 1.54 + 0.5)
 
 #define ORTEK_START_BIT_PULSE_LEN_MIN           ((uint_fast8_t)(F_INTERRUPTS * ORTEK_START_BIT_PULSE_TIME * MIN_TOLERANCE_10 + 0.5) - 1)
 #define ORTEK_START_BIT_PULSE_LEN_MAX           ((uint_fast8_t)(F_INTERRUPTS * ORTEK_START_BIT_PULSE_TIME * MAX_TOLERANCE_10 + 0.5) + 1)
@@ -601,16 +602,16 @@
 #define ACP24_0_PAUSE_LEN_MIN                   ((uint_fast8_t)(F_INTERRUPTS * ACP24_0_PAUSE_TIME * MIN_TOLERANCE_15 + 0.5) - 1)
 #define ACP24_0_PAUSE_LEN_MAX                   ((uint_fast8_t)(F_INTERRUPTS * ACP24_0_PAUSE_TIME * MAX_TOLERANCE_15 + 0.5) + 1)
 
-#define METZ_START_BIT_PULSE_LEN_MIN            ((uint_fast8_t)(F_INTERRUPTS * METZ_START_BIT_PULSE_TIME * MIN_TOLERANCE_05 + 0.5) - 1)
-#define METZ_START_BIT_PULSE_LEN_MAX            ((uint_fast8_t)(F_INTERRUPTS * METZ_START_BIT_PULSE_TIME * MAX_TOLERANCE_05 + 0.5) + 1)
-#define METZ_START_BIT_PAUSE_LEN_MIN            ((uint_fast8_t)(F_INTERRUPTS * METZ_START_BIT_PAUSE_TIME * MIN_TOLERANCE_05 + 0.5) - 1)
-#define METZ_START_BIT_PAUSE_LEN_MAX            ((uint_fast8_t)(F_INTERRUPTS * METZ_START_BIT_PAUSE_TIME * MAX_TOLERANCE_05 + 0.5) + 1)
-#define METZ_PULSE_LEN_MIN                      ((uint_fast8_t)(F_INTERRUPTS * METZ_PULSE_TIME * MIN_TOLERANCE_20 + 0.5) - 1)
-#define METZ_PULSE_LEN_MAX                      ((uint_fast8_t)(F_INTERRUPTS * METZ_PULSE_TIME * MAX_TOLERANCE_20 + 0.5) + 1)
-#define METZ_1_PAUSE_LEN_MIN                    ((uint_fast8_t)(F_INTERRUPTS * METZ_1_PAUSE_TIME * MIN_TOLERANCE_20 + 0.5) - 1)
-#define METZ_1_PAUSE_LEN_MAX                    ((uint_fast8_t)(F_INTERRUPTS * METZ_1_PAUSE_TIME * MAX_TOLERANCE_20 + 0.5) + 1)
-#define METZ_0_PAUSE_LEN_MIN                    ((uint_fast8_t)(F_INTERRUPTS * METZ_0_PAUSE_TIME * MIN_TOLERANCE_20 + 0.5) - 1)
-#define METZ_0_PAUSE_LEN_MAX                    ((uint_fast8_t)(F_INTERRUPTS * METZ_0_PAUSE_TIME * MAX_TOLERANCE_20 + 0.5) + 1)
+#define METZ_START_BIT_PULSE_LEN_MIN            (uint_fast8_t)(F_INTERRUPTS * METZ_START_BIT_PULSE_TIME * 0.89 + 0.5)
+#define METZ_START_BIT_PULSE_LEN_MAX            (uint_fast8_t)(F_INTERRUPTS * METZ_START_BIT_PULSE_TIME * 1.11 + 0.5)
+#define METZ_START_BIT_PAUSE_LEN_MIN            (uint_fast8_t)(F_INTERRUPTS * METZ_START_BIT_PAUSE_TIME * 0.93 + 0.5)
+#define METZ_START_BIT_PAUSE_LEN_MAX            (uint_fast8_t)(F_INTERRUPTS * METZ_START_BIT_PAUSE_TIME * 1.07 + 0.5)
+#define METZ_PULSE_LEN_MIN                      (uint_fast8_t)(F_INTERRUPTS * METZ_PULSE_TIME * 0.68 + 0.5)
+#define METZ_PULSE_LEN_MAX                      (uint_fast8_t)(F_INTERRUPTS * METZ_PULSE_TIME * 1.32 + 0.5)
+#define METZ_1_PAUSE_LEN_MIN                    (uint_fast8_t)(F_INTERRUPTS * METZ_1_PAUSE_TIME * 0.77 + 0.5)
+#define METZ_1_PAUSE_LEN_MAX                    (uint_fast8_t)(F_INTERRUPTS * METZ_1_PAUSE_TIME * 1.23 + 0.5)
+#define METZ_0_PAUSE_LEN_MIN                    (uint_fast8_t)(F_INTERRUPTS * METZ_0_PAUSE_TIME * MIN_TOLERANCE_25 + 0.5)
+#define METZ_0_PAUSE_LEN_MAX                    (uint_fast8_t)(F_INTERRUPTS * METZ_0_PAUSE_TIME * MAX_TOLERANCE_25 + 0.5)
 #define METZ_FRAME_REPEAT_PAUSE_LEN_MAX         (uint_fast16_t)(F_INTERRUPTS * METZ_FRAME_REPEAT_PAUSE_TIME * MAX_TOLERANCE_20 + 0.5)
 
 #define RF_GEN24_1_PAUSE_LEN_EXACT              ((uint_fast8_t)(F_INTERRUPTS * RF_GEN24_1_PAUSE_TIME + 0.5))

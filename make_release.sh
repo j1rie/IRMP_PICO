@@ -6,6 +6,6 @@ zip -9 -r ../binaries_for_Windows.zip *
 cd ..
 
 mkdir tmp
-cp -p irmpalarm/Linux/irmpalarm irmpconfig/Linux/irmpconfig irmpconfig_gui/Linux/irmpconfig_gui irmpstatusled/irmpstatusled picoflash/picoflash irmpemit/irmpemit tmp/
+cp -p irmpalarm/Linux/irmpalarm irmpconfig/Linux/irmpconfig irmpconfig_gui/Linux/irmpconfig_gui irmpstatusled/irmpstatusled picoflash/picoflash irmpemit/irmpemit test-suite/test-irmp/irmp-25kHz test-suite/test-irmp/irsnd-25kHz tmp/
 tar -C tmp -cJvf binaries_for_Linux.tar.xz .
 rm -r tmp
