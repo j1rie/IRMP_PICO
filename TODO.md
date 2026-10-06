@@ -1,6 +1,5 @@
-* Fix SIRCS.
-* Fix sending Grundig/Nokia/IR60 endlessly.
-* Improve IRMP timings (which protocols are important?).
+* Fix SIRCS address.
+* Use much higher interrupt frequency.
 * Refactor the GUI.
 * Keep improving the READMEs.
 * Is it a good idea to use PIO for IRMP?

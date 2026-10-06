@@ -39,7 +39,7 @@
 # 3c Melinera 0 address bits
 for i in $(seq 0 199); do
 for irdata in \
-		01081f003f01 \
+		01001f003f01 \
 		02001f003f01 \
 		03001f003f01 \
 		04001f003f01 \

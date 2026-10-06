@@ -911,7 +911,7 @@ rate:	while(true) {
 				}
 				printf("\n");
 			}
-			if (inBuf[0] == REPORT_ID_IR && inBuf[6] == IRMP_FLAG_RELEASE) {
+			if (inBuf[0] == REPORT_ID_IR && inBuf[6] == IRMP_FLAG_RELEASE) { // && count%255) {
 				got_release = 1;
 				printf("%02hhx%02hhx%02hhx%02hhx%02hhx%02hhx\n", inBuf[1],inBuf[3],inBuf[2],inBuf[5],inBuf[4],inBuf[6]);
 			}

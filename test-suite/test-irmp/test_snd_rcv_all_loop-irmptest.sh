@@ -39,7 +39,7 @@
 # 3c Melinera, conflicts with RC6(A), 0 address bits
 #for i in $(seq 0 0); do
 for irdata in \
-		"01 081f 003f" \
+		"01 001f 003f" \
 		"02 001f 003f" \
 		"03 001f 003f" \
 		"04 001f 003f" \

@@ -100,7 +100,7 @@
 #define SIRCS_START_BIT_PULSE_LEN_MAX           (uint_fast8_t)(F_INTERRUPTS * SIRCS_START_BIT_PULSE_TIME * 1.12 + 0.5) // 1.13 >< RC6!
 #define SIRCS_START_BIT_PAUSE_LEN_MIN           (uint_fast8_t)(F_INTERRUPTS * SIRCS_START_BIT_PAUSE_TIME * MIN_TOLERANCE_30 + 0.5)
 #if IRMP_SUPPORT_NETBOX_PROTOCOL                // only 5% to avoid conflict with NETBOX:
-#  define SIRCS_START_BIT_PAUSE_LEN_MAX         (uint_fast8_t)(F_INTERRUPTS * SIRCS_START_BIT_PAUSE_TIME * MAX_TOLERANCE_30 + 0.5) // war 15
+#  define SIRCS_START_BIT_PAUSE_LEN_MAX         (uint_fast8_t)(F_INTERRUPTS * SIRCS_START_BIT_PAUSE_TIME * MAX_TOLERANCE_15 + 0.5) // war 15
 #else                                           // only 5% + 1 to avoid conflict with RC6:
 #  define SIRCS_START_BIT_PAUSE_LEN_MAX         (uint_fast8_t)(F_INTERRUPTS * SIRCS_START_BIT_PAUSE_TIME * MAX_TOLERANCE_15 + 0.5) // war 15
 #endif
@@ -174,15 +174,15 @@
 #define MATSUSHITA_0_PAUSE_LEN_MAX              (uint_fast8_t)(F_INTERRUPTS * MATSUSHITA_0_PAUSE_TIME * 1.45 + 0.5)
 
 #define KASEIKYO_START_BIT_PULSE_LEN_MIN        (uint_fast8_t)(F_INTERRUPTS * KASEIKYO_START_BIT_PULSE_TIME * MIN_TOLERANCE_20 + 0.5)
-#define KASEIKYO_START_BIT_PULSE_LEN_MAX        (uint_fast8_t)(F_INTERRUPTS * KASEIKYO_START_BIT_PULSE_TIME * MAX_TOLERANCE_20 + 0.5) // 22
+#define KASEIKYO_START_BIT_PULSE_LEN_MAX        (uint_fast8_t)(F_INTERRUPTS * KASEIKYO_START_BIT_PULSE_TIME * 1.22 + 0.5)
 #define KASEIKYO_START_BIT_PAUSE_LEN_MIN        (uint_fast8_t)(F_INTERRUPTS * KASEIKYO_START_BIT_PAUSE_TIME * MIN_TOLERANCE_25 + 0.5)
-#define KASEIKYO_START_BIT_PAUSE_LEN_MAX        (uint_fast8_t)(F_INTERRUPTS * KASEIKYO_START_BIT_PAUSE_TIME * MAX_TOLERANCE_25 + 0.5) // 22
-#define KASEIKYO_PULSE_LEN_MIN                  (uint_fast8_t)(F_INTERRUPTS * KASEIKYO_PULSE_TIME * MIN_TOLERANCE_50 + 0.5)
-#define KASEIKYO_PULSE_LEN_MAX                  (uint_fast8_t)(F_INTERRUPTS * KASEIKYO_PULSE_TIME * MAX_TOLERANCE_50 + 0.5)
+#define KASEIKYO_START_BIT_PAUSE_LEN_MAX        (uint_fast8_t)(F_INTERRUPTS * KASEIKYO_START_BIT_PAUSE_TIME * 1.22 + 0.5)
+#define KASEIKYO_PULSE_LEN_MIN                  (uint_fast8_t)(F_INTERRUPTS * KASEIKYO_PULSE_TIME * 0.48 + 0.5)
+#define KASEIKYO_PULSE_LEN_MAX                  (uint_fast8_t)(F_INTERRUPTS * KASEIKYO_PULSE_TIME * 1.52 + 0.5)
 #define KASEIKYO_1_PAUSE_LEN_MIN                (uint_fast8_t)(F_INTERRUPTS * KASEIKYO_1_PAUSE_TIME * MIN_TOLERANCE_25 + 0.5) // 23
-#define KASEIKYO_1_PAUSE_LEN_MAX                (uint_fast8_t)(F_INTERRUPTS * KASEIKYO_1_PAUSE_TIME * MAX_TOLERANCE_25 + 0.5)
-#define KASEIKYO_0_PAUSE_LEN_MIN                (uint_fast8_t)(F_INTERRUPTS * KASEIKYO_0_PAUSE_TIME * MIN_TOLERANCE_30 + 0.5)
-#define KASEIKYO_0_PAUSE_LEN_MAX                (uint_fast8_t)(F_INTERRUPTS * KASEIKYO_0_PAUSE_TIME * MAX_TOLERANCE_30 + 0.5)
+#define KASEIKYO_1_PAUSE_LEN_MAX                (uint_fast8_t)(F_INTERRUPTS * KASEIKYO_1_PAUSE_TIME * MAX_TOLERANCE_30 + 0.5)
+#define KASEIKYO_0_PAUSE_LEN_MIN                (uint_fast8_t)(F_INTERRUPTS * KASEIKYO_0_PAUSE_TIME * 0.57 + 0.5)
+#define KASEIKYO_0_PAUSE_LEN_MAX                (uint_fast8_t)(F_INTERRUPTS * KASEIKYO_0_PAUSE_TIME * 1.32 + 0.5)
 
 #define MITSU_HEAVY_START_BIT_PULSE_LEN_MIN     ((uint_fast8_t)(F_INTERRUPTS * MITSU_HEAVY_START_BIT_PULSE_TIME * MIN_TOLERANCE_10 + 0.5) - 1)
 #define MITSU_HEAVY_START_BIT_PULSE_LEN_MAX     ((uint_fast8_t)(F_INTERRUPTS * MITSU_HEAVY_START_BIT_PULSE_TIME * MAX_TOLERANCE_10 + 0.5) + 1)
@@ -214,8 +214,8 @@
 #define PANASONIC_PULSE_LEN_MAX                 (uint_fast8_t)(F_INTERRUPTS * PANASONIC_PULSE_TIME * 1.52 + 0.5)
 #define PANASONIC_1_PAUSE_LEN_MIN               (uint_fast8_t)(F_INTERRUPTS * PANASONIC_1_PAUSE_TIME * MIN_TOLERANCE_25 + 0.5) // -.24
 #define PANASONIC_1_PAUSE_LEN_MAX               (uint_fast8_t)(F_INTERRUPTS * PANASONIC_1_PAUSE_TIME * MAX_TOLERANCE_30 + 0.5) + 1) // 1.29
-#define PANASONIC_0_PAUSE_LEN_MIN               (uint_fast8_t)(F_INTERRUPTS * PANASONIC_0_PAUSE_TIME * 0.68 + 0.5)
-#define PANASONIC_0_PAUSE_LEN_MAX               (uint_fast8_t)(F_INTERRUPTS * PANASONIC_0_PAUSE_TIME * 1.32 + 0.5)
+#define PANASONIC_0_PAUSE_LEN_MIN               (uint_fast8_t)(F_INTERRUPTS * PANASONIC_0_PAUSE_TIME * 0.48 + 0.5) // .68 // .57
+#define PANASONIC_0_PAUSE_LEN_MAX               (uint_fast8_t)(F_INTERRUPTS * PANASONIC_0_PAUSE_TIME * 1.39 + 0.5) // 1.32
 
 #define RECS80_START_BIT_PULSE_LEN_MIN          (uint_fast8_t)(F_INTERRUPTS * RECS80_START_BIT_PULSE_TIME * 0.53 + 0.5)
 #define RECS80_START_BIT_PULSE_LEN_MAX          (uint_fast8_t)(F_INTERRUPTS * RECS80_START_BIT_PULSE_TIME * 1.53 + 0.5)
@@ -233,12 +233,12 @@
 #define RC5_START_BIT_LEN_MIN                   (uint_fast8_t)(F_INTERRUPTS * RC5_BIT_TIME * MIN_TOLERANCE_10 + 0.5)
 #define RC5_START_BIT_LEN_MAX                   (uint_fast8_t)(F_INTERRUPTS * RC5_BIT_TIME * MAX_TOLERANCE_10 + 0.5)
 #else
-#define RC5_START_BIT_LEN_MIN                   (uint_fast8_t)(F_INTERRUPTS * RC5_BIT_TIME * 0.84 + 0.5) // war 15
-#define RC5_START_BIT_LEN_MAX                   (uint_fast8_t)(F_INTERRUPTS * RC5_BIT_TIME * 1.19 + 0.5) // war 15
+#define RC5_START_BIT_LEN_MIN                   (uint_fast8_t)(F_INTERRUPTS * RC5_BIT_TIME * 0.84 + 0.5) // max 0.84, für Bose 0.87 nötig
+#define RC5_START_BIT_LEN_MAX                   (uint_fast8_t)(F_INTERRUPTS * RC5_BIT_TIME * 1.19 + 0.5) // min 1.19
 #endif
 
 #define RC5_BIT_LEN_MIN                         (uint_fast8_t)(F_INTERRUPTS * RC5_BIT_TIME * 0.84 + 0.5) // war 15
-#define RC5_BIT_LEN_MAX                         (uint_fast8_t)(F_INTERRUPTS * RC5_BIT_TIME * 1.19 + 0.5) // war 15
+#define RC5_BIT_LEN_MAX                         (uint_fast8_t)(F_INTERRUPTS * RC5_BIT_TIME * 1.19 + 0.5) // min 1.19
 
 #define RCII_START_BIT_PULSE_LEN_MIN            ((uint_fast8_t)(F_INTERRUPTS * RCII_START_BIT_PULSE_TIME * MIN_TOLERANCE_05 + 0.5) - 1)
 #define RCII_START_BIT_PULSE_LEN_MAX            ((uint_fast8_t)(F_INTERRUPTS * RCII_START_BIT_PULSE_TIME * MAX_TOLERANCE_05 + 0.5) + 1)
@@ -281,14 +281,14 @@
 
 #define RC6_START_BIT_PULSE_LEN_MIN             (uint_fast8_t)(F_INTERRUPTS * RC6_START_BIT_PULSE_TIME * MIN_TOLERANCE_15 + 0.5)
 #define RC6_START_BIT_PULSE_LEN_MAX             (uint_fast8_t)(F_INTERRUPTS * RC6_START_BIT_PULSE_TIME * MAX_TOLERANCE_25 + 0.5)
-#define RC6_START_BIT_PAUSE_LEN_MIN             (uint_fast8_t)(F_INTERRUPTS * RC6_START_BIT_PAUSE_TIME * MIN_TOLERANCE_15 + 0.5)
+#define RC6_START_BIT_PAUSE_LEN_MIN             (uint_fast8_t)(F_INTERRUPTS * RC6_START_BIT_PAUSE_TIME * 0.84 + 0.5)
 #define RC6_START_BIT_PAUSE_LEN_MAX             (uint_fast8_t)(F_INTERRUPTS * RC6_START_BIT_PAUSE_TIME * MAX_TOLERANCE_50 + 0.5)
 #define RC6_TOGGLE_BIT_LEN_MIN                  (uint_fast8_t)(F_INTERRUPTS * RC6_TOGGLE_BIT_TIME * MIN_TOLERANCE_50 + 0.5)
 #define RC6_TOGGLE_BIT_LEN_MAX                  (uint_fast8_t)(F_INTERRUPTS * RC6_TOGGLE_BIT_TIME * MAX_TOLERANCE_50 + 0.5)
-#define RC6_BIT_PULSE_LEN_MIN                   (uint_fast8_t)(F_INTERRUPTS * RC6_BIT_TIME * MIN_TOLERANCE_40 + 0.5)
-#define RC6_BIT_PULSE_LEN_MAX                   (uint_fast8_t)(F_INTERRUPTS * RC6_BIT_TIME * MAX_TOLERANCE_70 + 0.5)       // pulses: 300 - 800
+#define RC6_BIT_PULSE_LEN_MIN                   (uint_fast8_t)(F_INTERRUPTS * RC6_BIT_TIME * MIN_TOLERANCE_20 + 0.5) // war 40
+#define RC6_BIT_PULSE_LEN_MAX                   (uint_fast8_t)(F_INTERRUPTS * RC6_BIT_TIME * MAX_TOLERANCE_50 + 0.5) // war 70      // pulses: 300 - 800
 #define RC6_BIT_PAUSE_LEN_MIN                   (uint_fast8_t)(F_INTERRUPTS * RC6_BIT_TIME * MIN_TOLERANCE_40 + 0.5)
-#define RC6_BIT_PAUSE_LEN_MAX                   (uint_fast8_t)(F_INTERRUPTS * RC6_BIT_TIME * MAX_TOLERANCE_50 + 0.5)       // pauses: 300 - 600
+#define RC6_BIT_PAUSE_LEN_MAX                   (uint_fast8_t)(F_INTERRUPTS * RC6_BIT_TIME * 1.46 + 0.5)       // pauses: 300 - 600
 
 #define RECS80EXT_START_BIT_PULSE_LEN_MIN       (uint_fast8_t)(F_INTERRUPTS * RECS80EXT_START_BIT_PULSE_TIME * 0.53 + 0.5)
 #define RECS80EXT_START_BIT_PULSE_LEN_MAX       (uint_fast8_t)(F_INTERRUPTS * RECS80EXT_START_BIT_PULSE_TIME * 1.53 + 0.5)
@@ -369,9 +369,9 @@
 
 #define IR60_TIMEOUT_LEN                        (uint_fast8_t)(F_INTERRUPTS * IR60_TIMEOUT_TIME * 0.5)
 #define GRUNDIG_NOKIA_IR60_START_BIT_LEN_MIN    (uint_fast8_t)(F_INTERRUPTS * GRUNDIG_NOKIA_IR60_BIT_TIME * MIN_TOLERANCE_20 + 0.5)
-#define GRUNDIG_NOKIA_IR60_START_BIT_LEN_MAX    (uint_fast8_t)(F_INTERRUPTS * GRUNDIG_NOKIA_IR60_BIT_TIME * MAX_TOLERANCE_20 + 0.5)
+#define GRUNDIG_NOKIA_IR60_START_BIT_LEN_MAX    (uint_fast8_t)(F_INTERRUPTS * GRUNDIG_NOKIA_IR60_BIT_TIME * 1.24 + 0.5)
 #define GRUNDIG_NOKIA_IR60_BIT_LEN_MIN          (uint_fast8_t)(F_INTERRUPTS * GRUNDIG_NOKIA_IR60_BIT_TIME * MIN_TOLERANCE_20 + 0.5)
-#define GRUNDIG_NOKIA_IR60_BIT_LEN_MAX          (uint_fast8_t)(F_INTERRUPTS * GRUNDIG_NOKIA_IR60_BIT_TIME * MAX_TOLERANCE_20 + 0.5)
+#define GRUNDIG_NOKIA_IR60_BIT_LEN_MAX          (uint_fast8_t)(F_INTERRUPTS * GRUNDIG_NOKIA_IR60_BIT_TIME * 1.24 + 0.5)
 #define GRUNDIG_NOKIA_IR60_PRE_PAUSE_LEN_MIN    (uint_fast8_t)(F_INTERRUPTS * GRUNDIG_NOKIA_IR60_PRE_PAUSE_TIME * MIN_TOLERANCE_20 + 0.5)
 #define GRUNDIG_NOKIA_IR60_PRE_PAUSE_LEN_MAX    (uint_fast8_t)(F_INTERRUPTS * GRUNDIG_NOKIA_IR60_PRE_PAUSE_TIME * MAX_TOLERANCE_20 + 0.5)
 
@@ -496,7 +496,7 @@
 
 #define BOSE_START_BIT_PULSE_LEN_MIN             (uint_fast8_t)(F_INTERRUPTS * BOSE_START_BIT_PULSE_TIME * MIN_TOLERANCE_40 + 0.5)
 #define BOSE_START_BIT_PULSE_LEN_MAX             (uint_fast8_t)(F_INTERRUPTS * BOSE_START_BIT_PULSE_TIME * MAX_TOLERANCE_40 + 0.5)
-#define BOSE_START_BIT_PAUSE_LEN_MIN             (uint_fast8_t)(F_INTERRUPTS * BOSE_START_BIT_PAUSE_TIME * MIN_TOLERANCE_40 + 0.5)
+#define BOSE_START_BIT_PAUSE_LEN_MIN             (uint_fast8_t)(F_INTERRUPTS * BOSE_START_BIT_PAUSE_TIME * 0.81 + 0.5)
 #define BOSE_START_BIT_PAUSE_LEN_MAX             (uint_fast8_t)(F_INTERRUPTS * BOSE_START_BIT_PAUSE_TIME * MAX_TOLERANCE_40 + 0.5)
 #define BOSE_PULSE_LEN_MIN                       (uint_fast8_t)(F_INTERRUPTS * BOSE_PULSE_TIME * MIN_TOLERANCE_40 + 0.5) // 35
 #define BOSE_PULSE_LEN_MAX                       (uint_fast8_t)(F_INTERRUPTS * BOSE_PULSE_TIME * MAX_TOLERANCE_40 + 0.5) // 35
@@ -2636,7 +2636,7 @@ irmp_get_data (IRMP_DATA * irmp_data_p)
                 if ((irmp_command >> 8) == (~irmp_command & 0x00FF))
                 {
                     irmp_command &= 0xff;
-//                    irmp_command |= irmp_id << 8; // for samsung32 irmp_id looks to be the same as irmp_command
+                    irmp_command |= irmp_id << 8;
                     rtc = TRUE;
                 }
                 break;
@@ -2648,7 +2648,7 @@ irmp_get_data (IRMP_DATA * irmp_data_p)
                 break;
 #endif
 #endif
-
+/*
 #if IRMP_SUPPORT_SIRCS_PROTOCOL == 1
             case IRMP_SIRCS_PROTOCOL:
                 // Concatenate high byte of command and low byte of address
@@ -2664,7 +2664,7 @@ irmp_get_data (IRMP_DATA * irmp_data_p)
                 rtc = TRUE;
                 break;
 #endif
-
+*/
 #if IRMP_SUPPORT_NEC_PROTOCOL == 1
             case IRMP_NEC_PROTOCOL:
             case IRMP_APPLE_PROTOCOL:
@@ -2682,16 +2682,17 @@ irmp_get_data (IRMP_DATA * irmp_data_p)
                     irmp_protocol = IRMP_APPLE_PROTOCOL;
                     irmp_address = (irmp_command & 0xFF00) >> 8; // address was received in command!
                     irmp_command &= 0x00FF;
+                    rtc = TRUE;
                 }
                 else
                 {
                     ANALYZE_PRINTF1 ("Switching to ONKYO protocol\n");
                     irmp_protocol = IRMP_ONKYO_PROTOCOL;
+                    rtc = TRUE;
                 }
-                rtc = TRUE;
+                //rtc = TRUE; // nur das funzt nicht!
                 break;
 #endif
-
 
 #if IRMP_SUPPORT_VINCENT_PROTOCOL == 1
             case IRMP_VINCENT_PROTOCOL:
