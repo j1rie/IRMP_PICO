@@ -14,8 +14,8 @@ For testing purposes, a wire can be used instead of a TSOP.
 This eliminates errors from the TSOP and reveals other errors.
 
 # Recognition Quality
-The shorter the protocol's timings, the worse the recognition, because of artifacts introduced by the TSOP.
-A1TVBox is the worst.
-Lego is the second worst.
-Recs80(Ext) sometimes has some occasional dropouts.
+The shorter the protocol's timings, the worse the recognition, because of artifacts introduced by the TSOP.  
+A1TVBox is the worst.  
+Lego is the second worst.  
+Recs80(Ext) sometimes has some occasional dropouts.  
 The rest of it works well when using a good TSOP.
