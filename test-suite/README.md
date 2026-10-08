@@ -1,3 +1,4 @@
+# Testing
 test_snd_rcv_all_loop.sh sends a set of infrared codes 200 times and irmpconfig 
 in test mode receives them and writes them to files.
 compare_testfiles.sh compares these files with a reference file and shows the differences.
@@ -11,3 +12,10 @@ To receive all protocols, the IR receiver must be able to decode short bursts/ga
 
 For testing purposes, a wire can be used instead of a TSOP.
 This eliminates errors from the TSOP and reveals other errors.
+
+# Recognition Quality
+The shorter the protocol's timings, the worse the recognition, because of artifacts introduced by the TSOP.
+A1TVBox is the worst.
+Lego is the second worst.
+Recs80(Ext) sometimes has some occasional dropouts.
+The rest of it works well when using a good TSOP.
