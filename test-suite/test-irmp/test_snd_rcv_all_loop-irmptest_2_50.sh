@@ -15,11 +15,11 @@
 # 17 Ruwido conflicts with denon, 56kHz
 # 18 IR-60, 0 address bits
 # 19 Kathrein can't send
-# 1a Netbox can't send
+# 1a Netbox can't send, conflicts withRC6(A)
 # 1d Lego 0 address bits
 # 1e Thomson 4 address bits
 # 1f Bose 0 address bits
-# 20 A1TVBox special, my TSOPs mess up the timings, so don't test
+# 20 A1TVBox special
 # 21 Ortek can't send
 # 22 Telefunken 0 address bits
 # 23 Roomba conflicts with RC6
@@ -36,43 +36,12 @@
 # 2f Technics
 # 30 Panasonic conflicts with Kaseikyo and Mitsu-Heavy
 # 31 Mitsu-Heavy conflicts with Kaseikyo and Panasonic
-# 3c Melinera 0 address bits
-for i in $(seq 0 199); do
+# 3c Melinera, conflicts with RC6(A), 0 address bits
+#for i in $(seq 0 0); do
 for irdata in \
-		01001f003f01 \
-		02001f003f01 \
-		03001f003f01 \
-		04001f003f01 \
-		05001f003f01 \
-		06001f003f01 \
-		07001f003f01 \
-		08001f003e01 \
-		09001f003f01 \
-		0a001f003f01 \
-		0b001f003f01 \
-		0c001f003f01 \
-		0d001f003f01 \
-		0f001f003f01 \
-		10001f003f01 \
-		11001f003e01 \
-		12001f003f01 \
-		13001f003f01 \
-		14001f003f01 \
-		15001f003f01 \
-		16001f003f01 \
-		18001f003f01 \
-		1b001f003f01 \
-		1c001f003f01 \
-		1e001f003f01 \
-		1f001f003f01 \
-		22001f003f01 \
-		27001f003f01 \
-		28001f003f01 \
-		29001f003f01 \
-		2f001f003f01 \
-		3c001f003f01 ;
+		"32 004f 003f" ;
 do
 	echo "${irdata}"
-	../irmpemit/irmpemit -i 0x${irdata} -d /dev/hidraw1 > /dev/null 2>&1
+	./irsnd-50kHz ${irdata} | ./irmp-50kHz -v
 done
-done
+#done

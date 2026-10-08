@@ -26,7 +26,7 @@
  *---------------------------------------------------------------------------------------------------------------------------------------------------
  */
 #ifndef F_INTERRUPTS
-#  define F_INTERRUPTS                          25000   // interrupts per second
+#  define F_INTERRUPTS                          50000   // interrupts per second
 #endif
 
 #if ! defined(ARDUINO)

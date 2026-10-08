@@ -73,7 +73,7 @@ for irdata in \
 		"41 001f 003f" \
 		"47 001f 003f" ;
 do
-	echo "# ${irdata}"
+	echo "# [${irdata}]"
 	./irsnd-25kHz ${irdata}
 done
 #done

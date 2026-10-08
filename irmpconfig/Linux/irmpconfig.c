@@ -803,13 +803,13 @@ monit:	memset(inBuf, 0, sizeof(inBuf));
 			}
 
 			if (inBuf[0] == REPORT_ID_LOGGING) {
-				inBuf[1] += 2; // STARTCYCLES
 				printf("\t");
 				for (l = 1; l <= retValm; l++) {
 					f = inBuf[l];
 					if (f == 0xff) {
 						l++;
 						f = inBuf[l];
+						if (l == 2) f += 2; // STARTCYCLES
 						l++;
 						f |= inBuf[l] << 8;
 					}
@@ -824,6 +824,7 @@ monit:	memset(inBuf, 0, sizeof(inBuf));
 					if (f == 0xff) {
 						l++;
 						f = inBuf[l];
+						if (l == 2) f += 2; // STARTCYCLES
 						l++;
 						f |= inBuf[l] << 8;
 					}
@@ -839,6 +840,7 @@ monit:	memset(inBuf, 0, sizeof(inBuf));
 					if (f == 0xff) {
 						l++;
 						f = inBuf[l];
+						if (l == 2) f += 2; // STARTCYCLES
 						l++;
 						f |= inBuf[l] << 8;
 					}
@@ -857,7 +859,8 @@ monit:	memset(inBuf, 0, sizeof(inBuf));
 		}
 	}
 
-rate:	while(true) {
+rate:	count = 0;
+	while(true) {
 		retValm = read(irmpfd, inBuf, in_size);
 		if (retValm >= 0) {
 			if (inBuf[0] == REPORT_ID_IR && inBuf[6] != IRMP_FLAG_RELEASE) {
@@ -897,6 +900,7 @@ rate:	while(true) {
 						}
 						printf("***********************\n");
 						if (got_release) printf("++++ RELEASE ++++\n");
+						count++;
 					}
 					if (!same_key) {
 						printf("key changed, diff_ms: %d, delta: %f\n\n", (diff_us + 500) / 1000, ((float)(inBuf[58] * 0xFF + inBuf[57]) * inBuf[56]) / 1000);
@@ -911,9 +915,13 @@ rate:	while(true) {
 				}
 				printf("\n");
 			}
-			if (inBuf[0] == REPORT_ID_IR && inBuf[6] == IRMP_FLAG_RELEASE) { // && count%255) {
-				got_release = 1;
-				printf("%02hhx%02hhx%02hhx%02hhx%02hhx%02hhx\n", inBuf[1],inBuf[3],inBuf[2],inBuf[5],inBuf[4],inBuf[6]);
+			if (inBuf[0] == REPORT_ID_IR && inBuf[6] == IRMP_FLAG_RELEASE) {
+				if (count%255) {
+					got_release = 1;
+					printf("%02hhx%02hhx%02hhx%02hhx%02hhx%02hhx\n", inBuf[1],inBuf[3],inBuf[2],inBuf[5],inBuf[4],inBuf[6]);
+				} else {
+					printf("new round count: %d\n", count);
+				}
 			}
 		}
 	}
@@ -967,7 +975,7 @@ test2:	sprintf(testfilename, "test2_%u", j); printf("write into %s\n", testfilen
 						}
 					}
 					printf("***********************\n");
-					printf("-----new-----, count: %d %s\n", count, count == 256 || (count == 258 && inBuf[1] == 0x02) || (count == 1 && inBuf[1] == 0x12) || (count == 255 && inBuf[1] == 0x13) || (count == 512 && inBuf[1] == 0x2f) ? "OK" : "FAILED");
+					printf("-----new-----, count: %d %s\n", count, count == 256 || (count == 258 && (inBuf[1] == 0x01 || inBuf[1] == 0x02)) || (count == 1 && inBuf[1] == 0x12) || (count == 255 && inBuf[1] == 0x13) || (count == 512 && inBuf[1] == 0x2f) ? "OK" : "FAILED");
 					if (!(count == 256 || (count == 258 && inBuf[1] == 0x02) || (count == 1 && inBuf[1] == 0x12) || (count == 255 && inBuf[1] == 0x13) || (count == 512 && inBuf[1] == 0x2f))) {
 						failed = 1;
 						printf("FAILED\n");

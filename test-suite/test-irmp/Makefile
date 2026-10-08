@@ -1,17 +1,17 @@
 CXX ?= g++
 
-CXXFLAGS ?= -Wall -O -DF_INTERRUPTS=25000
+CXXFLAGS ?= -Wall -O -DF_INTERRUPTS=50000
 
 .c.o:
 	$(CXX) $(CXXFLAGS) -c $<
 
-irmp-25kHz: irmp.o
-	$(CXX) $(LDFLAGS) -o irmp-25kHz irmp.o
+irmp-50kHz: irmp.o
+	$(CXX) $(LDFLAGS) -o irmp-50kHz irmp.o
 
-irsnd-25kHz: irsnd.o
-	$(CXX) $(LDFLAGS) -o irsnd-25kHz irsnd.o
+irsnd-50kHz: irsnd.o
+	$(CXX) $(LDFLAGS) -o irsnd-50kHz irsnd.o
 
-all: irmp-25kHz irsnd-25kHz
+all: irmp-50kHz irsnd-50kHz
 
 clean:
-	rm -f *.o irmp-25kHz irsnd-25kHz
+	rm -f *.o irmp-50kHz irsnd-50kHz
