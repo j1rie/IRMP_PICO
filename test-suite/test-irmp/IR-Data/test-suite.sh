@@ -78,7 +78,6 @@ scan_10khz_files='
 
 scan_15khz_files='
     bo_beolink1000-15kHz.txt
-    bose_wave_system_15khz.txt
     denon-15kHz.txt
     denon-rc-176-15kHz.txt
     denon-rc-176-repeat-15kHz.txt
@@ -117,6 +116,9 @@ scan_20khz_files='
     rcmm-20kHz.txt
     saa3004-20kHz.txt
     telefunken-1560-20kHz.txt'
+
+scan_25khz_files='
+    25kHz.txt'
 
 for j in $scan_10khz_files
 do
@@ -164,6 +166,24 @@ do
         exit 1
     else
         if tmpsrc/irmp-20kHz -v < $j | grep -q checked
+        then
+            echo "checked!"
+        else
+            echo "successful"
+        fi
+    fi
+done
+
+for j in $scan_25khz_files
+do
+    echo -n "testing $j (16 BIT) ... "
+    if tmpsrc/irmp-25kHz -v < $j | grep -q error
+    then
+        tmpsrc/irmp-25kHz -v < $j | grep error
+        echo "test failed"
+        exit 1
+    else
+        if tmpsrc/irmp-25kHz -v < $j | grep -q checked
         then
             echo "checked!"
         else
