@@ -18,4 +18,5 @@ The shorter the protocol's timings, the worse the recognition, because of artifa
 A1TVBox is the worst.  
 Lego is the second worst.  
 Recs80(Ext) sometimes has some occasional dropouts.  
+Siemens has very few dropouts.  
 The rest of it works well when using a good TSOP.

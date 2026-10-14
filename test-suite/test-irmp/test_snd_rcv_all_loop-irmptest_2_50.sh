@@ -39,9 +39,9 @@
 # 3c Melinera, conflicts with RC6(A), 0 address bits
 #for i in $(seq 0 0); do
 for irdata in \
-		"32 004f 003f" ;
+		"16 001f 003f" ;
 do
-	echo "${irdata}"
+	echo "# [${irdata}]"
 	./irsnd-50kHz ${irdata} | ./irmp-50kHz -v
 done
 #done

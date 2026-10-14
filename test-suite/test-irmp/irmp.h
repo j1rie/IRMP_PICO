@@ -312,8 +312,8 @@ void irmp_register_complete_callback_function(void (*aCompleteCallbackFunction)(
 #  define IRMP_SUPPORT_GREE_PROTOCOL            0
 #endif
 
-#if F_INTERRUPTS > 25000
-# warning F_INTERRUPTS too high (should be not greater than 25000)
+#if F_INTERRUPTS > 50000
+# warning F_INTERRUPTS too high (should be not greater than 50000)
 #endif
 
 #include "irmpprotocols.h"

@@ -15,12 +15,14 @@ picoflash/*.bin
 irmpconfig/Linux/test*
 irmpemit/irmpemit
 testergebnisse*/
-test-suite/test_snd_rcv_all_loop3.sh
 test-suite/test_snd_rcv_all_loop4.sh
 test-suite/test_snd_rcv_all_loop5.sh
 test-suite/test_snd_rcv_all_loop6.sh
+test-suite/test_snd_rcv_all_loop7.sh
 irmpconfig/Linux/compare_testfiles.sh
 irmpconfig2/*
 test-suite/test-irmp/irmp-25kHz
 test-suite/test-irmp/irsnd-25kHz
 irmpconfig3/*
+#test-suite/test-irmp/test_snd_rcv_all_loop-irmptest_2_50.sh
+irmpconfig/Linux/test3*

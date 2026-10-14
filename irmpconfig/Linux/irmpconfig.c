@@ -190,7 +190,7 @@ int main(int argc, const char **argv) {
 	uint16_t uc_rate[256] = {0};
 	uint32_t now_us;
 	uint32_t last_us = 0;
-	uint32_t diff_us;
+	uint32_t diff_us = 0;
 	uint8_t rrBuf[12];
 	uint8_t first_time = 1;
 	int count = 0;
@@ -208,7 +208,7 @@ int main(int argc, const char **argv) {
 	outBuf[2] = ACC_GET;
 	goto caps;
 
-cont:	printf("set: wakeups, macros, IR-data, keys, repeat, send_after_wakeup, alarm, commit, statusled and neopixel(s)\nset by remote: wakeups, macros and IR-data (q)\nget: wakeups, macros, IR-data, keys, repeat, send_after_wakeup, alarm, capabilities, eeprom, raw eeprom and dirty eeprom from RP2xxx (g)\nreset: wakeups, macros, IR-data, keys, repeat, send_after_wakeup, alarm and eeprom (r)\nsend IR (i)\nreboot (b)\nmonitor until ^C (m)\nrepeat rate statistics until ^C (y)\nrun test (t)\nhid test (h)\nneopixel test (n)\nrun test2 (u)\nrun test_rc6a (6)\nexit (x)\n");
+cont:	printf("set: wakeups, macros, IR-data, keys, repeat, send_after_wakeup, alarm, commit, statusled and neopixel(s)\nset by remote: wakeups, macros and IR-data (q)\nget: wakeups, macros, IR-data, keys, repeat, send_after_wakeup, alarm, capabilities, eeprom, raw eeprom and dirty eeprom from RP2xxx (g)\nreset: wakeups, macros, IR-data, keys, repeat, send_after_wakeup, alarm and eeprom (r)\nsend IR (i)\nreboot (b)\nmonitor until ^C (m)\nrepeat rate statistics until ^C (y)\nrun test (t)\nhid test (h)\nneopixel test (n)\nrun test2 (u)\nrun test_rc6a (6)\nrun test3(z)\nexit (x)\n");
 	scanf("%s", &c);
 
 	switch (c) {
@@ -758,6 +758,11 @@ reset:		printf("reset wakeup(w)\nreset macro slot(m)\nreset IR-data(i)\nreset ke
 		goto test_rc6a;
 		break;
 
+	case 'z':
+		goto test3;
+		break;
+
+
 	case 'x':
 		goto exit;
 		break;
@@ -975,7 +980,7 @@ test2:	sprintf(testfilename, "test2_%u", j); printf("write into %s\n", testfilen
 						}
 					}
 					printf("***********************\n");
-					printf("-----new-----, count: %d %s\n", count, count == 256 || (count == 258 && (inBuf[1] == 0x01 || inBuf[1] == 0x02)) || (count == 1 && inBuf[1] == 0x12) || (count == 255 && inBuf[1] == 0x13) || (count == 512 && inBuf[1] == 0x2f) ? "OK" : "FAILED");
+					printf("-----new-----, count: %d %s\n", count, count == 256 || (count == 258 && (inBuf[1] == 0x02)) || (count == 1 && inBuf[1] == 0x12) || (count == 255 && inBuf[1] == 0x13) || (count == 512 && inBuf[1] == 0x2f) ? "OK" : "FAILED");
 					if (!(count == 256 || (count == 258 && inBuf[1] == 0x02) || (count == 1 && inBuf[1] == 0x12) || (count == 255 && inBuf[1] == 0x13) || (count == 512 && inBuf[1] == 0x2f))) {
 						failed = 1;
 						printf("FAILED\n");
@@ -1087,6 +1092,64 @@ test_rc6a: memset(inBuf, 0, sizeof(inBuf));
 			diff_us = now_us - last_us;
 			if (!last_ir_was_rc6a) printf("\tdiff: %.2f\n\n", (double)(diff_us) / 1000);
 			last_us = now_us;
+		}
+	}
+
+test3:	sprintf(testfilename, "test3_%u", j); printf("write into %s\n", testfilename); // if directory, it needs to exist (or be created)!
+	fp = fopen(testfilename, "w");
+count = 0;
+	rrBuf[0] = 0xFF;
+	while(true) {
+		retValm = read(irmpfd, inBuf, in_size);
+		if (retValm >= 0) {
+			if (inBuf[0] == REPORT_ID_IR) {
+				now_us = GetUsTicks();
+				diff_us = now_us - last_us;
+				last_us = now_us;
+				if (inBuf[1] != rrBuf[0]) {
+					printf("\n\n%02hhx%02hhx%02hhx%02hhx%02hhx%02hhx\n", inBuf[1],inBuf[3],inBuf[2],inBuf[5],inBuf[4],inBuf[6]);
+					printf("protocol changed, diff_ms: %d\n", (diff_us + 500) / 1000);
+					fprintf(fp, "\n\n%02hhx%02hhx%02hhx%02hhx%02hhx%02hhx\n", inBuf[1],inBuf[3],inBuf[2],inBuf[5],inBuf[4],inBuf[6]);
+					fprintf(fp, "protocol changed, diff_ms: %d\n", (diff_us + 500) / 1000);
+					for(l=0;l<5;l++) {
+						rrBuf[l] = inBuf[l+1];
+					}
+					count = 0;
+					continue;
+				}
+				uint8_t same_key = inBuf[2] == rrBuf[1] && inBuf[3] == rrBuf[2] && inBuf[4] == rrBuf[3] && inBuf[5] == rrBuf[4];
+				if (!same_key) {
+					printf("\n%02hhx%02hhx%02hhx%02hhx%02hhx%02hhx   delta: %f min_delta: %f max_delta: %f upper_border: %f same key: %d timeout: %d repeat detected: %d\n", inBuf[1],inBuf[3],inBuf[2],inBuf[5],inBuf[4],inBuf[6], ((float)(inBuf[58] * 0xFF + inBuf[57]) * inBuf[56]) / 1000, ((float)(inBuf[53] * 0xFF + inBuf[52]) * inBuf[56]) / 1000, ((float)(inBuf[49] * 0xFF + inBuf[48]) * inBuf[56]) / 1000, ((float)(inBuf[51] * 0xFF + inBuf[50]) * inBuf[56]) / 1000, inBuf[54], inBuf[61], inBuf[60]);
+					printf("key changed, diff_ms: %d, delta: %f, count: %d\n", (diff_us + 500) / 1000, ((float)(inBuf[58] * 0xFF + inBuf[57]) * inBuf[56]) / 1000, count);
+					fprintf(fp, "\n%02hhx%02hhx%02hhx%02hhx%02hhx%02hhx   delta: %f min_delta: %f max_delta: %f upper_border: %f same key: %d timeout: %d repeat detected: %d\n", inBuf[1],inBuf[3],inBuf[2],inBuf[5],inBuf[4],inBuf[6], ((float)(inBuf[58] * 0xFF + inBuf[57]) * inBuf[56]) / 1000, ((float)(inBuf[53] * 0xFF + inBuf[52]) * inBuf[56]) / 1000, ((float)(inBuf[49] * 0xFF + inBuf[48]) * inBuf[56]) / 1000, ((float)(inBuf[51] * 0xFF + inBuf[50]) * inBuf[56]) / 1000, inBuf[54], inBuf[61], inBuf[60]);
+					fprintf(fp, "key changed, diff_ms: %d, delta: %f, count: %d\n", (diff_us + 500) / 1000, ((float)(inBuf[58] * 0xFF + inBuf[57]) * inBuf[56]) / 1000, count);
+					for(l=1;l<5;l++) {
+						rrBuf[l] = inBuf[l+1];
+					}
+					continue;
+				}
+				if (inBuf[6] == IRMP_FLAG_REPETITION) {
+					count++;
+					printf("repetition count: %d\r", count);
+					fprintf(fp, "repetition count: %d\r", count);
+				}
+				else if (inBuf[6] == IRMP_FLAG_NEW) {
+					printf("\n%02hhx%02hhx%02hhx%02hhx%02hhx%02hhx   delta: %f min_delta: %f max_delta: %f upper_border: %f same key: %d timeout: %d repeat detected: %d\n", inBuf[1],inBuf[3],inBuf[2],inBuf[5],inBuf[4],inBuf[6], ((float)(inBuf[58] * 0xFF + inBuf[57]) * inBuf[56]) / 1000, ((float)(inBuf[53] * 0xFF + inBuf[52]) * inBuf[56]) / 1000, ((float)(inBuf[49] * 0xFF + inBuf[48]) * inBuf[56]) / 1000, ((float)(inBuf[51] * 0xFF + inBuf[50]) * inBuf[56]) / 1000, inBuf[54], inBuf[61], inBuf[60]);
+					printf("new key, diff_ms: %d, delta: %f, count: %d\n", (diff_us + 500) / 1000, ((float)(inBuf[58] * 0xFF + inBuf[57]) * inBuf[56]) / 1000, count);
+					fprintf(fp, "\n%02hhx%02hhx%02hhx%02hhx%02hhx%02hhx   delta: %f min_delta: %f max_delta: %f upper_border: %f same key: %d timeout: %d repeat detected: %d\n", inBuf[1],inBuf[3],inBuf[2],inBuf[5],inBuf[4],inBuf[6], ((float)(inBuf[58] * 0xFF + inBuf[57]) * inBuf[56]) / 1000, ((float)(inBuf[53] * 0xFF + inBuf[52]) * inBuf[56]) / 1000, ((float)(inBuf[49] * 0xFF + inBuf[48]) * inBuf[56]) / 1000, ((float)(inBuf[51] * 0xFF + inBuf[50]) * inBuf[56]) / 1000, inBuf[54], inBuf[61], inBuf[60]);
+					fprintf(fp, "new key, diff_ms: %d, delta: %f, count: %d\n", (diff_us + 500) / 1000, ((float)(inBuf[58] * 0xFF + inBuf[57]) * inBuf[56]) / 1000, count);
+				}
+				else if (inBuf[6] == IRMP_FLAG_RELEASE) {
+				printf("\n%02hhx%02hhx%02hhx%02hhx%02hhx%02hhx   delta: %f min_delta: %f max_delta: %f upper_border: %f same key: %d timeout: %d repeat detected: %d\n", inBuf[1],inBuf[3],inBuf[2],inBuf[5],inBuf[4],inBuf[6], ((float)(inBuf[58] * 0xFF + inBuf[57]) * inBuf[56]) / 1000, ((float)(inBuf[53] * 0xFF + inBuf[52]) * inBuf[56]) / 1000, ((float)(inBuf[49] * 0xFF + inBuf[48]) * inBuf[56]) / 1000, ((float)(inBuf[51] * 0xFF + inBuf[50]) * inBuf[56]) / 1000, inBuf[54], inBuf[61], inBuf[60]);
+				printf("++++ release ++++ diff_ms: %d\n", (diff_us + 500) / 1000);
+				fprintf(fp, "\n%02hhx%02hhx%02hhx%02hhx%02hhx%02hhx   delta: %f min_delta: %f max_delta: %f upper_border: %f same key: %d timeout: %d repeat detected: %d\n", inBuf[1],inBuf[3],inBuf[2],inBuf[5],inBuf[4],inBuf[6], ((float)(inBuf[58] * 0xFF + inBuf[57]) * inBuf[56]) / 1000, ((float)(inBuf[53] * 0xFF + inBuf[52]) * inBuf[56]) / 1000, ((float)(inBuf[49] * 0xFF + inBuf[48]) * inBuf[56]) / 1000, ((float)(inBuf[51] * 0xFF + inBuf[50]) * inBuf[56]) / 1000, inBuf[54], inBuf[61], inBuf[60]);
+				fprintf(fp, "++++ release ++++ diff_ms: %d count: %d\n", (diff_us + 500) / 1000, count);
+				fflush(fp);
+				}
+				if (inBuf[1] == 0x3c && inBuf[3] == 0 && inBuf[2] == 0 && inBuf[5] == 0 && inBuf[4] == 0x3f && inBuf[6] == 0) { // 3c0000003f00, stopsequence TODO make configurable
+					fclose(fp);
+				}
+			}
 		}
 	}
 

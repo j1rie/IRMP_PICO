@@ -904,7 +904,8 @@ int main(void)
 	IRMP_DATA myIRData, oldIRData;
 	int8_t ret;
 	uint8_t last_magic_sent = 0;
-	uint16_t key, last_kbd_sent, last_ir_sent;
+	uint16_t key;
+	uint32_t last_kbd_sent, last_ir_sent;
 	uint8_t num, ir_release_needed = 0, kbd_release_needed = 0, send_ir_needed = 0, send_key_needed = 0;
 	uint8_t old_usb_state_color = usb_state_color;
 
@@ -1041,14 +1042,14 @@ int main(void)
 
 		/* send ir release */
 		// since last time >= timeout
-		if (PrevXferComplete && ir_release_needed && (repeat_timer - last_ir_sent > (get_repeat(release) ? get_repeat(release) : upper_border * INV_F_INT_US / 1000) + 4)) { // ticks to ms, compensate repeat_timer 1 ms precision and division inaccuracy
+		if (PrevXferComplete && ir_release_needed && (repeat_timer - last_ir_sent > (get_repeat(release) ? get_repeat(release) : upper_border * INV_F_INT_US / 1000) + 2)) { // ticks to ms, compensate repeat_timer 1 ms precision and division inaccuracy
 			ir_release_needed = 0;
 			USB_HID_SendData(REPORT_ID_IR, (uint8_t *) &oldIRData, sizeof(oldIRData));
 		}
 
 		/* send kbd release */
 		// since last time >= timeout
-		if (PrevXferComplete && kbd_release_needed && (repeat_timer - last_kbd_sent >= (get_repeat(release) ? get_repeat(release) : upper_border * INV_F_INT_US / 1000) + 4)) { // ticks to ms
+		if (PrevXferComplete && kbd_release_needed && (repeat_timer - last_kbd_sent >= (get_repeat(release) ? get_repeat(release) : upper_border * INV_F_INT_US / 1000) + 2)) { // ticks to ms
 			kbd_release_needed = 0;
 			USB_KBD_SendData(0, 0);
 		}

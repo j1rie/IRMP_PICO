@@ -18,4 +18,5 @@ Je kürzer die Timings des Protokolls sind, desto schlechter ist die Erkennung a
 A1TVBox ist am am schlechtesten.  
 Lego ist am zweitschlechtestem.  
 Recs80(Ext) hat manchmal Aussetzer.  
+Siemens hat sehr selten Aussetzer.  
 Der Rest funktioniert gut, wenn ein guter TSOP verwendet wird.

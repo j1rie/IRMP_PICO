@@ -577,7 +577,7 @@ volatile uint8_t                                irsnd_is_on = FALSE;
 
 static volatile uint8_t                         irsnd_protocol = 0;
 static volatile uint8_t                         irsnd_buffer[11] = {0};
-static volatile uint8_t                         irsnd_repeat = 0;
+static volatile LEN_T                           irsnd_repeat = 0;
 
 #if defined(ARDUINO)
 #include "irsndArduinoExt.cpp.h" // must be after the declarations of irsnd_busy etc.
@@ -1249,8 +1249,13 @@ irsnd_send_data (IRMP_DATA * irmp_data_p, uint8_t do_wait)
         return (FALSE);
     }
 
-    irsnd_protocol  = irmp_data_p->protocol;
+    irsnd_protocol  = irmp_data_p->protocol & ~0x80; // hack for testing
     irsnd_repeat    = irmp_data_p->flags & IRSND_REPETITION_MASK;
+
+        if (irmp_data_p->protocol & 0x80) // hack for testing
+        {
+            irsnd_repeat = 20000;
+        }
 
     switch (irsnd_protocol)
     {
@@ -1937,19 +1942,19 @@ irsnd_ISR (void)
     static IRSND_PAUSE_LEN      pause_counter                   = 0;
     static LEN_T                startbit_pulse_len              = 0;
     static IRSND_PAUSE_LEN      startbit_pause_len              = 0;
-    static LEN_T               pulse_1_len                     = 0;
-    static LEN_T               pause_1_len                     = 0;
-    static LEN_T               pulse_0_len                     = 0;
-    static LEN_T               pause_0_len                     = 0;
+    static LEN_T                pulse_1_len                     = 0;
+    static LEN_T                pause_1_len                     = 0;
+    static LEN_T                pulse_0_len                     = 0;
+    static LEN_T                pause_0_len                     = 0;
     static uint8_t              has_stop_bit                    = 0;
     static uint8_t              new_frame                       = TRUE;
-    static LEN_T               complete_data_len               = 0;
-    static uint8_t              n_repeat_frames                 = 0;                                // number of repetition frames
+    static LEN_T                complete_data_len               = 0;
+    static LEN_T                n_repeat_frames                 = 0;                                // number of repetition frames
     static uint16_t             n_auto_repetitions              = 0;                                // number of frames inclusive auto_repetition frames
     static uint16_t             auto_repetition_counter         = 0;                                // auto_repetition counter
     static uint16_t             auto_repetition_pause_len       = 0;                                // pause before auto_repetition, uint16_t!
     static uint16_t             auto_repetition_pause_counter   = 0;                                // pause before auto_repetition, uint16_t!
-    static uint8_t              repeat_counter                  = 0;                                // repeat counter
+    static LEN_T                repeat_counter                  = 0;                                // repeat counter
     static uint16_t             repeat_frame_pause_len          = 0;                                // pause before repeat, uint16_t!
     static uint16_t             packet_repeat_pause_counter     = 0;                                // pause before repeat, uint16_t!
 #if IRSND_SUPPORT_BANG_OLUFSEN_PROTOCOL == 1
