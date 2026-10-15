@@ -48,6 +48,9 @@ extern uint8_t *bufptr;
 extern volatile uint8_t USB_HID_Data_Received;
 extern volatile uint8_t PrevXferComplete;
 extern volatile uint8_t usb_state_color;
+extern uint8_t *log_buf_ptr;
+extern volatile uint8_t log_buf_ready;
+extern volatile uint16_t log_buf_len;
 
 extern void USB_HID_SendData(uint8_t Report_ID, uint8_t *ptr, uint8_t len);
 extern void USB_KBD_SendData(uint8_t modifier, uint8_t key);

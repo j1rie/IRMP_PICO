@@ -16,6 +16,9 @@ uint8_t *bufptr; // maybe copying the data into buf would be better? but using t
 volatile uint8_t USB_HID_Data_Received = 0;
 volatile uint8_t PrevXferComplete = 1;
 volatile uint8_t usb_state_color = off;
+uint8_t *log_buf_ptr;
+volatile uint8_t log_buf_ready;
+volatile uint16_t log_buf_len;
 
 void USB_HID_SendData(uint8_t Report_ID, uint8_t *ptr, uint8_t len)
 {

@@ -131,6 +131,7 @@ public:
 #define IRMP_FLAG_NEW                   0x00
 #define IRMP_FLAG_REPETITION            0x01
 #define IRMP_FLAG_RELEASE               0x02
+#define IRMP_FLAG_FORCE_RELEASE         0x04
 
 private:
 	FXList *device_list;
@@ -1193,7 +1194,7 @@ MainWindow::Read(int show_len)
 long
 MainWindow::onReadIR(FXObject *sender, FXSelector sel, void *ptr)
 {
-	int read, release = 0;
+	int read, release = 0, force_release = 0;
 	read = Read(7);
 	if(read == -1)
 		return -1;
@@ -1205,19 +1206,23 @@ MainWindow::onReadIR(FXObject *sender, FXSelector sel, void *ptr)
 	if (buf[0] == REPORT_ID_IR) {
 		// Repeat Counter
 		if(ReceiveActive) {
-			if (buf[6] == IRMP_FLAG_NEW) {
+			if ((buf[6] & IRMP_FLAG_REPETITION) == IRMP_FLAG_NEW) {
 				RepeatCounter = 0;
-			} else if (buf[6] == IRMP_FLAG_REPETITION) {
+			} else if ((buf[6] & IRMP_FLAG_REPETITION) == IRMP_FLAG_REPETITION) {
 				RepeatCounter++;
-			} else if (buf[6] == IRMP_FLAG_RELEASE) {
+			} else if ((buf[6] & IRMP_FLAG_RELEASE) == IRMP_FLAG_RELEASE) {
 				release = 1;
+			} else if ((buf[6] & IRMP_FLAG_FORCE_RELEASE) == IRMP_FLAG_FORCE_RELEASE) {
+				force_release = 1;
 			}
 			FXString u;
-			if (!release) {
+			if (!release && !force_release) {
 				u.format("RepeatCounter: %d \n", RepeatCounter);
 				debug_messages_text->appendText(u);
-			} else
+			} else if (release)
 				debug_messages_text->appendText("Release\n");
+			} else if (force_release)
+				debug_messages_text->appendText("Force Release\n");
 			debug_messages_text->setBottomLine(INT_MAX);
 			receive_ir_button->setBackColor(FXRGB(255,23,23));
 			g_main_window->repaint();

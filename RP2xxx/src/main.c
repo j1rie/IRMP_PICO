@@ -948,6 +948,14 @@ int main(void)
 			last_magic_sent = send_after_wakeup;
 		}
 
+		if (log_buf_ready) {
+			for (int offset = 0; offset < log_buf_len; offset += HID_IN_REPORT_COUNT - 1) {
+				USB_HID_SendData(REPORT_ID_LOGGING, log_buf_ptr + offset, log_buf_len - offset < HID_IN_REPORT_COUNT - 1 ? log_buf_len - offset : HID_IN_REPORT_COUNT - 1);
+				while (!PrevXferComplete) tud_task();
+			}
+			log_buf_ready = 0;
+		}
+
 		/* test if configuration command is received */
 		if(PrevXferComplete && USB_HID_Data_Received && *bufptr == REPORT_ID_CONFIG_OUT && *(bufptr+1) == STAT_CMD) {
 			USB_HID_Data_Received = 0;
@@ -988,8 +996,8 @@ int main(void)
 
 		/* poll IR-data */
 		if (PrevXferComplete && irmp_get_data(&myIRData)) {
-			if (myIRData.flags == IRMP_FLAG_NEW ) { // new
-				if (ir_release_needed) { // generate release for previous not yet released IR-data
+			if ((myIRData.flags & IRMP_FLAG_REPETITION) == IRMP_FLAG_NEW ) { // new
+				if (myIRData.flags & IRMP_FLAG_FORCE_RELEASE) { // generate release for previous not yet released IR-data
 					USB_HID_SendData(REPORT_ID_IR, (uint8_t *) &oldIRData, sizeof(oldIRData));
 					while (!PrevXferComplete) tud_task();
 				}
@@ -1005,9 +1013,8 @@ int main(void)
 				check_reboot(&myIRData);
 				memcpy(&oldIRData, &myIRData, sizeof(oldIRData));
 				oldIRData.flags = IRMP_FLAG_RELEASE;
-				ir_release_needed = 1;
 			}
-			else if (myIRData.flags == IRMP_FLAG_REPETITION) { // repeat, or possibly unrecognized new if non toggling protocol
+			else if ((myIRData.flags & IRMP_FLAG_REPETITION) == IRMP_FLAG_REPETITION) { // repeat, or possibly unrecognized new if non toggling protocol
 				// since  first time, since last time
 				if ((repeat_timer < get_repeat(delay)) || (repeat_timer - last_ir_sent) < get_repeat(period)) {
 					continue; // don't send key
@@ -1021,8 +1028,6 @@ int main(void)
 		if (PrevXferComplete && send_ir_needed) {
 			send_ir_needed = 0;
 			USB_HID_SendData(REPORT_ID_IR, (uint8_t *) &myIRData, sizeof(myIRData));
-			// last time
-			last_ir_sent = repeat_timer;
 		}
 
 		/* send key corresponding to IR-data */
@@ -1038,13 +1043,6 @@ int main(void)
 					last_kbd_sent = repeat_timer;
 				}
 			}
-		}
-
-		/* send ir release */
-		// since last time >= timeout
-		if (PrevXferComplete && ir_release_needed && (repeat_timer - last_ir_sent > (get_repeat(release) ? get_repeat(release) : upper_border * INV_F_INT_US / 1000) + 2)) { // ticks to ms, compensate repeat_timer 1 ms precision and division inaccuracy
-			ir_release_needed = 0;
-			USB_HID_SendData(REPORT_ID_IR, (uint8_t *) &oldIRData, sizeof(oldIRData));
 		}
 
 		/* send kbd release */

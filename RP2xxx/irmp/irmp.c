@@ -1192,11 +1192,10 @@ irmp_log (uint_fast8_t val)
                 if (val && cnt > ENDBITS)                                   // if high received then look at log-stop condition
                 {                                                           // if stop condition is true, output on uart
                     buf[buf_idx] = 0;                                       // terminate
-                    USB_HID_SendData(REPORT_ID_LOGGING, &buf[1], HID_IN_REPORT_COUNT - 1); // buf[1] += 2; in app for ignored starting zeros by STARTCYCLES! 0xff handeln! TODO: falls buf_idx > HID_IN_REPORT_COUNT - 1 in mehreren Portionen senden?!
-                    /*if (buf_idx > HID_IN_REPORT_COUNT - 1) { // hängt sich auf!
-                        while (!PrevXferComplete) tud_task();
-                        USB_HID_SendData(REPORT_ID_LOGGING, &buf[HID_IN_REPORT_COUNT], HID_IN_REPORT_COUNT - 1);
-                    }*/
+                    log_buf_len = buf_idx;
+                    log_buf_ptr = &buf[1];
+                    log_buf_ready = 1;
+                    //USB_HID_SendData(REPORT_ID_LOGGING, &buf[1], HID_IN_REPORT_COUNT - 1); // buf[1] += 2; in app for ignored starting zeros by STARTCYCLES! 0xff handeln!
                     /*uint_fast8_t     i8;
                     uint_fast16_t    i;
                     uint_fast16_t    j;
@@ -2493,6 +2492,7 @@ volatile uint_fast8_t                           same_key = 0;
 volatile uint_fast8_t                           keep_same_key = 0;
 volatile uint_fast8_t                           timeout = 1;
 volatile uint32_t                               upper_border = F_INTERRUPTS * 170 / 1000 * (100 + JITTER_COMPENSATION) / 100;     // repeatrate plus jitter (threshold for timeout)
+uint_fast8_t                                    release_pending = FALSE;
 #endif
 
 #if defined(__MBED__)
@@ -2640,7 +2640,7 @@ irmp_get_data (IRMP_DATA * irmp_data_p)
                 if ((irmp_command >> 8) == (~irmp_command & 0x00FF))
                 {
                     irmp_command &= 0xff;
-                    irmp_command |= irmp_id << 8;
+                    irmp_command |= irmp_id << 8; // for samsung32 irmp_id looks to be the same as irmp_command
                     rtc = TRUE;
                 }
                 break;
@@ -2909,6 +2909,15 @@ irmp_get_data (IRMP_DATA * irmp_data_p)
                 }
                 keep_same_key = same_key;
                 same_key = 0;
+            }
+
+            if ((irmp_flags & IRMP_FLAG_RELEASE) == IRMP_FLAG_RELEASE) {
+                release_pending = FALSE;
+            }
+            else if ((irmp_flags & IRMP_FLAG_REPETITION) == IRMP_FLAG_NEW) {
+                if (release_pending)
+                    irmp_flags |= IRMP_FLAG_FORCE_RELEASE;
+                release_pending = TRUE;
             }
 #endif
 
