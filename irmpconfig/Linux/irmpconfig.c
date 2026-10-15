@@ -805,9 +805,9 @@ monit:	memset(inBuf, 0, sizeof(inBuf));
 				F_INTERRUPTS = inBuf[63] << 8 | inBuf[62];
 				printf("converted to protocoladdresscommandflag:\n\t");
 				printf("%02hhx%02hhx%02hhx%02hhx%02hhx%02hhx   delta: %f min_delta: %f max_delta: %f upper_border: %f same key: %d timeout: %d repeat detected: %d\n", inBuf[1],inBuf[3],inBuf[2],inBuf[5],inBuf[4],inBuf[6], ((float)(inBuf[58] * 0xFF + inBuf[57]) * inBuf[56]) / 1000, ((float)(inBuf[53] * 0xFF + inBuf[52]) * inBuf[56]) / 1000, ((float)(inBuf[49] * 0xFF + inBuf[48]) * inBuf[56]) / 1000, ((float)(inBuf[51] * 0xFF + inBuf[50]) * inBuf[56]) / 1000, inBuf[54], inBuf[61], inBuf[60]);
-				if (inBuf[6] == IRMP_FLAG_RELEASE)
+				if ((inBuf[6] & IRMP_FLAG_RELEASE) == IRMP_FLAG_RELEASE)
 					printf("release\n");
-				if (inBuf[6] == IRMP_FLAG_FORCE_RELEASE)
+				if ((inBuf[6] & IRMP_FLAG_FORCE_RELEASE) == IRMP_FLAG_FORCE_RELEASE)
 					printf("force release\n");
 			}
 
@@ -873,7 +873,7 @@ rate:	count = 0;
 	while(true) {
 		retValm = read(irmpfd, inBuf, in_size);
 		if (retValm >= 0) {
-			if (inBuf[0] == REPORT_ID_IR && inBuf[6] != IRMP_FLAG_RELEASE) {
+			if (inBuf[0] == REPORT_ID_IR && (inBuf[6] & IRMP_FLAG_RELEASE) != IRMP_FLAG_RELEASE) {
 				printf("%02hhx%02hhx%02hhx%02hhx%02hhx%02hhx\n", inBuf[1],inBuf[3],inBuf[2],inBuf[5],inBuf[4],inBuf[6]);
 				now_us = GetUsTicks();
 				diff_us = now_us - last_us;
@@ -889,7 +889,7 @@ rate:	count = 0;
 						goto exit;
 					}
 					uint8_t same_key = inBuf[2] == rrBuf[1] && inBuf[3] == rrBuf[2] && inBuf[4] == rrBuf[3] && inBuf[5] == rrBuf[4];
-					if (same_key && inBuf[6] == IRMP_FLAG_REPETITION) {
+					if (same_key && (inBuf[6] & IRMP_FLAG_REPETITION) == IRMP_FLAG_REPETITION) {
 						if ((diff_us + 500) / 1000 <= 255) {
 							pc_rate[(diff_us + 500) / 1000]++;
 							uc_rate[(((inBuf[58] * 0xFF + inBuf[57]) * inBuf[56]) + 500) / 1000]++;
@@ -920,17 +920,17 @@ rate:	count = 0;
 						}
 						continue;
 					}
-					if (inBuf[6] == IRMP_FLAG_NEW) {
+					if ((inBuf[6] & IRMP_FLAG_REPETITION) == IRMP_FLAG_NEW) {
 						printf("new key, diff_ms: %d, delta: %f\n", (diff_us + 500) / 1000, ((float)(inBuf[58] * 0xFF + inBuf[57]) * inBuf[56]) / 1000);
 					}
-					if (inBuf[6] == IRMP_FLAG_FORCE_RELEASE) {
+					if ((inBuf[6] & IRMP_FLAG_FORCE_RELEASE) == IRMP_FLAG_FORCE_RELEASE) {
 						printf("force new key, diff_ms: %d, delta: %f\n", (diff_us + 500) / 1000, ((float)(inBuf[58] * 0xFF + inBuf[57]) * inBuf[56]) / 1000);
 						got_force = 1;
 					}
 				}
 				printf("\n");
 			}
-			if (inBuf[0] == REPORT_ID_IR && inBuf[6] == IRMP_FLAG_RELEASE) {
+			if (inBuf[0] == REPORT_ID_IR && (inBuf[6]& IRMP_FLAG_RELEASE) == IRMP_FLAG_RELEASE) {
 				got_release = 1;
 				printf("%02hhx%02hhx%02hhx%02hhx%02hhx%02hhx\n", inBuf[1],inBuf[3],inBuf[2],inBuf[5],inBuf[4],inBuf[6]);
 			}
@@ -944,7 +944,7 @@ test:	sprintf(testfilename, "test%u", j); printf("write into %s\n", testfilename
 		if (retValm >= 0 && inBuf[0] == REPORT_ID_IR) {
 			printf("%02hhx%02hhx%02hhx%02hhx%02hhx%02hhx\n", inBuf[1],inBuf[3],inBuf[2],inBuf[5],inBuf[4],inBuf[6]);
 			fprintf(fp, "%02hhx%02hhx%02hhx%02hhx%02hhx%02hhx\n", inBuf[1],inBuf[3],inBuf[2],inBuf[5],inBuf[4],inBuf[6]);
-			if (inBuf[1] == 0x3c && inBuf[3] == 0 && inBuf[2] == 0 && inBuf[5] == 0 && inBuf[4] == 0x3f && inBuf[6] == 2) { // 3c0000003f02, stopsequence TODO make configurable
+			if (inBuf[1] == 0x3c && inBuf[3] == 0 && inBuf[2] == 0 && inBuf[5] == 0 && inBuf[4] == 0x3f && (inBuf[6] & IRMP_FLAG_RELEASE) == 2) { // 3c0000003f02, stopsequence TODO make configurable
 				printf("received stopsequence\n");
 				fclose(fp);
 				j++;
@@ -971,12 +971,12 @@ test2:	sprintf(testfilename, "test2_%u", j); printf("write into %s\n", testfilen
 				}
 			} else {
 				uint8_t same_key = inBuf[1] == rrBuf[0] && inBuf[2] == rrBuf[1] && inBuf[3] == rrBuf[2] && inBuf[4] == rrBuf[3] && inBuf[5] == rrBuf[4];
-				if (same_key && (inBuf[6] & ~IRMP_FLAG_FORCE_RELEASE) != IRMP_FLAG_NEW) {
+				if (same_key && (inBuf[6] & IRMP_FLAG_REPETITION) != IRMP_FLAG_NEW) {
 					if (!count) fprintf(fp, "%02hhx%02hhx%02hhx%02hhx%02hhx%02hhx\n", inBuf[1],inBuf[3],inBuf[2],inBuf[5],inBuf[4],inBuf[6]);
 					count++;
 					uc_rate[(((inBuf[58] * 0xFF + inBuf[57]) * inBuf[56]) + 500) / 1000]++;
 					}
-				else if ((inBuf[6] & ~IRMP_FLAG_FORCE_RELEASE) == IRMP_FLAG_NEW) {
+				else if ((inBuf[6] & IRMP_FLAG_REPETITION) == IRMP_FLAG_NEW) {
 					printf("*** uc rate - count ***\n");
 					fprintf(fp, "*** uc rate - count ***\n");
 					for(l=0;l<255;l++) {
@@ -1006,13 +1006,13 @@ test2:	sprintf(testfilename, "test2_%u", j); printf("write into %s\n", testfilen
 					}
 					count = 0;
 				}
-				if (inBuf[6] == IRMP_FLAG_FORCE_RELEASE) {
+				if ((inBuf[6] & IRMP_FLAG_FORCE_RELEASE) == IRMP_FLAG_FORCE_RELEASE) {
 					printf("IRMP_FLAG_FORCE_RELEASE\n");
 					fprintf(fp, "IRMP_FLAG_FORCE_RELEASE\n");
 					failed = 1;
 					printf("FAILED\n");
 				}
-				if (inBuf[1] == 0x3c && inBuf[3] == 0 && inBuf[2] == 0 && inBuf[5] == 0 && inBuf[4] == 0x3f && inBuf[6] == 2) { // 3c0000003f02, stopsequence TODO make configurable
+				if (inBuf[1] == 0x3c && inBuf[3] == 0 && inBuf[2] == 0 && inBuf[5] == 0 && inBuf[4] == 0x3f && (inBuf[6] & IRMP_FLAG_RELEASE) == 2) { // 3c0000003f02, stopsequence TODO make configurable
 					printf("-----STOP----- count: %d %s\n", count, count == 256 ? "OK" : "");
 					fprintf(fp, "-----STOP----- count: %d %s\n", count, count == 256 ? "OK" : "");
 					printf("TEST %s\n", failed ? "FAILED" : "PASSED");
@@ -1044,7 +1044,7 @@ test_rc6a: memset(inBuf, 0, sizeof(inBuf));
 				if (inBuf[1] != 0x15) { // !RC6A
 					printf("converted to protocoladdresscommandflag:\n\t");
 					printf("%02hhx%02hhx%02hhx%02hhx%02hhx%02hhx   delta: %f min_delta: %f max_delta: %f upper_border: %f same key: %d timeout: %d repeat detected: %d\n", inBuf[1],inBuf[3],inBuf[2],inBuf[5],inBuf[4],inBuf[6], ((float)(inBuf[58] * 0xFF + inBuf[57]) * inBuf[56]) / 1000, ((float)(inBuf[53] * 0xFF + inBuf[52]) * inBuf[56]) / 1000, ((float)(inBuf[49] * 0xFF + inBuf[48]) * inBuf[56]) / 1000, ((float)(inBuf[51] * 0xFF + inBuf[50]) * inBuf[56]) / 1000, inBuf[54], inBuf[61], inBuf[60]);
-					if (inBuf[6] == IRMP_FLAG_RELEASE)
+					if ((inBuf[6] & IRMP_FLAG_RELEASE) == IRMP_FLAG_RELEASE)
 						printf("release\n");
 					last_ir_was_rc6a = 0;
 				} else {
@@ -1140,33 +1140,32 @@ test3:	sprintf(testfilename, "test3_%u", j); printf("write into %s\n", testfilen
 					}
 					continue;
 				}
-				if (inBuf[6] == IRMP_FLAG_REPETITION) {
+				if ((inBuf[6] & IRMP_FLAG_REPETITION) == IRMP_FLAG_REPETITION) {
 					count++;
 					printf("repetition count: %d\r", count);
 					//fprintf(fp, "repetition count: %d\r", count);
 				}
-				else if (inBuf[6] == IRMP_FLAG_NEW) {
+				else if ((inBuf[6] & IRMP_FLAG_REPETITION) == IRMP_FLAG_NEW) {
 					count++; // since it is the same key
 					printf("\n%02hhx%02hhx%02hhx%02hhx%02hhx%02hhx   delta: %f min_delta: %f max_delta: %f upper_border: %f same key: %d timeout: %d repeat detected: %d\n", inBuf[1],inBuf[3],inBuf[2],inBuf[5],inBuf[4],inBuf[6], ((float)(inBuf[58] * 0xFF + inBuf[57]) * inBuf[56]) / 1000, ((float)(inBuf[53] * 0xFF + inBuf[52]) * inBuf[56]) / 1000, ((float)(inBuf[49] * 0xFF + inBuf[48]) * inBuf[56]) / 1000, ((float)(inBuf[51] * 0xFF + inBuf[50]) * inBuf[56]) / 1000, inBuf[54], inBuf[61], inBuf[60]);
 					printf("new key, diff_ms: %d, delta: %f, count: %d\n", (diff_us + 500) / 1000, ((float)(inBuf[58] * 0xFF + inBuf[57]) * inBuf[56]) / 1000, count);
 					fprintf(fp, "\n%02hhx%02hhx%02hhx%02hhx%02hhx%02hhx   delta: %f min_delta: %f max_delta: %f upper_border: %f same key: %d timeout: %d repeat detected: %d\n", inBuf[1],inBuf[3],inBuf[2],inBuf[5],inBuf[4],inBuf[6], ((float)(inBuf[58] * 0xFF + inBuf[57]) * inBuf[56]) / 1000, ((float)(inBuf[53] * 0xFF + inBuf[52]) * inBuf[56]) / 1000, ((float)(inBuf[49] * 0xFF + inBuf[48]) * inBuf[56]) / 1000, ((float)(inBuf[51] * 0xFF + inBuf[50]) * inBuf[56]) / 1000, inBuf[54], inBuf[61], inBuf[60]);
 					fprintf(fp, "new key, diff_ms: %d, delta: %f, count: %d\n", (diff_us + 500) / 1000, ((float)(inBuf[58] * 0xFF + inBuf[57]) * inBuf[56]) / 1000, count);
 				}
-				else if (inBuf[6] == IRMP_FLAG_FORCE_RELEASE) {
-					//count++; // since it is the same key
+				else if ((inBuf[6] & IRMP_FLAG_FORCE_RELEASE) == IRMP_FLAG_FORCE_RELEASE) {
 					printf("\n%02hhx%02hhx%02hhx%02hhx%02hhx%02hhx   delta: %f min_delta: %f max_delta: %f upper_border: %f same key: %d timeout: %d repeat detected: %d\n", inBuf[1],inBuf[3],inBuf[2],inBuf[5],inBuf[4],inBuf[6], ((float)(inBuf[58] * 0xFF + inBuf[57]) * inBuf[56]) / 1000, ((float)(inBuf[53] * 0xFF + inBuf[52]) * inBuf[56]) / 1000, ((float)(inBuf[49] * 0xFF + inBuf[48]) * inBuf[56]) / 1000, ((float)(inBuf[51] * 0xFF + inBuf[50]) * inBuf[56]) / 1000, inBuf[54], inBuf[61], inBuf[60]);
 					printf("force new key, diff_ms: %d, delta: %f, count: %d\n", (diff_us + 500) / 1000, ((float)(inBuf[58] * 0xFF + inBuf[57]) * inBuf[56]) / 1000, count);
 					fprintf(fp, "\n%02hhx%02hhx%02hhx%02hhx%02hhx%02hhx   delta: %f min_delta: %f max_delta: %f upper_border: %f same key: %d timeout: %d repeat detected: %d\n", inBuf[1],inBuf[3],inBuf[2],inBuf[5],inBuf[4],inBuf[6], ((float)(inBuf[58] * 0xFF + inBuf[57]) * inBuf[56]) / 1000, ((float)(inBuf[53] * 0xFF + inBuf[52]) * inBuf[56]) / 1000, ((float)(inBuf[49] * 0xFF + inBuf[48]) * inBuf[56]) / 1000, ((float)(inBuf[51] * 0xFF + inBuf[50]) * inBuf[56]) / 1000, inBuf[54], inBuf[61], inBuf[60]);
 					fprintf(fp, "force new key, diff_ms: %d, delta: %f, count: %d\n", (diff_us + 500) / 1000, ((float)(inBuf[58] * 0xFF + inBuf[57]) * inBuf[56]) / 1000, count);
 				}
-				else if (inBuf[6] == IRMP_FLAG_RELEASE) {
+				else if ((inBuf[6] & IRMP_FLAG_RELEASE) == IRMP_FLAG_RELEASE) {
 				printf("\n%02hhx%02hhx%02hhx%02hhx%02hhx%02hhx   delta: %f min_delta: %f max_delta: %f upper_border: %f same key: %d timeout: %d repeat detected: %d\n", inBuf[1],inBuf[3],inBuf[2],inBuf[5],inBuf[4],inBuf[6], ((float)(inBuf[58] * 0xFF + inBuf[57]) * inBuf[56]) / 1000, ((float)(inBuf[53] * 0xFF + inBuf[52]) * inBuf[56]) / 1000, ((float)(inBuf[49] * 0xFF + inBuf[48]) * inBuf[56]) / 1000, ((float)(inBuf[51] * 0xFF + inBuf[50]) * inBuf[56]) / 1000, inBuf[54], inBuf[61], inBuf[60]);
 				printf("++++ release ++++ diff_ms: %d\n", (diff_us + 500) / 1000);
 				fprintf(fp, "\n%02hhx%02hhx%02hhx%02hhx%02hhx%02hhx   delta: %f min_delta: %f max_delta: %f upper_border: %f same key: %d timeout: %d repeat detected: %d\n", inBuf[1],inBuf[3],inBuf[2],inBuf[5],inBuf[4],inBuf[6], ((float)(inBuf[58] * 0xFF + inBuf[57]) * inBuf[56]) / 1000, ((float)(inBuf[53] * 0xFF + inBuf[52]) * inBuf[56]) / 1000, ((float)(inBuf[49] * 0xFF + inBuf[48]) * inBuf[56]) / 1000, ((float)(inBuf[51] * 0xFF + inBuf[50]) * inBuf[56]) / 1000, inBuf[54], inBuf[61], inBuf[60]);
 				fprintf(fp, "++++ release ++++ diff_ms: %d count: %d\n", (diff_us + 500) / 1000, count);
 				fflush(fp);
 				}
-				if (inBuf[1] == 0x3c && inBuf[3] == 0 && inBuf[2] == 0 && inBuf[5] == 0 && inBuf[4] == 0x3f && inBuf[6] == 0) { // 3c0000003f00, stopsequence TODO make configurable
+				if (inBuf[1] == 0x3c && inBuf[3] == 0 && inBuf[2] == 0 && inBuf[5] == 0 && inBuf[4] == 0x3f && (inBuf[6] & IRMP_FLAG_REPETITION) == 0) { // 3c0000003f00, stopsequence TODO make configurable
 					fclose(fp);
 				}
 			}
