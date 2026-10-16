@@ -1221,7 +1221,7 @@ MainWindow::onReadIR(FXObject *sender, FXSelector sel, void *ptr)
 				debug_messages_text->appendText(u);
 			} else if (release)
 				debug_messages_text->appendText("Release\n");
-			} else if (force_release)
+			else if (force_release)
 				debug_messages_text->appendText("Force Release\n");
 			debug_messages_text->setBottomLine(INT_MAX);
 			receive_ir_button->setBackColor(FXRGB(255,23,23));

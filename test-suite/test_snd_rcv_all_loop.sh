@@ -72,5 +72,6 @@ for irdata in \
 do
 	echo "${irdata}"
 	../irmpemit/irmpemit -i 0x${irdata} -d /dev/hidraw1 > /dev/null 2>&1
+	sleep 0.15
 done
 done
