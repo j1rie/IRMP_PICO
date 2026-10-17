@@ -948,7 +948,7 @@ int main(void)
 			last_magic_sent = send_after_wakeup;
 		}
 
-		if (log_buf_ready) {
+		if (PrevXferComplete && log_buf_ready) {
 			for (int offset = 0; offset < log_buf_len; offset += HID_IN_REPORT_COUNT - 1) {
 				USB_HID_SendData(REPORT_ID_LOGGING, log_buf_ptr + offset, log_buf_len - offset < HID_IN_REPORT_COUNT - 1 ? log_buf_len - offset : HID_IN_REPORT_COUNT - 1);
 				while (!PrevXferComplete) tud_task();

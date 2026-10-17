@@ -267,8 +267,8 @@
 #define DENON_PULSE_LEN_MAX                     (LEN_T)(F_INTERRUPTS * DENON_PULSE_TIME * MAX_TOLERANCE_40 + 0.5)
 #define DENON_1_PAUSE_LEN_MIN                   (LEN_T)(F_INTERRUPTS * DENON_1_PAUSE_TIME * MIN_TOLERANCE_15 + 0.5)
 #define DENON_1_PAUSE_LEN_MAX                   (LEN_T)(F_INTERRUPTS * DENON_1_PAUSE_TIME * MAX_TOLERANCE_15 + 0.5) // 13
-// RUWIDO (see t-home-mediareceiver-15kHz.txt) conflicts here with DENON
-#define DENON_0_PAUSE_LEN_MIN                   (LEN_T)(F_INTERRUPTS * DENON_0_PAUSE_TIME * MIN_TOLERANCE_15 + 0.5)
+// RUWIDO (see t-home-mediareceiver-15kHz.txt) conflicts here with DENON // ?
+#define DENON_0_PAUSE_LEN_MIN                   (LEN_T)(F_INTERRUPTS * DENON_0_PAUSE_TIME * MIN_TOLERANCE_20 + 0.5)
 #define DENON_0_PAUSE_LEN_MAX                   (LEN_T)(F_INTERRUPTS * DENON_0_PAUSE_TIME * MAX_TOLERANCE_20 + 0.5)
 #define DENON_AUTO_REPETITION_PAUSE_LEN         (uint_fast16_t)(F_INTERRUPTS * DENON_AUTO_REPETITION_PAUSE_TIME * MAX_TOLERANCE_10 + 0.5)
 
@@ -377,7 +377,7 @@
 
 #define SIEMENS_OR_RUWIDO_START_BIT_PULSE_LEN_MIN       (LEN_T)(F_INTERRUPTS * SIEMENS_OR_RUWIDO_START_BIT_PULSE_TIME * 0.69 + 0.5) // <> A1TVBOX
 #define SIEMENS_OR_RUWIDO_START_BIT_PULSE_LEN_MAX       (LEN_T)(F_INTERRUPTS * SIEMENS_OR_RUWIDO_START_BIT_PULSE_TIME * 1.35 + 0.5) // 30
-#define SIEMENS_OR_RUWIDO_START_BIT_PAUSE_LEN_MIN       (LEN_T)(F_INTERRUPTS * SIEMENS_OR_RUWIDO_START_BIT_PAUSE_TIME * 0.69 + 0.5) // <> A1TVBOX
+#define SIEMENS_OR_RUWIDO_START_BIT_PAUSE_LEN_MIN       (LEN_T)(F_INTERRUPTS * SIEMENS_OR_RUWIDO_START_BIT_PAUSE_TIME * 0.69 + 0.5) // <> A1TVBOX 0.71 zu gross
 #define SIEMENS_OR_RUWIDO_START_BIT_PAUSE_LEN_MAX       (LEN_T)(F_INTERRUPTS * SIEMENS_OR_RUWIDO_START_BIT_PAUSE_TIME * MAX_TOLERANCE_20 + 0.5)
 #define SIEMENS_OR_RUWIDO_BIT_PULSE_LEN_MIN             (LEN_T)(F_INTERRUPTS * SIEMENS_OR_RUWIDO_BIT_PULSE_TIME * MIN_TOLERANCE_20 + 0.5)
 #define SIEMENS_OR_RUWIDO_BIT_PULSE_LEN_MAX             (LEN_T)(F_INTERRUPTS * SIEMENS_OR_RUWIDO_BIT_PULSE_TIME * 1.35 + 0.5) // 30
@@ -509,7 +509,7 @@
 #define A1TVBOX_START_BIT_PULSE_LEN_MIN         (LEN_T)(F_INTERRUPTS * A1TVBOX_START_BIT_PULSE_TIME * MIN_TOLERANCE_40 + 0.5)
 #define A1TVBOX_START_BIT_PULSE_LEN_MAX         (LEN_T)(F_INTERRUPTS * A1TVBOX_START_BIT_PULSE_TIME * MAX_TOLERANCE_40 + 0.5)
 #define A1TVBOX_START_BIT_PAUSE_LEN_MIN         (LEN_T)(F_INTERRUPTS * A1TVBOX_START_BIT_PAUSE_TIME * MIN_TOLERANCE_50 + 0.5) // 30?
-#define A1TVBOX_START_BIT_PAUSE_LEN_MAX         (LEN_T)(F_INTERRUPTS * A1TVBOX_START_BIT_PAUSE_TIME * MAX_TOLERANCE_15 + 0.5)
+#define A1TVBOX_START_BIT_PAUSE_LEN_MAX         (LEN_T)(F_INTERRUPTS * A1TVBOX_START_BIT_PAUSE_TIME * 1.03 + 0.5) // <> 1.09 geht nicht mit Siemens
 #define A1TVBOX_BIT_PULSE_LEN_MIN               (LEN_T)(F_INTERRUPTS * A1TVBOX_BIT_PULSE_TIME * MIN_TOLERANCE_20 + 0.5) // <> Siemens
 #define A1TVBOX_BIT_PULSE_LEN_MAX               (LEN_T)(F_INTERRUPTS * A1TVBOX_BIT_PULSE_TIME * MAX_TOLERANCE_50 + 0.5)
 #define A1TVBOX_BIT_PAUSE_LEN_MIN               (LEN_T)(F_INTERRUPTS * A1TVBOX_BIT_PAUSE_TIME * MIN_TOLERANCE_60 + 0.5) // war 40
@@ -2489,6 +2489,7 @@ volatile uint_fast8_t                           same_key = 0;
 volatile uint_fast8_t                           keep_same_key = 0;
 volatile uint_fast8_t                           timeout = 1;
 volatile uint32_t                               upper_border = F_INTERRUPTS * 170 / 1000 * (100 + JITTER_COMPENSATION) / 100;     // repeatrate plus jitter (threshold for timeout)
+uint_fast8_t                                    release_pending = FALSE;
 #endif
 
 #if defined(__MBED__)
@@ -2636,7 +2637,7 @@ irmp_get_data (IRMP_DATA * irmp_data_p)
                 if ((irmp_command >> 8) == (~irmp_command & 0x00FF))
                 {
                     irmp_command &= 0xff;
-                    irmp_command |= irmp_id << 8;
+                    irmp_command |= irmp_id << 8; // for samsung32 irmp_id looks to be the same as irmp_command
                     rtc = TRUE;
                 }
                 break;
@@ -2905,6 +2906,15 @@ irmp_get_data (IRMP_DATA * irmp_data_p)
                 }
                 keep_same_key = same_key;
                 same_key = 0;
+            }
+
+            if ((irmp_flags & IRMP_FLAG_RELEASE) == IRMP_FLAG_RELEASE) {
+                release_pending = FALSE;
+            }
+            else if ((irmp_flags & IRMP_FLAG_REPETITION) == IRMP_FLAG_NEW) {
+                if (release_pending)
+                    irmp_flags |= IRMP_FLAG_FORCE_RELEASE;
+                release_pending = TRUE;
             }
 #endif
 

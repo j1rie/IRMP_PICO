@@ -267,8 +267,8 @@
 #define DENON_PULSE_LEN_MAX                     (LEN_T)(F_INTERRUPTS * DENON_PULSE_TIME * MAX_TOLERANCE_40 + 0.5)
 #define DENON_1_PAUSE_LEN_MIN                   (LEN_T)(F_INTERRUPTS * DENON_1_PAUSE_TIME * MIN_TOLERANCE_15 + 0.5)
 #define DENON_1_PAUSE_LEN_MAX                   (LEN_T)(F_INTERRUPTS * DENON_1_PAUSE_TIME * MAX_TOLERANCE_15 + 0.5) // 13
-// RUWIDO (see t-home-mediareceiver-15kHz.txt) conflicts here with DENON
-#define DENON_0_PAUSE_LEN_MIN                   (LEN_T)(F_INTERRUPTS * DENON_0_PAUSE_TIME * MIN_TOLERANCE_15 + 0.5)
+// RUWIDO (see t-home-mediareceiver-15kHz.txt) conflicts here with DENON // ?
+#define DENON_0_PAUSE_LEN_MIN                   (LEN_T)(F_INTERRUPTS * DENON_0_PAUSE_TIME * MIN_TOLERANCE_20 + 0.5)
 #define DENON_0_PAUSE_LEN_MAX                   (LEN_T)(F_INTERRUPTS * DENON_0_PAUSE_TIME * MAX_TOLERANCE_20 + 0.5)
 #define DENON_AUTO_REPETITION_PAUSE_LEN         (uint_fast16_t)(F_INTERRUPTS * DENON_AUTO_REPETITION_PAUSE_TIME * MAX_TOLERANCE_10 + 0.5)
 
