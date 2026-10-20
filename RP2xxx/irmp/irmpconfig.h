@@ -253,7 +253,7 @@
  *---------------------------------------------------------------------------------------------------------------------------------------------------
  */
 #ifndef IRMP_ENABLE_RELEASE_DETECTION
-#  define IRMP_ENABLE_RELEASE_DETECTION         1                       // enable detection of key releases
+#  define IRMP_ENABLE_RELEASE_DETECTION         1                       // enable detection of key releases, darf nicht für für test-suite.sh!
 #endif
 
 /*---------------------------------------------------------------------------------------------------------------------------------------------------

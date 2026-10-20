@@ -997,7 +997,7 @@ int main(void)
 		/* poll IR-data */
 		if (PrevXferComplete && irmp_get_data(&myIRData)) {
 			if ((myIRData.flags & IRMP_FLAG_REPETITION) == IRMP_FLAG_NEW ) { // new
-				if (myIRData.flags & IRMP_FLAG_FORCE_RELEASE) { // generate release for previous not yet released IR-data
+				if (myIRData.flags & IRMP_FLAG_FORCE_RELEASE) { // generate a release for the previous not yet released IR-data
 					USB_HID_SendData(REPORT_ID_IR, (uint8_t *) &oldIRData, sizeof(oldIRData));
 					while (!PrevXferComplete) tud_task();
 				}

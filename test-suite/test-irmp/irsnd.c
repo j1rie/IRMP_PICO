@@ -439,7 +439,7 @@
 
 #define IRSND_NIKON_START_BIT_PULSE_LEN             (LEN_T)(F_INTERRUPTS * NIKON_START_BIT_PULSE_TIME + 0.5)
 #define IRSND_NIKON_START_BIT_PAUSE_LEN             (uint16_t)(F_INTERRUPTS * NIKON_START_BIT_PAUSE_TIME + 0.5)
-#define IRSND_NIKON_REPEAT_START_BIT_PAUSE_LEN      (LEN_T)(F_INTERRUPTS * NIKON_REPEAT_START_BIT_PAUSE_TIME + 0.5)
+//#define IRSND_NIKON_REPEAT_START_BIT_PAUSE_LEN      (LEN_T)(F_INTERRUPTS * NIKON_REPEAT_START_BIT_PAUSE_TIME + 0.5) // unused
 #define IRSND_NIKON_PULSE_LEN                       (LEN_T)(F_INTERRUPTS * NIKON_PULSE_TIME + 0.5)
 #define IRSND_NIKON_1_PAUSE_LEN                     (LEN_T)(F_INTERRUPTS * NIKON_1_PAUSE_TIME + 0.5)
 #define IRSND_NIKON_0_PAUSE_LEN                     (LEN_T)(F_INTERRUPTS * NIKON_0_PAUSE_TIME + 0.5)
@@ -1254,7 +1254,7 @@ irsnd_send_data (IRMP_DATA * irmp_data_p, uint8_t do_wait)
 
         if (irmp_data_p->protocol & 0x80) // hack for testing
         {
-            irsnd_repeat = 1000;
+            irsnd_repeat = 20000;
         }
 
     switch (irsnd_protocol)
