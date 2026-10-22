@@ -68,7 +68,7 @@ for irdata in \
 		a9001f003f00 \
 		af001f003f00 \
 		bc001f003f00 \
-		3c001f003f00;
+		1d001f003f00;
 do
 	echo "${irdata}"
 	../irmpemit/irmpemit -i 0x${irdata} -d /dev/hidraw1 > /dev/null 2>&1

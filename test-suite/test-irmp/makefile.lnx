@@ -11,9 +11,10 @@
 #----------------------------------------------------------------------------
 all:	all-irmp all-irsnd
 
-all-irmp:   irmp-10kHz irmp-15kHz irmp-20kHz irmp-25kHz irmp-50kHz
+all-irmp:   irmp-10kHz irmp-15kHz irmp-20kHz irmp-25kHz irmp-50kHz irmp-100kHz
 
-all-irsnd:  irsnd-10kHz irsnd-15kHz irsnd-20kHz irsnd-25kHz irsnd-50kHz
+all-irsnd:  irsnd-10kHz irsnd-15kHz irsnd-20kHz irsnd-25kHz irsnd-50kHz irsnd-100kHz
+
 
 irmp-10kHz: irmp.c irmp.h irmpconfig.h irmpsystem.h irmpprotocols.h
 	cc -Wall -DF_INTERRUPTS=10000 irmp.c -o irmp-10kHz
@@ -30,6 +31,10 @@ irmp-25kHz: irmp.c irmp.h irmpconfig.h irmpsystem.h irmpprotocols.h
 irmp-50kHz: irmp.c irmp.h irmpconfig.h irmpsystem.h irmpprotocols.h
 	cc -Wall -DF_INTERRUPTS=50000 irmp.c -o irmp-50kHz
 
+irmp-100kHz: irmp.c irmp.h irmpconfig.h irmpsystem.h irmpprotocols.h
+	cc -Wall -DF_INTERRUPTS=100000 irmp.c -o irmp-100kHz
+
+
 irsnd-10kHz: irsnd.c irsnd.h irmp.h irsndconfig.h irmpsystem.h irmpprotocols.h
 	cc -Wall -DF_INTERRUPTS=10000 irsnd.c -o irsnd-10kHz
 
@@ -45,9 +50,12 @@ irsnd-25kHz: irsnd.c irsnd.h irmp.h irsndconfig.h irmpsystem.h irmpprotocols.h
 irsnd-50kHz: irsnd.c irsnd.h irmp.h irsndconfig.h irmpsystem.h irmpprotocols.h
 	cc -Wall -DF_INTERRUPTS=50000 irsnd.c -o irsnd-50kHz
 
+irsnd-100kHz: irsnd.c irsnd.h irmp.h irsndconfig.h irmpsystem.h irmpprotocols.h
+	cc -Wall -DF_INTERRUPTS=100000 irsnd.c -o irsnd-100kHz
+
 
 test: all
 	cd IR-Data && ./test-suite.sh
 
 clean:
-	rm -f irmp-10kHz irmp-15kHz irmp-20kHz irmp-25kHz irmp-50kHz irsnd-10kHz irsnd-15kHz irsnd-20kHz irsnd-25kHz irsnd-50kHz
+	rm -f irmp-10kHz irmp-15kHz irmp-20kHz irmp-25kHz irmp-50kHz irmp-100kHz irsnd-10kHz irsnd-15kHz irsnd-20kHz irsnd-25kHz irsnd-50kHz irsnd-100kHz

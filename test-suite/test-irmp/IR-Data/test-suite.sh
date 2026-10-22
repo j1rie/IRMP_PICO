@@ -123,6 +123,10 @@ scan_25khz_files='
 scan_50khz_files='
     50kHz.txt'
 
+scan_100khz_files='
+    100kHz.txt'
+
+
 for j in $scan_10khz_files
 do
     echo -n "testing $j (16 BIT) ... "
@@ -212,6 +216,25 @@ do
         fi
     fi
 done
+
+for j in $scan_100khz_files
+do
+    echo -n "testing $j (16 BIT) ... "
+    if tmpsrc/irmp-100kHz -v < $j | grep -q error
+    then
+        tmpsrc/irmp-100kHz -v < $j | grep error
+        echo "test failed"
+        exit 1
+    else
+        if tmpsrc/irmp-100kHz -v < $j | grep -q checked
+        then
+            echo "checked!"
+        else
+            echo "successful"
+        fi
+    fi
+done
+
 
 # rm -rf tmpsrc
 

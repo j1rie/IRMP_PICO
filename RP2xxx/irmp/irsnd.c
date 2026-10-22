@@ -2042,7 +2042,7 @@ irsnd_ISR (void)
             /*
              * Send trailing space
              */
-            else if (packet_repeat_pause_counter < repeat_frame_pause_len)
+            else if (packet_repeat_pause_counter < repeat_frame_pause_len /*+ 5.0e-3 * F_INTERRUPTS*/) // hack for release when IRMP_AUTODETECT_REPEATRATE, JITTER_COMPENSATION, max 150 ms protocol, 5ms
             {
                 /*
                  * Send trailing space, especially for repeats
