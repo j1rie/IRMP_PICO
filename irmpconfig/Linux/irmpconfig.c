@@ -829,7 +829,9 @@ monit:	memset(inBuf, 0, sizeof(inBuf));
 						f = inBuf[l];
 						if (l == 2) f += 2; // STARTCYCLES
 						l++;
-						f |= inBuf[l] << 8;
+						f += inBuf[l] << 8;
+					} else {
+						if (l == 1) f += 2; // STARTCYCLES
 					}
 					if (f)
 						printf("%d%s ", f, l%2 ? "x0" : "x1");
@@ -844,7 +846,9 @@ monit:	memset(inBuf, 0, sizeof(inBuf));
 						f = inBuf[l];
 						if (l == 2) f += 2; // STARTCYCLES
 						l++;
-						f |= inBuf[l] << 8;
+						f += inBuf[l] << 8;
+					} else {
+						if (l == 1) f += 2; // STARTCYCLES
 					}
 					if (f)
 						for(g = 0; g < f; g++)
@@ -860,7 +864,9 @@ monit:	memset(inBuf, 0, sizeof(inBuf));
 						f = inBuf[l];
 						if (l == 2) f += 2; // STARTCYCLES
 						l++;
-						f |= inBuf[l] << 8;
+						f += inBuf[l] << 8;
+					} else {
+						if (l == 1) f += 2; // STARTCYCLES
 					}
 					if (f)
 						printf("%d%s ", f * INV_F_INT_US, l%2 ? "ms0" : "ms1");
@@ -1066,15 +1072,17 @@ test_rc6a: memset(inBuf, 0, sizeof(inBuf));
 			}
 
 			if (inBuf[0] == REPORT_ID_LOGGING && !last_ir_was_rc6a) {
-				inBuf[1] += 2; // STARTCYCLES
 				printf("\t");
 				for (l = 1; l <= retValm; l++) {
 					f = inBuf[l];
 					if (f == 0xff) {
 						l++;
 						f = inBuf[l];
+						if (l == 2) f += 2; // STARTCYCLES
 						l++;
 						f |= inBuf[l] << 8;
+					} else {
+						if (l == 1) f += 2; // STARTCYCLES
 					}
 					if (f)
 						printf("%d%s ", f, l%2 ? "x0" : "x1");
@@ -1142,6 +1150,8 @@ test3:	sprintf(testfilename, "test3_%u", j); printf("write into %s\n", testfilen
 						if (l == 1) f += 2; // STARTCYCLES
 						l++;
 						f += log_buf[m][l] << 8;
+					} else {
+						if (l == 0) f += 2; // STARTCYCLES
 					}
 					if (f) {
 						printf("%d%s ", f, l%2 ? "x1" : "x0"); // valid only for first chunk
@@ -1226,7 +1236,7 @@ test3:	sprintf(testfilename, "test3_%u", j); printf("write into %s\n", testfilen
 					fflush(fp);
 					print_next_log = 1;
 				}
-				if (inBuf[1] == 0x1d) { // && inBuf[3] == 0 && inBuf[2] == 0x4f && inBuf[5] == 0 && inBuf[4] == 0x3f && (inBuf[6] & IRMP_FLAG_REPETITION) == 0) { // 32004f003f00, stopsequence TODO make configurable
+				if (inBuf[1] == 0x80) { // && inBuf[3] == 0 && inBuf[2] == 0x4f && inBuf[5] == 0 && inBuf[4] == 0x3f && (inBuf[6] & IRMP_FLAG_REPETITION) == 0) { // 32004f003f00, stopsequence TODO make configurable
 					time(&now);
 					printf("closing, time: %s", ctime(&now));
 					fprintf(fp, "closing, time: %s", ctime(&now));

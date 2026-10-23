@@ -44,14 +44,17 @@ for irdata in \
 		03001f003f0f \
 		04001f003f0f \
 		05001f003f0f \
+		06001f003f0f \
 		07001f003f0f \
 		08001f003e0f \
 		09001f003f0f \
 		0a001f003f0f \
 		0b001f003f0f \
+		0c001f003f0f \
 		0d001f003f0f \
 		0f001f003f0f \
 		10001f003f0f \
+		11001f003e0f \
 		12001f003f0f \
 		13001f003f0f \
 		14001f003f0f \
@@ -71,6 +74,6 @@ for irdata in \
 do
 	echo "${irdata}"
 	../irmpemit/irmpemit -i 0x${irdata} -d /dev/hidraw1 > /dev/null 2>&1
-	sleep 0.1
+	sleep 0.15
 done
 #done

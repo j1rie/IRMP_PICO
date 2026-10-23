@@ -94,8 +94,8 @@
 #define IRMP_SUPPORT_RCCAR_PROTOCOL             1       // RC Car               >= 10000 (better 15000)  ~150 bytes (~500 in combination with RC5)
 #define IRMP_SUPPORT_ROOMBA_PROTOCOL            0       // iRobot Roomba        >= 10000                 ~150 bytes     conflicts with RC6
 #define IRMP_SUPPORT_RUWIDO_PROTOCOL            0       // RUWIDO, T-Home       >= 15000                 ~550 bytes     conflicts with DENON
-#define IRMP_SUPPORT_A1TVBOX_PROTOCOL           1       // A1 TV BOX            >= 15000 (better 20000)  ~300 bytes
-#define IRMP_SUPPORT_LEGO_PROTOCOL              1       // LEGO Power RC        >= 20000                 ~150 bytes
+#define IRMP_SUPPORT_A1TVBOX_PROTOCOL           0       // A1 TV BOX            >= 15000 (better 20000)  ~300 bytes     conflicts with SIEMENS
+#define IRMP_SUPPORT_LEGO_PROTOCOL              0       // LEGO Power RC        >= 20000                 ~150 bytes     conflicts with SIEMENS
 #define IRMP_SUPPORT_RCMM_PROTOCOL              1       // RCMM 12,24, or 32    >= 20000                 ~150 bytes
 #define IRMP_SUPPORT_LGAIR_PROTOCOL             1       // LG Air Condition     >= 10000                 ~300 bytes
 #define IRMP_SUPPORT_SAMSUNG48_PROTOCOL         1       // Samsung48            >= 10000                 ~100 bytes (SAMSUNG must be enabled!)
