@@ -1154,7 +1154,7 @@ test3:	sprintf(testfilename, "test3_%u", j); printf("write into %s\n", testfilen
 						if (l == 0) f += 2; // STARTCYCLES
 					}
 					if (f) {
-						printf("%d%s ", f, l%2 ? "x1" : "x0"); // valid only for first chunk
+						printf("%d%s ", f, l%2 ? "x1" : "x0"); // valid only for first chunk, TODO if diff < 4 ms toggeln
 						fprintf(fp, "%d%s ", f, l%2 ? "x1" : "x0");
 					}
 					else
@@ -1181,14 +1181,14 @@ test3:	sprintf(testfilename, "test3_%u", j); printf("write into %s\n", testfilen
 					printf("protocol changed, diff_ms: %d time: %s\n", (diff_us + 500) / 1000, ctime(&now));
 					fprintf(fp, "\n\n%02hhx%02hhx%02hhx%02hhx%02hhx%02hhx\n", inBuf[1],inBuf[3],inBuf[2],inBuf[5],inBuf[4],inBuf[6]);
 					fprintf(fp, "protocol changed, diff_ms: %d time: %s\n", (diff_us + 500) / 1000, ctime(&now));
-					if (last_protocol != inBuf[1])
-						last_protocol = rrBuf[0];
+					//if (last_protocol != inBuf[1])
+						//last_protocol = rrBuf[0];
 					for(l=0;l<5;l++) {
 						rrBuf[l] = inBuf[l+1];
 					}
 					count = 0;
 					fflush(fp);
-					if (last_protocol != inBuf[1])
+					//if (last_protocol != inBuf[1])
 						print_next_log = 1;
 					continue;
 				}
@@ -1236,10 +1236,10 @@ test3:	sprintf(testfilename, "test3_%u", j); printf("write into %s\n", testfilen
 					fflush(fp);
 					print_next_log = 1;
 				}
-				if (inBuf[1] == 0x80) { // && inBuf[3] == 0 && inBuf[2] == 0x4f && inBuf[5] == 0 && inBuf[4] == 0x3f && (inBuf[6] & IRMP_FLAG_REPETITION) == 0) { // 32004f003f00, stopsequence TODO make configurable
+				if (inBuf[1] == 0x07 && inBuf[3] == 0 && inBuf[2] == 0x15 && inBuf[5] == 0 && inBuf[4] == 0x2a && (inBuf[6] & IRMP_FLAG_REPETITION) == 0) { // 070015002a00, stopsequence
 					time(&now);
-					printf("closing, time: %s", ctime(&now));
-					fprintf(fp, "closing, time: %s", ctime(&now));
+					printf("received stop sequence, closing, time: %s", ctime(&now));
+					fprintf(fp, "received stop sequence, closing, time: %s", ctime(&now));
 					printf("exit\n");
 					fprintf(fp,"exit\n");
 					fclose(fp);
