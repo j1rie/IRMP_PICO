@@ -120,7 +120,7 @@ void cIrmpRemote::Action(void)
             repeat = false;
             FirstTime.Set();
         }
-        else if ((irmp_flags & IRMP_FLAG_REPETITION)) == IRMP_FLAG_REPETITION) { // repeat
+        else if ((irmp_flags & IRMP_FLAG_REPETITION) == IRMP_FLAG_REPETITION) { // repeat
             if (DEBUG) printf("repeat\n");
             if (FirstTime.Elapsed() < (uint)Setup.RcRepeatDelay) {
                 if (DEBUG) printf("continue Delay\n\n");
