@@ -26,3 +26,5 @@ test-suite/test-irmp/irsnd-*kHz
 irmpconfig3/*
 #test-suite/test-irmp/test_snd_rcv_all_loop-irmptest_2_50.sh
 irmpconfig/Linux/test*
+test-suite/test_snd_rcv_all_loop3T*
+test-suite/test_snd_rcv_all_loop3gG*

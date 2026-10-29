@@ -831,7 +831,7 @@ monit:	memset(inBuf, 0, sizeof(inBuf));
 						l++;
 						f += inBuf[l] << 8;
 					} else {
-						if (l == 1) f += 2; // STARTCYCLES
+						if (l == 1 && f > 0) f += 2; // STARTCYCLES
 					}
 					if (f)
 						printf("%d%s ", f, l%2 ? "x0" : "x1");
@@ -848,7 +848,7 @@ monit:	memset(inBuf, 0, sizeof(inBuf));
 						l++;
 						f += inBuf[l] << 8;
 					} else {
-						if (l == 1) f += 2; // STARTCYCLES
+						if (l == 1 && f > 0) f += 2; // STARTCYCLES
 					}
 					if (f)
 						for(g = 0; g < f; g++)
@@ -866,7 +866,7 @@ monit:	memset(inBuf, 0, sizeof(inBuf));
 						l++;
 						f += inBuf[l] << 8;
 					} else {
-						if (l == 1) f += 2; // STARTCYCLES
+						if (l == 1 && f > 0) f += 2; // STARTCYCLES
 					}
 					if (f)
 						printf("%d%s ", f * INV_F_INT_US, l%2 ? "ms0" : "ms1");
@@ -1082,7 +1082,7 @@ test_rc6a: memset(inBuf, 0, sizeof(inBuf));
 						l++;
 						f |= inBuf[l] << 8;
 					} else {
-						if (l == 1) f += 2; // STARTCYCLES
+						if (l == 1 && f > 0) f += 2; // STARTCYCLES
 					}
 					if (f)
 						printf("%d%s ", f, l%2 ? "x0" : "x1");
@@ -1135,13 +1135,14 @@ test3:	sprintf(testfilename, "test3_%u", j); printf("write into %s\n", testfilen
 	nr = 0;
 	print_next_log = 0;
 	memset(log_buf, 0, NR * DATALEN);
+	(void)last_protocol;
 	while(true) {
 		if (print_next_log && got_log) {
 			printf("\nLOG  nr: %d\n\t", nr <= 0 ? nr + NR : nr );
 			fprintf(fp, "\nLOG  nr: %d\n\t", nr <= 0 ? nr + NR : nr );
 			for (m = 0; m < NR; m++) {
-				printf("*%d: ", m + 1);
-				fprintf(fp, "*%d: ", m + 1);
+				printf("*%02d: ", m + 1);
+				fprintf(fp, "*02%d: ", m + 1);
 				for (l = 0; l < 63; l++) {
 					f = log_buf[m][l];
 					if (f == 0xff) {
@@ -1151,11 +1152,11 @@ test3:	sprintf(testfilename, "test3_%u", j); printf("write into %s\n", testfilen
 						l++;
 						f += log_buf[m][l] << 8;
 					} else {
-						if (l == 0) f += 2; // STARTCYCLES
+						if (l == 0 && f > 0) f += 2; // STARTCYCLES
 					}
 					if (f) {
-						printf("%d%s ", f, l%2 ? "x1" : "x0"); // valid only for first chunk, TODO if diff < 4 ms toggeln
-						fprintf(fp, "%d%s ", f, l%2 ? "x1" : "x0");
+						printf("%02d%s ", f, l%2 ? "x1" : "x0"); // valid only for first chunk, TODO if diff < 4 ms toggeln
+						fprintf(fp, "%02d%s ", f, l%2 ? "x1" : "x0");
 					}
 					else
 						break;

@@ -78,6 +78,7 @@ scan_10khz_files='
 
 scan_15khz_files='
     bo_beolink1000-15kHz.txt
+    bose_wave_system_15khz.txt
     denon-15kHz.txt
     denon-rc-176-15kHz.txt
     denon-rc-176-repeat-15kHz.txt
