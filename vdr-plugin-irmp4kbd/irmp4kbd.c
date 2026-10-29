@@ -233,7 +233,7 @@ void cReadIR::Action(void)
     if (buf[0] == REPORT_ID_KBD) {
         myIrmpRemote->Receive();
     } else {
-	//if(DEBUG) printf("configuration report or hidraw\n");
+        //if(DEBUG) printf("configuration report or hidraw\n");
     }
   }
 }
