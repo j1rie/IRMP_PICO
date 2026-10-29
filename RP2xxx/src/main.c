@@ -996,7 +996,7 @@ int main(void)
 
 		/* poll IR-data */
 		if (PrevXferComplete && irmp_get_data(&myIRData)) {
-			if ((myIRData.flags & IRMP_FLAG_REPETITION) == IRMP_FLAG_NEW ) { // new
+			if ((myIRData.flags & 0x07) == IRMP_FLAG_NEW ) { // new
 				if (myIRData.flags & IRMP_FLAG_FORCE_RELEASE) { // generate a release for the previous not yet released IR-data
 					USB_HID_SendData(REPORT_ID_IR, (uint8_t *) &oldIRData, sizeof(oldIRData));
 					while (!PrevXferComplete) tud_task();
@@ -1014,7 +1014,7 @@ int main(void)
 				memcpy(&oldIRData, &myIRData, sizeof(oldIRData));
 				oldIRData.flags = IRMP_FLAG_RELEASE;
 			}
-			else if ((myIRData.flags & IRMP_FLAG_REPETITION) == IRMP_FLAG_REPETITION) { // repeat, or possibly unrecognized new if non toggling protocol
+			else if ((myIRData.flags & 0x07) == IRMP_FLAG_REPETITION) { // repeat, or possibly unrecognized new if non toggling protocol
 				// since  first time, since last time
 				if ((repeat_timer < get_repeat(delay)) || (repeat_timer - last_ir_sent) < get_repeat(period)) {
 					continue; // don't send key
