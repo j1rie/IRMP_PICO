@@ -322,6 +322,7 @@ void irmp_register_complete_callback_function(void (*aCompleteCallbackFunction)(
 #define IRMP_FLAG_REPETITION            0x01
 #define IRMP_FLAG_RELEASE               0x02                                    // see IRMP_ENABLE_RELEASE_DETECTION in irmpconfig.h
 #define IRMP_FLAG_FORCE_RELEASE         0x04                                    // new IRData were received, before a release for the old IRData was sent
+#define IRMP_FLAG_ANY                   0x07                                    // any of the above
 
 #ifdef __cplusplus
 extern "C"

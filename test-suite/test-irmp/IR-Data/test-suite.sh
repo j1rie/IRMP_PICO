@@ -76,9 +76,9 @@ scan_10khz_files='
     sharp_lang_10khz.txt
     xbox360-10kHz.txt'
 
+#    bose_wave_system_15khz.txt
 scan_15khz_files='
     bo_beolink1000-15kHz.txt
-    bose_wave_system_15khz.txt
     denon-15kHz.txt
     denon-rc-176-15kHz.txt
     denon-rc-176-repeat-15kHz.txt
@@ -126,6 +126,12 @@ scan_50khz_files='
 
 scan_100khz_files='
     100kHz.txt'
+
+scan_320khz_files='
+    320kHz.txt'
+
+scan_500khz_files='
+    500kHz.txt'
 
 
 for j in $scan_10khz_files
@@ -228,6 +234,42 @@ do
         exit 1
     else
         if tmpsrc/irmp-100kHz -v < $j | grep -q checked
+        then
+            echo "checked!"
+        else
+            echo "successful"
+        fi
+    fi
+done
+
+for j in $scan_320khz_files
+do
+    echo -n "testing $j (16 BIT) ... "
+    if tmpsrc/irmp-320kHz -v < $j | grep -q error
+    then
+        tmpsrc/irmp-320kHz -v < $j | grep error
+        echo "test failed"
+        exit 1
+    else
+        if tmpsrc/irmp-320kHz -v < $j | grep -q checked
+        then
+            echo "checked!"
+        else
+            echo "successful"
+        fi
+    fi
+done
+
+for j in $scan_500khz_files
+do
+    echo -n "testing $j (16 BIT) ... "
+    if tmpsrc/irmp-500kHz -v < $j | grep -q error
+    then
+        tmpsrc/irmp-500kHz -v < $j | grep error
+        echo "test failed"
+        exit 1
+    else
+        if tmpsrc/irmp-500kHz -v < $j | grep -q checked
         then
             echo "checked!"
         else

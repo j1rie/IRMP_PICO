@@ -233,7 +233,7 @@
 #define RC5_START_BIT_LEN_MIN                   (LEN_T)(F_INTERRUPTS * RC5_BIT_TIME * MIN_TOLERANCE_10 + 0.5)
 #define RC5_START_BIT_LEN_MAX                   (LEN_T)(F_INTERRUPTS * RC5_BIT_TIME * MAX_TOLERANCE_10 + 0.5)
 #else
-#define RC5_START_BIT_LEN_MIN                   (LEN_T)(F_INTERRUPTS * RC5_BIT_TIME * 0.83 + 0.5) // <> Bose, Thomson, ev 0.74
+#define RC5_START_BIT_LEN_MIN                   (LEN_T)(F_INTERRUPTS * RC5_BIT_TIME * 0.838 + 0.5) // <> Bose, Thomson
 #define RC5_START_BIT_LEN_MAX                   (LEN_T)(F_INTERRUPTS * RC5_BIT_TIME * 1.19 + 0.5) // min 1.19
 #endif
 
@@ -379,7 +379,7 @@
 #define SIEMENS_OR_RUWIDO_START_BIT_PULSE_LEN_MAX       (LEN_T)(F_INTERRUPTS * SIEMENS_OR_RUWIDO_START_BIT_PULSE_TIME * 1.35 + 0.5) // 30
 #define SIEMENS_OR_RUWIDO_START_BIT_PAUSE_LEN_MIN       (LEN_T)(F_INTERRUPTS * SIEMENS_OR_RUWIDO_START_BIT_PAUSE_TIME * 0.69 + 0.5) // <> A1TVBOX 0.71 zu gross
 #define SIEMENS_OR_RUWIDO_START_BIT_PAUSE_LEN_MAX       (LEN_T)(F_INTERRUPTS * SIEMENS_OR_RUWIDO_START_BIT_PAUSE_TIME * MAX_TOLERANCE_20 + 0.5)
-#define SIEMENS_OR_RUWIDO_BIT_PULSE_LEN_MIN             (LEN_T)(F_INTERRUPTS * SIEMENS_OR_RUWIDO_BIT_PULSE_TIME * MIN_TOLERANCE_20 + 0.5)
+#define SIEMENS_OR_RUWIDO_BIT_PULSE_LEN_MIN             (LEN_T)(F_INTERRUPTS * SIEMENS_OR_RUWIDO_BIT_PULSE_TIME * 0.78 + 0.5) // war .8 ev.nur .74
 #define SIEMENS_OR_RUWIDO_BIT_PULSE_LEN_MAX             (LEN_T)(F_INTERRUPTS * SIEMENS_OR_RUWIDO_BIT_PULSE_TIME * 1.53 + 0.5)
 #define SIEMENS_OR_RUWIDO_BIT_PAUSE_LEN_MIN             (LEN_T)(F_INTERRUPTS * SIEMENS_OR_RUWIDO_BIT_PAUSE_TIME * 0.50 + 0.5)
 #define SIEMENS_OR_RUWIDO_BIT_PAUSE_LEN_MAX             (LEN_T)(F_INTERRUPTS * SIEMENS_OR_RUWIDO_BIT_PAUSE_TIME * 1.35 + 0.5) // 20
@@ -3795,7 +3795,7 @@ irmp_ISR (void)
 
 #if IRMP_SUPPORT_RC5_PROTOCOL == 1
                     if (((irmp_pulse_time >= RC5_START_BIT_LEN_MIN     && irmp_pulse_time <= RC5_START_BIT_LEN_MAX) ||
-                         (irmp_pulse_time >= 2 * RC5_START_BIT_LEN_MIN && irmp_pulse_time <= 2 * RC5_START_BIT_LEN_MAX)) &&
+                         (irmp_pulse_time >= 2 * RC5_START_BIT_LEN_MIN && irmp_pulse_time <= 2 * RC5_START_BIT_LEN_MAX)) && // RC5X
                         ((irmp_pause_time >= RC5_START_BIT_LEN_MIN     && irmp_pause_time <= RC5_START_BIT_LEN_MAX) ||
                          (irmp_pause_time >= 2 * RC5_START_BIT_LEN_MIN && irmp_pause_time <= 2 * RC5_START_BIT_LEN_MAX)))
                     {                                                           // it's RC5

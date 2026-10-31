@@ -28,3 +28,6 @@ irmpconfig3/*
 irmpconfig/Linux/test*
 test-suite/test_snd_rcv_all_loop3T*
 test-suite/test_snd_rcv_all_loop3gG*
+test-suite/test_snd_rcv_all_loop2-nT*
+test-suite/test_snd_rcv_all_loop3-nT*
+irmpconfig/Linux/cc
