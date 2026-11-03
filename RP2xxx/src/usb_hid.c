@@ -33,7 +33,7 @@ void USB_HID_SendData(uint8_t Report_ID, uint8_t *ptr, uint8_t len)
 		buf[61] = F_INTERRUPTS & 0xFF;
 		buf[60] = timeout;
 		buf[59] = (keep_same_key && !timeout);
-		//buf[58] = ;
+		buf[58] = release_pending;
 		buf[57] = delta >> 8;
 		buf[56] = delta & 0xFF;
 		buf[55] = INV_F_INT_US;

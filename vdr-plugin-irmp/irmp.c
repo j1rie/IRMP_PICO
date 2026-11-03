@@ -112,7 +112,7 @@ void cIrmpRemote::Action(void)
 
         if (DEBUG) printf("key: %s, lastkey: %s, irmp_flags: %d\n", (const char*)key, (const char*)lastkey, irmp_flags);
 
-        if ((irmp_flags & IRMP_FLAG_ANY) == IRMP_FLAG_NEW || (irmp_flags & IRMP_FLAG_ANY) == IRMP_FLAG_FORCE_RELEASE) { // new key
+        if ((irmp_flags & IRMP_FLAG_ANY) == IRMP_FLAG_NEW || (irmp_flags & IRMP_FLAG_FORCE_RELEASE)) { // new key
             if (DEBUG) printf("new key\n");
             if (repeat) {
                 if (DEBUG) printf("put release for %s\n", (const char*)lastkey);
@@ -122,7 +122,7 @@ void cIrmpRemote::Action(void)
             repeat = false;
             FirstTime.Set();
         }
-        else if ((irmp_flags & IRMP_FLAG_ANY) == IRMP_FLAG_REPETITION) { // repeat
+        else if (irmp_flags & IRMP_FLAG_REPETITION) { // repeat
             if (DEBUG) printf("repeat\n");
             if (FirstTime.Elapsed() < (uint)Setup.RcRepeatDelay) {
                 if (DEBUG) printf("continue Delay\n\n");
@@ -135,7 +135,7 @@ void cIrmpRemote::Action(void)
             repeat = true;
         }
 
-        if ((irmp_flags & IRMP_FLAG_ANY) == IRMP_FLAG_NEW || (irmp_flags & IRMP_FLAG_ANY) == IRMP_FLAG_REPETITION || (irmp_flags & IRMP_FLAG_ANY) == IRMP_FLAG_FORCE_RELEASE) {
+        if ((irmp_flags & IRMP_FLAG_ANY) == IRMP_FLAG_NEW || (irmp_flags & IRMP_FLAG_REPETITION) || (irmp_flags & IRMP_FLAG_FORCE_RELEASE)) {
             /* send key */
             if(DEBUG) printf("delta send: %ld\n", LastTime.Elapsed());
             LastTime.Set();
@@ -143,7 +143,7 @@ void cIrmpRemote::Action(void)
             Put(key, repeat);
         }
 
-        if ((irmp_flags & IRMP_FLAG_ANY) == IRMP_FLAG_RELEASE) { // release
+        if (irmp_flags & IRMP_FLAG_RELEASE) { // release
             if (repeat) {
                 /* send release */
                 if (DEBUG) printf("release\n");

@@ -906,7 +906,7 @@ int main(void)
 	uint8_t last_magic_sent = 0;
 	uint16_t key;
 	uint32_t last_kbd_sent, last_ir_sent;
-	uint8_t num, ir_release_needed = 0, kbd_release_needed = 0, send_ir_needed = 0, send_key_needed = 0;
+	uint8_t num, ir_release_needed = 0, kbd_release_needed = 0, send_ir_needed = 0, send_kbd_needed = 0, release = 0;
 	uint8_t old_usb_state_color = usb_state_color;
 
 #if PICO_RP2350 // overclock  a little
@@ -996,7 +996,7 @@ int main(void)
 
 		/* poll IR-data */
 		if (PrevXferComplete && irmp_get_data(&myIRData)) {
-			if ((myIRData.flags & IRMP_FLAG_ANY) == IRMP_FLAG_NEW || (myIRData.flags & IRMP_FLAG_ANY) == IRMP_FLAG_FORCE_RELEASE) { // new
+			if ((myIRData.flags & IRMP_FLAG_ANY) == IRMP_FLAG_NEW || (myIRData.flags & IRMP_FLAG_FORCE_RELEASE)) { // new
 				if (myIRData.flags & IRMP_FLAG_FORCE_RELEASE) { // generate a release for the previous not yet released IR-data
 					USB_HID_SendData(REPORT_ID_IR, (uint8_t *) &oldIRData, sizeof(oldIRData));
 					while (!PrevXferComplete) tud_task();
@@ -1013,15 +1013,19 @@ int main(void)
 				check_reboot(&myIRData);
 				memcpy(&oldIRData, &myIRData, sizeof(oldIRData));
 				oldIRData.flags = IRMP_FLAG_RELEASE;
+				send_kbd_needed = 1;
 			}
-			else if ((myIRData.flags & IRMP_FLAG_ANY) == IRMP_FLAG_REPETITION) { // repeat, or possibly unrecognized new if non toggling protocol
+			else if (myIRData.flags & IRMP_FLAG_REPETITION) { // repeat, or possibly unrecognized new if non toggling protocol
 				// since  first time, since last time
-				if ((repeat_timer < get_repeat(delay)) || (repeat_timer - last_ir_sent) < get_repeat(period)) {
-					continue; // don't send key
-				}
+				//if ((repeat_timer < get_repeat(delay)) || (repeat_timer - last_ir_sent) < get_repeat(period)) {
+					//continue; // don't send key
+				//}
+				send_kbd_needed = 1;
+			}
+			else if (myIRData.flags & IRMP_FLAG_RELEASE) { // release
+				release = 1;
 			}
 			send_ir_needed = 1;
-			send_key_needed = 1;
 		}
 
 		/* send IR-data */
@@ -1031,13 +1035,14 @@ int main(void)
 		}
 
 		/* send key corresponding to IR-data */
-		if (PrevXferComplete && send_key_needed) {
-			send_key_needed = 0;
+		if (PrevXferComplete && send_kbd_needed) {
+			send_kbd_needed = 0;
 			num = get_num_of_irdata(&myIRData);
 			if (num != 0xFF) {
 				key = get_key(num);
 				if (key != 0xFFFF) {
 					USB_KBD_SendData(key >> 8, key & 0xFF); // modifier, key
+					release = 0; // clean previous release without key
 					kbd_release_needed = 1;
 					// last time
 					last_kbd_sent = repeat_timer;
@@ -1046,8 +1051,10 @@ int main(void)
 		}
 
 		/* send kbd release */
-		// since last time >= timeout
-		if (PrevXferComplete && kbd_release_needed && (repeat_timer - last_kbd_sent >= (get_repeat(release) ? get_repeat(release) : upper_border * INV_F_INT_US / 1000) + 2)) { // ticks to ms
+		//// since last time >= timeout
+		if (PrevXferComplete && kbd_release_needed && release) {
+			release = 0;
+		////if (PrevXferComplete && kbd_release_needed && (repeat_timer - last_kbd_sent >= (get_repeat(release) ? get_repeat(release) : upper_border * INV_F_INT_US / 1000) + 2)) { // ticks to ms
 			kbd_release_needed = 0;
 			USB_KBD_SendData(0, 0);
 		}
