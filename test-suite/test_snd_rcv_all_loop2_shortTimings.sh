@@ -39,33 +39,12 @@
 # 3c Melinera 0 address bits
 #for i in $(seq 0 199); do
 for irdata in \
-		01001f003f0f \
-		02001f003f0f \
-		03001f003f0f \
-		04001f003f0f \
-		05001f003f0f \
-		07001f003f0f \
-		08001f003e0f \
-		09001f003f0f \
-		0a001f003f0f \
-		0b001f003f0f \
-		0d001f003f0f \
-		0f001f003f0f \
-		10001f003f0f \
-		13001f003f0f \
-		14001f003f0f \
-		15001f003f0f \
-		16001f003f0f \
-		18001f003f0f \
-		1b001f003f0f \
-		1c001f003f0f \
-		1e001f003f0f \
-		22001f003f0f \
-		27001f003f0f \
-		28001f003f0f \
-		29001f003f0f \
-		2f001f003f0f \
-		3c001f003f0f ;
+		06001f003f0f \
+		0c001f003f0f \
+		11001f003e0f \
+		12001f003f0f \
+		1f001f003f0f \
+		3c001f003f00 ;
 do
 	echo "${irdata}"
 	../irmpemit/irmpemit -i 0x${irdata} -d /dev/hidraw1 > /dev/null 2>&1
