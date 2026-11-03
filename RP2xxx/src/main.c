@@ -64,12 +64,6 @@ enum status {
 	STAT_FAILURE
 };
 
-enum repeat {
-	delay,
-	period,
-	release
-};
-
 const char supported_protocols[] = {
 #if IRMP_SUPPORT_SIRCS_PROTOCOL==1
 IRMP_SIRCS_PROTOCOL,
@@ -249,7 +243,6 @@ volatile unsigned int i = 0;
 volatile unsigned int repeat_timer = 0;
 uint8_t Reboot = 0;
 volatile unsigned int send_after_wakeup = 0;
-uint16_t repeat_default[3] = {0, 0, 0};
 static bool led_state = false;
 static enum color statusled_state = off; // cache for blink_LED(), fast_toggle(), yellow_short_on()
 static enum color statusled_state_cb = off; // cache for led_callback
@@ -444,24 +437,6 @@ uint16_t get_key(uint8_t num)
 	return key;
 }
 
-/* put repeat into eeprom at address num */
-void put_repeat(uint8_t *repeat, uint8_t num)
-{
-	eeprom_store_var(NUM_KEYS * (SIZEOF_IR + 2) + WAKE_SLOTS * SIZEOF_IR + 2 * num, repeat);
-}
-
-/* get repeat at address num from eeprom */
-uint16_t get_repeat(uint8_t num)
-{
-	uint16_t repeat;
-	eeprom_restore_var(NUM_KEYS * (SIZEOF_IR + 2) + WAKE_SLOTS * SIZEOF_IR + 2 * num, &repeat);
-	if (repeat == 0xFFFF) {
-		/* after reset */
-		repeat = repeat_default[num];
-	}
-	return repeat;
-}
-
 /* put send_after_wakeup into eeprom */
 void put_send_after_wakeup(uint8_t send_after_wakeup)
 {
@@ -497,7 +472,6 @@ void store_wakeup(IRMP_DATA *ir)
 
 void SysTick_Handler(void)
 {
-	repeat_timer++;
 	if (i == 999) {
 		if (AlarmValue)
 			AlarmValue--;
@@ -652,10 +626,6 @@ int8_t get_handler(uint8_t *buf)
 		*((uint16_t*)&buf[4]) = get_key(buf[4]);
 		ret += 2;
 		break;
-	case CMD_REPEAT:
-		*((uint16_t*)&buf[4]) = get_repeat(buf[4]);
-		ret += 2;
-		break;
 	case CMD_EEPROM_GET_RAW:
 		eeprom_get_raw(&buf[4], buf[4], buf[5]);
 		ret += 32;
@@ -723,9 +693,6 @@ int8_t set_handler(uint8_t *buf)
 	case CMD_MACRO_REMOTE:
 		idx = 2*FLASH_PAGE_SIZE + (MACRO_DEPTH + 1) * SIZEOF_IR * buf[4] + SIZEOF_IR * buf[5];
 		ret = store_new_irdata(idx);
-		break;
-	case CMD_REPEAT:
-		put_repeat(&buf[5], buf[4]);
 		break;
 	case CMD_HID_TEST:
 		ret = HID_IN_REPORT_COUNT;
@@ -801,9 +768,6 @@ int8_t reset_handler(uint8_t *buf)
 		break;
 	case CMD_KEY:
 		put_key(zeros, buf[4]);
-		break;
-	case CMD_REPEAT:
-		put_repeat(zeros, buf[4]);
 		break;
 	case CMD_EEPROM_RESET:
 		eeprom_reset();
@@ -1005,8 +969,6 @@ int main(void)
 					kbd_release_needed = 0;
 					USB_KBD_SendData(0, 0);
 				}
-				// first time
-				repeat_timer = 0;
 				store_wakeup(&myIRData);
 				check_macros(&myIRData);
 				check_wakeups(&myIRData);
@@ -1015,16 +977,10 @@ int main(void)
 				oldIRData.flags = IRMP_FLAG_RELEASE;
 				send_kbd_needed = 1;
 			}
-			else if (myIRData.flags & IRMP_FLAG_REPETITION) { // repeat, or possibly unrecognized new if non toggling protocol
-				// since  first time, since last time
-				//if ((repeat_timer < get_repeat(delay)) || (repeat_timer - last_ir_sent) < get_repeat(period)) {
-					//continue; // don't send key
-				//}
+			else if (myIRData.flags & IRMP_FLAG_REPETITION) // repeat, or possibly unrecognized new if non toggling protocol
 				send_kbd_needed = 1;
-			}
-			else if (myIRData.flags & IRMP_FLAG_RELEASE) { // release
+			else if (myIRData.flags & IRMP_FLAG_RELEASE) // release
 				release = 1;
-			}
 			send_ir_needed = 1;
 		}
 
@@ -1044,17 +1000,13 @@ int main(void)
 					USB_KBD_SendData(key >> 8, key & 0xFF); // modifier, key
 					release = 0; // clean previous release without key
 					kbd_release_needed = 1;
-					// last time
-					last_kbd_sent = repeat_timer;
 				}
 			}
 		}
 
 		/* send kbd release */
-		//// since last time >= timeout
 		if (PrevXferComplete && kbd_release_needed && release) {
 			release = 0;
-		////if (PrevXferComplete && kbd_release_needed && (repeat_timer - last_kbd_sent >= (get_repeat(release) ? get_repeat(release) : upper_border * INV_F_INT_US / 1000) + 2)) { // ticks to ms
 			kbd_release_needed = 0;
 			USB_KBD_SendData(0, 0);
 		}

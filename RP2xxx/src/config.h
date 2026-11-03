@@ -16,7 +16,7 @@
  * Eeprom partition 1: NUM_KEYS IRMP_DATA
  * Eeprom partition 2: NUM_KEYS keys
  * Eeprom partition 3: WAKE_SLOTS IRMP_DATA
- * Eeprom partition 4: repeat_delay, repeat_period, repeat_timeout, send_after_wakeup
+ * Eeprom partition 4: unused,unused, unused, send_after_wakeup
  * Eeprom partition 5 starting at 512: MACRO_SLOTS x (MACRO_DEPTH + 1) IRMP_DATA
  */
 #define NUM_KEYS	60
