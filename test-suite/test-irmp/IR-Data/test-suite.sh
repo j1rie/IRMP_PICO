@@ -242,16 +242,16 @@ do
     fi
 done
 
-for j in $scan_320khz_files
+for j in $scan_333khz_files
 do
     echo -n "testing $j (16 BIT) ... "
-    if tmpsrc/irmp-320kHz -v < $j | grep -q error
+    if tmpsrc/irmp-333kHz -v < $j | grep -q error
     then
-        tmpsrc/irmp-320kHz -v < $j | grep error
+        tmpsrc/irmp-333kHz -v < $j | grep error
         echo "test failed"
         exit 1
     else
-        if tmpsrc/irmp-320kHz -v < $j | grep -q checked
+        if tmpsrc/irmp-333kHz -v < $j | grep -q checked
         then
             echo "checked!"
         else

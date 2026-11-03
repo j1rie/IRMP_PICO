@@ -2491,7 +2491,7 @@ volatile uint_fast8_t                           same_key = 0;
 volatile uint_fast8_t                           keep_same_key = 0;
 volatile uint_fast8_t                           timeout = 1;
 volatile uint32_t                               upper_border = F_INTERRUPTS * 170 / 1000 * (100 + JITTER_COMPENSATION) / 100;     // repeatrate plus jitter (threshold for timeout)
-uint_fast8_t                                    release_pending = FALSE;
+volatile uint_fast8_t                           release_pending = FALSE;
 #endif
 
 #if defined(__MBED__)
@@ -2910,7 +2910,8 @@ irmp_get_data (IRMP_DATA * irmp_data_p)
                 same_key = 0;
             }
 
-            if ((irmp_flags & IRMP_FLAG_RELEASE) == IRMP_FLAG_RELEASE) {
+#if IRMP_ENABLE_RELEASE_DETECTION == 1
+            if (irmp_flags & IRMP_FLAG_RELEASE) {
                 release_pending = FALSE;
             }
             else if ((irmp_flags & IRMP_FLAG_REPETITION) == IRMP_FLAG_NEW) {
@@ -2918,6 +2919,7 @@ irmp_get_data (IRMP_DATA * irmp_data_p)
                     irmp_flags |= IRMP_FLAG_FORCE_RELEASE;
                 release_pending = TRUE;
             }
+#endif
 #endif
 
             irmp_data_p->flags    = irmp_flags;
