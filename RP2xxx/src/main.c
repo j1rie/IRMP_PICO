@@ -962,6 +962,7 @@ int main(void)
 		if (PrevXferComplete && irmp_get_data(&myIRData)) {
 			if ((myIRData.flags & IRMP_FLAG_ANY) == IRMP_FLAG_NEW || (myIRData.flags & IRMP_FLAG_FORCE_RELEASE)) { // new
 				if (myIRData.flags & IRMP_FLAG_FORCE_RELEASE) { // generate a release for the previous not yet released IR-data
+					myIRData.flags &= ~IRMP_FLAG_FORCE_RELEASE; // turn it into a regular new
 					USB_HID_SendData(REPORT_ID_IR, (uint8_t *) &oldIRData, sizeof(oldIRData));
 					while (!PrevXferComplete) tud_task();
 				}

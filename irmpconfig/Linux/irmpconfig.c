@@ -212,6 +212,9 @@ int main(int argc, const char **argv) {
 	uint8_t nr;
 	uint8_t got_log = 0;
 	uint8_t last_protocol = 0;
+	uint32_t log_now_us, log_diff_us, log_last_us = 0;
+	uint8_t log_count = 0;
+
 
 	open_irmp(argc>1 ? argv[1] : "/dev/irmp_pico");
 
@@ -822,6 +825,16 @@ monit:	memset(inBuf, 0, sizeof(inBuf));
 			}
 
 			if (inBuf[0] == REPORT_ID_LOGGING) {
+				log_now_us = GetUsTicks();
+				log_diff_us = log_now_us - log_last_us;
+				//printf("\tlog diff: %.2f\n\n", (double)(log_diff_us) / 1000);
+				log_last_us = log_now_us;
+				if (((double)(log_diff_us) / 1000) < 4) {
+					log_count++;
+				} else {
+					log_count = 0;
+				}
+
 				printf("\t");
 				for (l = 1; l <= retValm; l++) {
 					f = inBuf[l];
@@ -835,7 +848,7 @@ monit:	memset(inBuf, 0, sizeof(inBuf));
 						if (l == 1 && f > 0) f += 2; // STARTCYCLES
 					}
 					if (f)
-						printf("%d%s ", f, l%2 ? "x0" : "x1");
+						printf("%d%s ", f, l%2 ? (log_count%2 ? "x1" : "x0") : (log_count%2 ? "x0" : "x1"));
 					else
 						break;
 				}
@@ -853,7 +866,7 @@ monit:	memset(inBuf, 0, sizeof(inBuf));
 					}
 					if (f)
 						for(g = 0; g < f; g++)
-							printf("%s", l%2 ? "0" : "1");
+							printf("%s", l%2 ? (log_count%2 ? "1" : "0") : (log_count%2 ? "0" : "1"));
 					else
 						break;
 				}
@@ -870,7 +883,7 @@ monit:	memset(inBuf, 0, sizeof(inBuf));
 						if (l == 1 && f > 0) f += 2; // STARTCYCLES
 					}
 					if (f)
-						printf("%d%s ", f * INV_F_INT_US, l%2 ? "ms0" : "ms1");
+						printf("%d%s ", f * INV_F_INT_US, l%2 ? (log_count%2 ? "ms1" : "ms0") : (log_count%2 ? "ms0" : "ms1"));
 					else
 					    break;
 				}
