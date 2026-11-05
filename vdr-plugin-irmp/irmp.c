@@ -22,8 +22,6 @@ static const char *DESCRIPTION    = tr("Send keypresses from IRMP Pico Device to
 #define IRMP_FLAG_NEW                   0x00
 #define IRMP_FLAG_REPETITION            0x01
 #define IRMP_FLAG_RELEASE               0x02
-#define IRMP_FLAG_FORCE_RELEASE         0x04
-#define IRMP_FLAG_ANY                   0x07
 
 const char* irmp_device = "/dev/irmp_pico";
 int fd;
@@ -112,7 +110,7 @@ void cIrmpRemote::Action(void)
 
         if (DEBUG) printf("key: %s, lastkey: %s, irmp_flags: %d\n", (const char*)key, (const char*)lastkey, irmp_flags);
 
-        if ((irmp_flags & IRMP_FLAG_ANY) == IRMP_FLAG_NEW || (irmp_flags & IRMP_FLAG_FORCE_RELEASE)) { // new key
+        if (!(irmp_flags & (IRMP_FLAG_REPETITION || IRMP_FLAG_RELEASE))) { // new key
             if (DEBUG) printf("new key\n");
             if (repeat) {
                 if (DEBUG) printf("put release for %s\n", (const char*)lastkey);
@@ -135,15 +133,13 @@ void cIrmpRemote::Action(void)
             repeat = true;
         }
 
-        if ((irmp_flags & IRMP_FLAG_ANY) == IRMP_FLAG_NEW || (irmp_flags & IRMP_FLAG_REPETITION) || (irmp_flags & IRMP_FLAG_FORCE_RELEASE)) {
+        if (!(irmp_flags & IRMP_FLAG_RELEASE))) { // new or repeat
             /* send key */
             if(DEBUG) printf("delta send: %ld\n", LastTime.Elapsed());
             LastTime.Set();
             if (DEBUG) printf("put %s %s\n", (const char*)key, repeat ? "Repeat" : "");
             Put(key, repeat);
-        }
-
-        if (irmp_flags & IRMP_FLAG_RELEASE) { // release
+        } else { // release
             if (repeat) {
                 /* send release */
                 if (DEBUG) printf("release\n");

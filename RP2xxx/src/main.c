@@ -966,7 +966,7 @@ int main(void)
 					USB_HID_SendData(REPORT_ID_IR, (uint8_t *) &oldIRData, sizeof(oldIRData));
 					while (!PrevXferComplete) tud_task();
 				}
-				if (kbd_release_needed) { // generate release for previous not yet released key
+				if (kbd_release_needed) { // generate a release for the previous not yet released key
 					kbd_release_needed = 0;
 					USB_KBD_SendData(0, 0);
 				}

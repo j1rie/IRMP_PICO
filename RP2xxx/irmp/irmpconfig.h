@@ -87,7 +87,7 @@
 #define IRMP_SUPPORT_RECS80EXT_PROTOCOL         1       // RECS80EXT (SAA3008)  >= 15000                  ~50 bytes
 #define IRMP_SUPPORT_THOMSON_PROTOCOL           1       // Thomson              >= 10000                 ~250 bytes
 #define IRMP_SUPPORT_NIKON_PROTOCOL             1       // NIKON camera         >= 10000                 ~250 bytes
-#define IRMP_SUPPORT_NETBOX_PROTOCOL            0       // Netbox keyboard      >= 10000                 ~400 bytes (PROTOTYPE!)
+#define IRMP_SUPPORT_NETBOX_PROTOCOL            0       // Netbox keyboard      >= 10000                 ~400 bytes (PROTOTYPE!) conflicts with FDC and SIRCS
 #define IRMP_SUPPORT_ORTEK_PROTOCOL             0       // ORTEK (Hama)         >= 10000                 ~150 bytes     conflicts with FDC and NETBOX
 #define IRMP_SUPPORT_TELEFUNKEN_PROTOCOL        1       // Telefunken 1560      >= 10000                 ~150 bytes
 #define IRMP_SUPPORT_FDC_PROTOCOL               1       // FDC3402 keyboard     >= 10000 (better 15000)  ~150 bytes (~400 in combination with RC5)

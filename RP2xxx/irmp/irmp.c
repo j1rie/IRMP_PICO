@@ -100,9 +100,9 @@
 #define SIRCS_START_BIT_PULSE_LEN_MAX           (LEN_T)(F_INTERRUPTS * SIRCS_START_BIT_PULSE_TIME * 1.12 + 0.5) // 1.13 >< RC6!
 #define SIRCS_START_BIT_PAUSE_LEN_MIN           (LEN_T)(F_INTERRUPTS * SIRCS_START_BIT_PAUSE_TIME * MIN_TOLERANCE_30 + 0.5)
 #if IRMP_SUPPORT_NETBOX_PROTOCOL                // only 5% to avoid conflict with NETBOX:
-#  define SIRCS_START_BIT_PAUSE_LEN_MAX         (LEN_T)(F_INTERRUPTS * SIRCS_START_BIT_PAUSE_TIME * MAX_TOLERANCE_15 + 0.5) // war 15
+#  define SIRCS_START_BIT_PAUSE_LEN_MAX         (LEN_T)(F_INTERRUPTS * SIRCS_START_BIT_PAUSE_TIME * MAX_TOLERANCE_15 + 0.5)
 #else                                           // only 5% + 1 to avoid conflict with RC6:
-#  define SIRCS_START_BIT_PAUSE_LEN_MAX         (LEN_T)(F_INTERRUPTS * SIRCS_START_BIT_PAUSE_TIME * MAX_TOLERANCE_15 + 0.5) // war 15
+#  define SIRCS_START_BIT_PAUSE_LEN_MAX         (LEN_T)(F_INTERRUPTS * SIRCS_START_BIT_PAUSE_TIME * MAX_TOLERANCE_15 + 0.5)
 #endif
 #define SIRCS_1_PULSE_LEN_MIN                   (LEN_T)(F_INTERRUPTS * SIRCS_1_PULSE_TIME * MIN_TOLERANCE_15 + 0.5)
 #define SIRCS_1_PULSE_LEN_MAX                   (LEN_T)(F_INTERRUPTS * SIRCS_1_PULSE_TIME * 1.14 + 0.5)
@@ -2481,6 +2481,7 @@ static volatile uint_fast16_t                   irmp_command;
 static volatile uint_fast16_t                   irmp_id;                // only used for SAMSUNG protocol
 static volatile uint_fast8_t                    irmp_flags;
 // static volatile uint_fast8_t                 irmp_busy_flag;
+
 #if IRMP_AUTODETECT_REPEATRATE
 volatile uint_fast16_t                          delta_detection = 0;    // interval between two detections in ticks
 volatile uint32_t                               delta = 0;    // interval between two detections in ticks
@@ -2491,6 +2492,9 @@ volatile uint_fast8_t                           same_key = 0;
 volatile uint_fast8_t                           keep_same_key = 0;
 volatile uint_fast8_t                           timeout = 1;
 volatile uint32_t                               upper_border = F_INTERRUPTS * 170 / 1000 * (100 + JITTER_COMPENSATION) / 100;     // repeatrate plus jitter (threshold for timeout)
+#endif
+
+#if IRMP_ENABLE_RELEASE_DETECTION == 1
 volatile uint_fast8_t                           release_pending = FALSE;
 #endif
 
@@ -2909,6 +2913,7 @@ irmp_get_data (IRMP_DATA * irmp_data_p)
                 keep_same_key = same_key;
                 same_key = 0;
             }
+#endif
 
 #if IRMP_ENABLE_RELEASE_DETECTION == 1
             if (irmp_flags & IRMP_FLAG_RELEASE) {
@@ -2919,7 +2924,6 @@ irmp_get_data (IRMP_DATA * irmp_data_p)
                     irmp_flags |= IRMP_FLAG_FORCE_RELEASE;
                 release_pending = TRUE;
             }
-#endif
 #endif
 
             irmp_data_p->flags    = irmp_flags;
