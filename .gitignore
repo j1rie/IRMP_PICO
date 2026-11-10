@@ -27,3 +27,5 @@ irmpconfig3/*
 #test-suite/test-irmp/test_snd_rcv_all_loop-irmptest_2_50.sh
 irmpconfig/Linux/test*
 irmpconfig/Linux/cc
+test-suite/test-irmp/IR-Data/tmpsrc/*
+test-suite/test-irmp/irmp.c.*

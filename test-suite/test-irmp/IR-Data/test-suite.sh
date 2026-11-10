@@ -74,7 +74,8 @@ scan_10khz_files='
     rc6.txt
     sharp_kurz_10khz.txt
     sharp_lang_10khz.txt
-    xbox360-10kHz.txt'
+    xbox360-10kHz.txt
+    10kHz.txt'
 
 #    bose_wave_system_15khz.txt
 scan_15khz_files='
@@ -105,7 +106,8 @@ scan_15khz_files='
     universal-15kHz.txt
     vincent-15kHz.txt
     vincent-flash-15kHz.txt
-    xbox360-15kHz.txt'
+    xbox360-15kHz.txt
+    15kHz.txt'
 
 scan_20khz_files='
     rc-car-20kHz.txt
@@ -116,7 +118,8 @@ scan_20khz_files='
     metz-20kHz.txt
     rcmm-20kHz.txt
     saa3004-20kHz.txt
-    telefunken-1560-20kHz.txt'
+    telefunken-1560-20kHz.txt
+    20kHz.txt'
 
 scan_25khz_files='
     25kHz.txt'
