@@ -127,8 +127,8 @@
 #  define IRSND_SUPPORT_SIEMENS_PROTOCOL        0
 #endif
 
-#if IRSND_SUPPORT_A1TVBOX_PROTOCOL == 1 && F_INTERRUPTS < 15000
-#  warning F_INTERRUPTS too low, A1TVBOX protocol disabled (should be at least 15000)
+#if IRSND_SUPPORT_A1TVBOX_PROTOCOL == 1 && F_INTERRUPTS < 19000
+#  warning F_INTERRUPTS too low, A1TVBOX protocol disabled (should be at least 19000)
 #  undef IRSND_SUPPORT_A1TVBOX_PROTOCOL
 #  define IRSND_SUPPORT_A1TVBOX_PROTOCOL        0
 #endif

@@ -258,6 +258,12 @@ void irmp_register_complete_callback_function(void (*aCompleteCallbackFunction)(
 #  define IRMP_SUPPORT_LEGO_PROTOCOL            0
 #endif
 
+#if IRMP_SUPPORT_A1TVBOX_PROTOCOL == 1 && F_INTERRUPTS < 19000
+#  warning F_INTERRUPTS too low, A1TVBOX protocol disabled (should be at least 19000)
+#  undef IRMP_SUPPORT_A1TVBOX_PROTOCOL
+#  define IRMP_SUPPORT_A1TVBOX_PROTOCOL            0
+#endif
+
 #if IRMP_SUPPORT_SAMSUNG48_PROTOCOL == 1 && IRMP_SUPPORT_SAMSUNG_PROTOCOL == 0
 #  warning SAMSUNG48 protocol needs also SAMSUNG protocol, SAMSUNG protocol enabled
 #  undef IRMP_SUPPORT_SAMSUNG_PROTOCOL
@@ -312,6 +318,13 @@ void irmp_register_complete_callback_function(void (*aCompleteCallbackFunction)(
 #  define IRMP_SUPPORT_GREE_PROTOCOL            0
 #endif
 
+#if IRMP_SUPPORT_BOSE_PROTOCOL == 1 && (IRMP_SUPPORT_RC5_PROTOCOL == 1 || IRMP_SUPPORT_S100_PROTOCOL) == 1 && F_INTERRUPTS <= 15000
+#  warning BOSE protocol conflicts with RC5 and S100 at 10kHz and 15 kHz, please enable only one of those protocols
+#  warning BOSE protocol disabled
+#  undef IRMP_SUPPORT_BOSE_PROTOCOL
+#  define IRMP_SUPPORT_BOSE_PROTOCOL           0
+#endif
+
 #if F_INTERRUPTS > 100000
 # warning F_INTERRUPTS too high (should be not greater than 100000)
 #endif
@@ -333,8 +346,12 @@ extern void                             irmp_init (void);
 extern uint_fast8_t                     irmp_get_data (IRMP_DATA *);
 extern uint_fast8_t                     irmp_ISR (void);
 #if IRMP_AUTODETECT_REPEATRATE
-extern volatile uint_fast8_t            keep_same_key, timeout, release_pending;
+extern volatile uint_fast8_t            keep_same_key, timeout;
 extern volatile uint32_t                delta, min_delta, max_delta, upper_border;
+#endif
+
+#if IRMP_ENABLE_RELEASE_DETECTION == 1
+extern volatile uint_fast8_t            release_pending;
 #endif
 
 #if IRMP_PROTOCOL_NAMES == 1

@@ -71,7 +71,8 @@ for irdata in \
 		"39 001f 003f" \
 		"40 001f 003f" \
 		"41 001f 003f" \
-		"47 001f 003f" ;
+		"47 001f 003f" \
+		"60 001f 003f" ;
 do
 	echo "# [${irdata}]"
 	./irsnd-333kHz ${irdata}

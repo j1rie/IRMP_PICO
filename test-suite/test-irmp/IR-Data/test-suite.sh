@@ -130,8 +130,8 @@ scan_50khz_files='
 scan_100khz_files='
     100kHz.txt'
 
-scan_320khz_files='
-    320kHz.txt'
+scan_333khz_files='
+    333kHz.txt'
 
 scan_500khz_files='
     500kHz.txt'

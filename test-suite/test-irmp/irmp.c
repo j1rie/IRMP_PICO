@@ -218,25 +218,18 @@
 #define PANASONIC_0_PAUSE_LEN_MAX               (LEN_T)(F_INTERRUPTS * PANASONIC_0_PAUSE_TIME * 1.39 + 0.5) // 1.32
 
 #define RECS80_START_BIT_PULSE_LEN_MIN          (LEN_T)(F_INTERRUPTS * RECS80_START_BIT_PULSE_TIME * 0.53 + 0.5)
-#define RECS80_START_BIT_PULSE_LEN_MAX          (LEN_T)(F_INTERRUPTS * RECS80_START_BIT_PULSE_TIME * 1.53 + 0.5) // 1.90?
+#define RECS80_START_BIT_PULSE_LEN_MAX          (LEN_T)(F_INTERRUPTS * RECS80_START_BIT_PULSE_TIME * 1.90 + 0.5) // rare, but sometimes needed
 #define RECS80_START_BIT_PAUSE_LEN_MIN          (LEN_T)(F_INTERRUPTS * RECS80_START_BIT_PAUSE_TIME * MIN_TOLERANCE_10 + 0.5)
 #define RECS80_START_BIT_PAUSE_LEN_MAX          (LEN_T)(F_INTERRUPTS * RECS80_START_BIT_PAUSE_TIME * MAX_TOLERANCE_10 + 0.5)
 #define RECS80_PULSE_LEN_MIN                    (LEN_T)(F_INTERRUPTS * RECS80_PULSE_TIME * 0.53 + 0.5)
-#define RECS80_PULSE_LEN_MAX                    (LEN_T)(F_INTERRUPTS * RECS80_PULSE_TIME * 1.53 + 0.5) // 1.90?
+#define RECS80_PULSE_LEN_MAX                    (LEN_T)(F_INTERRUPTS * RECS80_PULSE_TIME * 1.90 + 0.5) // rare, but sometimes needed
 #define RECS80_1_PAUSE_LEN_MIN                  (LEN_T)(F_INTERRUPTS * RECS80_1_PAUSE_TIME * MIN_TOLERANCE_10 + 0.5)
 #define RECS80_1_PAUSE_LEN_MAX                  (LEN_T)(F_INTERRUPTS * RECS80_1_PAUSE_TIME * MAX_TOLERANCE_10 + 0.5)
 #define RECS80_0_PAUSE_LEN_MIN                  (LEN_T)(F_INTERRUPTS * RECS80_0_PAUSE_TIME * MIN_TOLERANCE_10 + 0.5)
 #define RECS80_0_PAUSE_LEN_MAX                  (LEN_T)(F_INTERRUPTS * RECS80_0_PAUSE_TIME * MAX_TOLERANCE_10 + 0.5)
 
-#if (0) // IRMP_SUPPORT_BOSE_PROTOCOL == 1 // BOSE conflicts with RC5, so keep tolerance for RC5 minimal here:
-// start pause is well separated, so overlap in start pulse does not disturb, but reducing tolerance leads to worse RC5 recognition
-#define RC5_START_BIT_LEN_MIN                   (LEN_T)(F_INTERRUPTS * RC5_BIT_TIME * MIN_TOLERANCE_10 + 0.5)
-#define RC5_START_BIT_LEN_MAX                   (LEN_T)(F_INTERRUPTS * RC5_BIT_TIME * MAX_TOLERANCE_10 + 0.5)
-#else
 #define RC5_START_BIT_LEN_MIN                   (LEN_T)(F_INTERRUPTS * RC5_BIT_TIME * 0.838 + 0.5) // <> Bose, Thomson
 #define RC5_START_BIT_LEN_MAX                   (LEN_T)(F_INTERRUPTS * RC5_BIT_TIME * 1.19 + 0.5) // min 1.19
-#endif
-
 #define RC5_BIT_LEN_MIN                         (LEN_T)(F_INTERRUPTS * RC5_BIT_TIME * 0.83 + 0.5)
 #define RC5_BIT_LEN_MAX                         (LEN_T)(F_INTERRUPTS * RC5_BIT_TIME * 1.19 + 0.5) // min 1.19
 
@@ -251,15 +244,10 @@
 #define RCII_BIT_LEN                            (LEN_T)(F_INTERRUPTS * RCII_BIT_TIME)
 #define RCII_BIT_LEN_MAX                        (LEN_T)(F_INTERRUPTS * RCII_BIT_TIME * MAX_TOLERANCE_40 + 0.5)
 
-#if (0) // IRMP_SUPPORT_BOSE_PROTOCOL == 1 // BOSE conflicts with S100, so keep tolerance for S100 minimal here:
-// start pause is well separated, so overlap in start pulse does not disturb, but reducing tolerance leads to worse RC5 recognition
 #define S100_START_BIT_LEN_MIN                   ((LEN_T)(F_INTERRUPTS * S100_BIT_TIME * MIN_TOLERANCE_05 + 0.5) - 1)
 #define S100_START_BIT_LEN_MAX                   ((LEN_T)(F_INTERRUPTS * S100_BIT_TIME * MAX_TOLERANCE_05 + 0.5) + 1)
-#else
 #define S100_START_BIT_LEN_MIN                   (LEN_T)(F_INTERRUPTS * S100_BIT_TIME * 0.84 + 0.5)
 #define S100_START_BIT_LEN_MAX                   (LEN_T)(F_INTERRUPTS * S100_BIT_TIME * 1.19 + 0.5)
-#endif
-
 #define S100_BIT_LEN_MIN                         (LEN_T)(F_INTERRUPTS * S100_BIT_TIME * 0.84 + 0.5)
 #define S100_BIT_LEN_MAX                         (LEN_T)(F_INTERRUPTS * S100_BIT_TIME * 1.19 + 0.5)
 
@@ -291,11 +279,11 @@
 #define RC6_BIT_PAUSE_LEN_MAX                   (LEN_T)(F_INTERRUPTS * RC6_BIT_TIME * 1.46 + 0.5)       // pauses: 300 - 600
 
 #define RECS80EXT_START_BIT_PULSE_LEN_MIN       (LEN_T)(F_INTERRUPTS * RECS80EXT_START_BIT_PULSE_TIME * 0.53 + 0.5)
-#define RECS80EXT_START_BIT_PULSE_LEN_MAX       (LEN_T)(F_INTERRUPTS * RECS80EXT_START_BIT_PULSE_TIME * 1.53 + 0.5) // 1.90?
+#define RECS80EXT_START_BIT_PULSE_LEN_MAX       (LEN_T)(F_INTERRUPTS * RECS80EXT_START_BIT_PULSE_TIME * 1.90 + 0.5) // rare, but sometimes needed
 #define RECS80EXT_START_BIT_PAUSE_LEN_MIN       (LEN_T)(F_INTERRUPTS * RECS80EXT_START_BIT_PAUSE_TIME * MIN_TOLERANCE_10 + 0.5)
 #define RECS80EXT_START_BIT_PAUSE_LEN_MAX       (LEN_T)(F_INTERRUPTS * RECS80EXT_START_BIT_PAUSE_TIME * MAX_TOLERANCE_10 + 0.5)
 #define RECS80EXT_PULSE_LEN_MIN                 (LEN_T)(F_INTERRUPTS * RECS80EXT_PULSE_TIME * 0.53 + 0.5)
-#define RECS80EXT_PULSE_LEN_MAX                 (LEN_T)(F_INTERRUPTS * RECS80EXT_PULSE_TIME * 1.53 + 0.5) // 1.90?
+#define RECS80EXT_PULSE_LEN_MAX                 (LEN_T)(F_INTERRUPTS * RECS80EXT_PULSE_TIME * 1.90 + 0.5) // rare, but sometimes needed
 #define RECS80EXT_1_PAUSE_LEN_MIN               (LEN_T)(F_INTERRUPTS * RECS80EXT_1_PAUSE_TIME * MIN_TOLERANCE_10 + 0.5)
 #define RECS80EXT_1_PAUSE_LEN_MAX               (LEN_T)(F_INTERRUPTS * RECS80EXT_1_PAUSE_TIME * MAX_TOLERANCE_10 + 0.5)
 #define RECS80EXT_0_PAUSE_LEN_MIN               (LEN_T)(F_INTERRUPTS * RECS80EXT_0_PAUSE_TIME * MIN_TOLERANCE_10 + 0.5)
@@ -497,7 +485,7 @@
 #define BOSE_START_BIT_PULSE_LEN_MIN             (LEN_T)(F_INTERRUPTS * BOSE_START_BIT_PULSE_TIME * MIN_TOLERANCE_40 + 0.5)
 #define BOSE_START_BIT_PULSE_LEN_MAX             (LEN_T)(F_INTERRUPTS * BOSE_START_BIT_PULSE_TIME * MAX_TOLERANCE_40 + 0.5)
 #define BOSE_START_BIT_PAUSE_LEN_MIN             (LEN_T)(F_INTERRUPTS * BOSE_START_BIT_PAUSE_TIME * 0.81 + 0.5)
-#define BOSE_START_BIT_PAUSE_LEN_MAX             (LEN_T)(F_INTERRUPTS * BOSE_START_BIT_PAUSE_TIME * MAX_TOLERANCE_40 + 0.5)
+#define BOSE_START_BIT_PAUSE_LEN_MAX             (LEN_T)(F_INTERRUPTS * BOSE_START_BIT_PAUSE_TIME * MAX_TOLERANCE_40 + 0.5) // max 1.0526, <> RC5
 #define BOSE_PULSE_LEN_MIN                       (LEN_T)(F_INTERRUPTS * BOSE_PULSE_TIME * MIN_TOLERANCE_40 + 0.5) // 35
 #define BOSE_PULSE_LEN_MAX                       (LEN_T)(F_INTERRUPTS * BOSE_PULSE_TIME * MAX_TOLERANCE_40 + 0.5) // 35
 #define BOSE_1_PAUSE_LEN_MIN                     (LEN_T)(F_INTERRUPTS * BOSE_1_PAUSE_TIME * MIN_TOLERANCE_30 + 0.5) // 35?
@@ -2481,6 +2469,7 @@ static volatile uint_fast16_t                   irmp_command;
 static volatile uint_fast16_t                   irmp_id;                // only used for SAMSUNG protocol
 static volatile uint_fast8_t                    irmp_flags;
 // static volatile uint_fast8_t                 irmp_busy_flag;
+
 #if IRMP_AUTODETECT_REPEATRATE
 volatile uint_fast16_t                          delta_detection = 0;    // interval between two detections in ticks
 volatile uint32_t                               delta = 0;    // interval between two detections in ticks
@@ -2491,6 +2480,9 @@ volatile uint_fast8_t                           same_key = 0;
 volatile uint_fast8_t                           keep_same_key = 0;
 volatile uint_fast8_t                           timeout = 1;
 volatile uint32_t                               upper_border = F_INTERRUPTS * 170 / 1000 * (100 + JITTER_COMPENSATION) / 100;     // repeatrate plus jitter (threshold for timeout)
+#endif
+
+#if IRMP_ENABLE_RELEASE_DETECTION == 1
 volatile uint_fast8_t                           release_pending = FALSE;
 #endif
 
@@ -2909,6 +2901,7 @@ irmp_get_data (IRMP_DATA * irmp_data_p)
                 keep_same_key = same_key;
                 same_key = 0;
             }
+#endif
 
 #if IRMP_ENABLE_RELEASE_DETECTION == 1
             if (irmp_flags & IRMP_FLAG_RELEASE) {
@@ -2919,7 +2912,6 @@ irmp_get_data (IRMP_DATA * irmp_data_p)
                     irmp_flags |= IRMP_FLAG_FORCE_RELEASE;
                 release_pending = TRUE;
             }
-#endif
 #endif
 
             irmp_data_p->flags    = irmp_flags;
