@@ -133,7 +133,7 @@ void cIrmpRemote::Action(void)
             repeat = true;
         }
 
-        if (!(irmp_flags & IRMP_FLAG_RELEASE))) { // new or repeat
+        if (!(irmp_flags & IRMP_FLAG_RELEASE)) { // new or repeat
             /* send key */
             if(DEBUG) printf("delta send: %ld\n", LastTime.Elapsed());
             LastTime.Set();
