@@ -577,7 +577,8 @@ volatile uint8_t                                irsnd_is_on = FALSE;
 
 static volatile uint8_t                         irsnd_protocol = 0;
 static volatile uint8_t                         irsnd_buffer[11] = {0};
-static volatile LEN_T                           irsnd_repeat = 0;
+//static volatile LEN_T                           irsnd_repeat = 0;
+static volatile uint_fast16_t                   irsnd_repeat = 0; // hack for testing with <= 25kHz
 
 #if defined(ARDUINO)
 #include "irsndArduinoExt.cpp.h" // must be after the declarations of irsnd_busy etc.

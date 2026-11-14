@@ -244,8 +244,6 @@
 #define RCII_BIT_LEN                            (LEN_T)(F_INTERRUPTS * RCII_BIT_TIME)
 #define RCII_BIT_LEN_MAX                        (LEN_T)(F_INTERRUPTS * RCII_BIT_TIME * MAX_TOLERANCE_40 + 0.5)
 
-#define S100_START_BIT_LEN_MIN                   ((LEN_T)(F_INTERRUPTS * S100_BIT_TIME * MIN_TOLERANCE_05 + 0.5) - 1)
-#define S100_START_BIT_LEN_MAX                   ((LEN_T)(F_INTERRUPTS * S100_BIT_TIME * MAX_TOLERANCE_05 + 0.5) + 1)
 #define S100_START_BIT_LEN_MIN                   (LEN_T)(F_INTERRUPTS * S100_BIT_TIME * 0.84 + 0.5)
 #define S100_START_BIT_LEN_MAX                   (LEN_T)(F_INTERRUPTS * S100_BIT_TIME * 1.19 + 0.5)
 #define S100_BIT_LEN_MIN                         (LEN_T)(F_INTERRUPTS * S100_BIT_TIME * 0.84 + 0.5)
@@ -2631,7 +2629,7 @@ irmp_get_data (IRMP_DATA * irmp_data_p)
                 if ((irmp_command >> 8) == (~irmp_command & 0x00FF))
                 {
                     irmp_command &= 0xff;
-                    irmp_command |= irmp_id << 8; // for samsung32 irmp_id looks to be the same as irmp_command
+                    irmp_command |= irmp_id << 8; // for samsung32 irmp_id looks to be the same as irmp_command TESTEN
                     rtc = TRUE;
                 }
                 break;
