@@ -1181,7 +1181,7 @@ test3:	sprintf(testfilename, "test3_%u", j); printf("write into %s\n", testfilen
 			printf("\n");
 			fprintf(fp, "\n");
 			fflush(fp);
-			print_next_log = 0;
+			print_next_log--;
 			got_log = 0;
 		}
 		retValm = read(irmpfd, inBuf, in_size);
@@ -1204,7 +1204,7 @@ test3:	sprintf(testfilename, "test3_%u", j); printf("write into %s\n", testfilen
 					count = 0;
 					fflush(fp);
 					//if (last_protocol != inBuf[1])
-						print_next_log = 1;
+						print_next_log = 2;
 					continue;
 				}
 				uint8_t same_key = inBuf[2] == rrBuf[1] && inBuf[3] == rrBuf[2] && inBuf[4] == rrBuf[3] && inBuf[5] == rrBuf[4];
@@ -1218,12 +1218,12 @@ test3:	sprintf(testfilename, "test3_%u", j); printf("write into %s\n", testfilen
 						rrBuf[l] = inBuf[l+1];
 					}
 					fflush(fp);
-					print_next_log = 1;
+					print_next_log = 2;
 					continue;
 				}
 				if (inBuf[6] & IRMP_FLAG_REPETITION) {
 					count++;
-					printf("repetition count: %d\r", count);
+					if (!print_next_log) printf("repetition count: %d\r", count);
 				}
 				else if (inBuf[6] & IRMP_FLAG_RELEASE) {
 					time(&now);
@@ -1240,7 +1240,7 @@ test3:	sprintf(testfilename, "test3_%u", j); printf("write into %s\n", testfilen
 					fprintf(fp, "\n%02hhx%02hhx%02hhx%02hhx%02hhx%02hhx   delta: %f min_delta: %f max_delta: %f upper_border: %f same key: %d timeout: %d repeat detected: %d\n", inBuf[1],inBuf[3],inBuf[2],inBuf[5],inBuf[4],inBuf[6], ((float)(inBuf[58] * 0xFF + inBuf[57]) * inBuf[56]) / 1000, ((float)(inBuf[53] * 0xFF + inBuf[52]) * inBuf[56]) / 1000, ((float)(inBuf[49] * 0xFF + inBuf[48]) * inBuf[56]) / 1000, ((float)(inBuf[51] * 0xFF + inBuf[50]) * inBuf[56]) / 1000, inBuf[54], inBuf[61], inBuf[60]);
 					fprintf(fp, "new key, diff_ms: %d, count: %d time: %s\n", (diff_us + 500) / 1000, count, ctime(&now));
 					fflush(fp);
-					print_next_log = 1;
+					print_next_log = 2;
 				}
 				else if (inBuf[6] & IRMP_FLAG_FORCE_RELEASE) {
 					time(&now);
@@ -1249,7 +1249,7 @@ test3:	sprintf(testfilename, "test3_%u", j); printf("write into %s\n", testfilen
 					fprintf(fp, "\n%02hhx%02hhx%02hhx%02hhx%02hhx%02hhx   delta: %f min_delta: %f max_delta: %f upper_border: %f same key: %d timeout: %d repeat detected: %d\n", inBuf[1],inBuf[3],inBuf[2],inBuf[5],inBuf[4],inBuf[6], ((float)(inBuf[58] * 0xFF + inBuf[57]) * inBuf[56]) / 1000, ((float)(inBuf[53] * 0xFF + inBuf[52]) * inBuf[56]) / 1000, ((float)(inBuf[49] * 0xFF + inBuf[48]) * inBuf[56]) / 1000, ((float)(inBuf[51] * 0xFF + inBuf[50]) * inBuf[56]) / 1000, inBuf[54], inBuf[61], inBuf[60]);
 					fprintf(fp, "force new key, diff_ms: %d, count: %d, time: %s\n", (diff_us + 500) / 1000, count, ctime(&now));
 					fflush(fp);
-					print_next_log = 1;
+					print_next_log = 2;
 				}
 				if (inBuf[1] == 0x07 && inBuf[3] == 0 && inBuf[2] == 0x15 && inBuf[5] == 0 && inBuf[4] == 0x2a && inBuf[6] == 0x00) { // 070015002a00, stopsequence
 					time(&now);
